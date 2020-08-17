@@ -6,3 +6,62 @@
 
 # Notes
 *.note
+
+# OSX #
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
+local_settings.py
+.env
+static/
+
+# Backup files # 
+*.bak 
+*.backup
+
+# Thumbnails
+._*
+
+# Distribution / packaging
+.Python
+env/
+build/*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+.env*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Visual Studio Code # 
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history

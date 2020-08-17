@@ -9,6 +9,17 @@ verify_ssl = true
 django = "==3.0.2"
 gunicorn = "*"
 psycopg2 = "*"
+django-crispy-forms = "*"
+python-decouple = "*"
+plotly = "*"
+django-plotly-dash = "*"
+dash-bootstrap-components = "*"
+django-bootstrap4 = "*"
+django-debug-toolbar = "*"
+django-extensions = "*"
+django-mptt = "*"
+django-pandas = "*"
+cufflinks = "*"
 
 [requires]
 python_version = "3.7"

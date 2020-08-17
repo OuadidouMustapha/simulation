@@ -20,6 +20,11 @@ django-extensions = "*"
 django-mptt = "*"
 django-pandas = "*"
 cufflinks = "*"
+channels = "*"
+daphne = "*"
+redis = "*"
+django-redis = "*"
+channels-redis = "*"
 
 [requires]
 python_version = "3.7"

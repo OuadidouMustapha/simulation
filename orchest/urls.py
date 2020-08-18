@@ -14,8 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('stock/', include('stock.urls')),
+    path('forecasting/', include('forecasting.urls')),
+    path('deployment/', include('deployment.urls')),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),
+    path('accounts/', include("django.contrib.auth.urls")),
 ]
+
+# Enable the debugger toolbar
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

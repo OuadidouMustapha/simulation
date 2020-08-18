@@ -39,7 +39,9 @@ build/*.log
 __pycache__/
 local_settings.py
 
-.env*.log
+.env
+.venv
+*.log
 *.pot
 *.pyc
 __pycache__/

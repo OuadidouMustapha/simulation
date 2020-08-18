@@ -180,12 +180,15 @@ PLOTLY_DASH = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATICFILES_LOCATION = 'static'
-STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'orchest/static')
-]
+# STATIC_URL = '/static/'
+# STATIC_ROOT = 'static'
+STATIC_URL = os.getenv('STATIC_URL', '/static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATICFILES_LOCATION = 'static'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'orchest/static')
+# ]
 
 # Redirect page after login
 LOGIN_REDIRECT_URL = "/stock/index"

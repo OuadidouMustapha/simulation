@@ -1,0 +1,130 @@
+{% load static %}
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon">
+            <img class="sidebar-brand-icon" src="{% static 'img/logo.png' %}" style="width: 100%">
+
+            {% comment %} <i class="fas fa-signature"></i> {% endcomment %}
+        </div>
+            {% comment %} <img class="sidebar-brand-icon" src="{% static 'img/logo_tagline.png' %}" style="width: 55%"> {% endcomment %}
+        {% comment %} <div class="sidebar-brand-text mx-3"> <sup>Supply CHain </sup>Pulse</div> {% endcomment %}
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-2">
+
+    <!-- Nav Items -->
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'stock:index' %}">
+            <i class="fas fa-fw fa-project-diagram"></i>
+            <span>Dashboard</span></a>
+    </li> 
+    <hr class="sidebar-divider my-2">
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
+            aria-controls="collapsePages">
+            <i class="fas fa-fw fa-cubes"></i>
+            <span>Stock</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'stock:stock_index' %}">
+                    {% comment %} <i class="fas fa-columns"></i> {% endcomment %}
+                    <span>Overview</span></a>
+                </a>
+                <a class="collapse-item" href="{% url 'stock:stock_value' %}">
+                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
+                    <span>Stock Value</span></a>
+                </a>
+                <a class="collapse-item" href="{% url 'stock:stock_dio' %}">
+                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
+                    <span>Stock DIO</span></a>
+                </a>
+                <a class="collapse-item" href="{% url 'stock:stock_pareto' %}">
+                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
+                    <span>Pareto Distribution</span></a>
+                </a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#forecasting-pages" aria-expanded="true"
+            aria-controls="forecasting-pages">
+            <i class="fas fa-fw fa-chart-line"></i>
+            <span>Forecasting</span>
+            {% comment %} <small class="badge badge-danger">New</small> {% endcomment %}
+        </a>
+        <div id="forecasting-pages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'forecasting:stock_forecast_accuracy_madec' %}">
+                    <span>Forecast Accuracy</span></a>
+                </a>
+            </div>
+        </div>
+    </li>
+
+    {% comment %} <li class="nav-item">
+        <a class="nav-link" href="{% url 'deployment:deployment_index' %}">
+            <i class="fas fa-bezier-curve"></i>
+            <span>Deployment</span></a>
+    </li> {% endcomment %}
+    {% comment %} <li class="nav-item">
+        <a class="nav-link" href="{% url 'stock:purchase_index' %}">
+            <i class="fas fa-store"></i>
+            <span>Purchase</span></a>
+    </li> 
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'stock:sale_index' %}">
+            <i class="fas fa-search-dollar"></i>
+            <span>Sales</span></a>
+    </li>  {% endcomment %}
+    {% comment %} <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+            <i class="fas fa-compress-arrows-alt"></i>
+            <span>(INs)</span></a>
+    </li> 
+     <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+            <i class="fas fa-external-link-alt"></i>
+            <span>(OUTs)</span></a>
+    </li>  {% endcomment %}
+
+    <!-- Heading -->
+    {% comment %} <div class="sidebar-heading">
+        Addons
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
+            aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Pages</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Login Screens:</h6>
+                <a class="collapse-item" href="login.html">Login</a>
+                <a class="collapse-item" href="register.html">Register</a>
+                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">Other Pages:</h6>
+                <a class="collapse-item" href="404.html">404 Page</a>
+                <a class="collapse-item" href="blank.html">Blank Page</a>
+            </div>
+        </div>
+    </li> {% endcomment %}
+
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>

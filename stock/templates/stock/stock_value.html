@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+
+{% comment %} {% block custom_css %}
+<link href="{% static 'stock/css/dash.css' %}" rel="stylesheet">
+{% endblock %}
+ {% endcomment %}
+
+{% block header_title %} {{ page_elements.page_title }} {% endblock %}
+
+{% block content %}
+
+<!-- stock value Dash -->
+{% comment %} <div class="card shadow mb-3">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ page_elements.dash_title }}</h6>
+    </div>
+
+    <div class="card-body"> {% endcomment %}
+        <div class="{% plotly_class name='StockValue' %}" style="height: 100%; width: 100%">
+            {%plotly_app_bootstrap name="StockValue" aspect="1by1"%}
+        </div> 
+    {% comment %} </div>
+</div>
+ {% endcomment %}
+
+    
+{% endblock %}

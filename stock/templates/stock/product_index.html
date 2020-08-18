@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+
+{% comment %} {% block custom_css %}
+<link href="{% static 'stock/css/dash.css' %}" rel="stylesheet">
+{% endblock %}
+ {% endcomment %}
+
+{% block header_title %} {{ page_title }} {% endblock %}
+
+{% block content %}
+
+<!-- Total products -->
+{% comment %} <div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Total Products / Categories
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ total_products }} / {{ total_categories }}
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-shapes fa-3x text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+<!-- Products table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ table_title }}</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>{% field_name model 'reference' %}</th>
+                        <th>{% field_name model 'category' %}</th>
+                        <th>{% field_name model 'cost' %}</th>
+                        <th>{% field_name model 'volume' %}</th>
+                        <th>{% field_name model 'weight' %}</th>
+                        <th>{% field_name model 'status' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in product_list %}
+                    <tr>
+                        <td>{{product.reference}}</td>
+                        <td>{{product.category}}</td>
+                        <td>{{product.cost}}</td>
+                        <td>{{product.volume}}</td>
+                        <td>{{product.weight}}</td>
+                        <td>{{product.status}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        {% if is_paginated %}
+            {% include 'stock/_pagination.html' %}
+        {% endif %}
+    </div>
+
+</div>
+    
+{% endblock %}

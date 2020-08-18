@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <h1>Product Details</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>category</th>
+                <th>num_sku</th>
+                <th>name</th>
+                <th>description</th>
+                <th>status</th>
+                <th>created_at</th>
+                <th>updated_at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in object_list %}
+            <tr>
+                <td>{{ product.category }}</td>
+                <td>{{ product.num_sku }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.status }}</td>
+                <td>{{ product.created_at|date }}</td>
+                <td>{{ product.updated_at|date }}</td>
+                <td>
+                    <a href="{% url 'stock:product_detail' product.id %}">details</a>
+                    <a href="{% url 'stock:product_update' product.id %}">edit</a>
+                    <a href="{% url 'stock:product_delete' product.id %}">delete</a>
+                </td>
+            </tr>
+
+            {% empty %}
+                <li>No products yet.</li>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</body>

@@ -1,0 +1,21 @@
+{% load mptt_tags %}
+<div class="card shadow mb-3">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Product Category Tree</h6>
+    </div>
+
+    <div class="card-body">
+        <ul>
+            {% recursetree product_category_list %}
+            <li>
+                {{ node.reference }}
+                {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+                {% endif %}
+            </li>
+            {% endrecursetree %}
+        </ul>
+    </div>
+</div>

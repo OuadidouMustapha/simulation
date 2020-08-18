@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+
+
+{% block header_title %} {{ page_elements.page_title }} {% endblock %}
+
+{% block content %}
+
+
+<!-- stock coverage Dash -->
+<div class="{% plotly_class name='StockDio' %}" style="height: 100%; width: 100%">
+    {%plotly_app_bootstrap name="StockDio" aspect="1by1" %}
+</div>
+    
+{% endblock %}

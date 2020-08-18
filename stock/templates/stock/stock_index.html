@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+
+{% comment %} {% block custom_css %}
+<link href="{% static 'stock/css/dash.css' %}" rel="stylesheet">
+{% endblock %}
+ {% endcomment %}
+
+{% block header_title %} {{ page_elements.page_title }} {% endblock %}
+
+{% block content %}
+
+<!-- Total stocks -->
+<div class="row">
+    <div class="col-xl-3 col-sm-12 mb-4"> 
+        {% include 'stock/_mini_card.html' with title='Total Active Items' subtitle='8 Items in 3 Categories' icon='fa-shapes' %}
+    </div> 
+    <div class="col-xl-3 col-sm-12 mb-4">
+        {% include 'stock/_mini_card.html'  with title='Items Sold This Month' subtitle='78 (15400 MAD)' icon='fa-money-bill-wave' %}
+    </div> 
+    <div class="col-xl-3 col-sm-12 mb-4" >
+        {% include 'stock/_mini_card.html' with title='Items Out of Stock' subtitle='1 Item (in 2 Warehouses)' icon='fa-unlink' %}
+    </div> 
+    <div class="col-xl-3 col-sm-12 mb-4">
+        {% include 'stock/_mini_card.html' with title='Invoices to be completed' subtitle='3 invoices of 2 clients' icon='fa-file-invoice' %}
+    </div> 
+</div> 
+
+
+<div class="row">
+    <!-- stock table -->
+    <div class="col-md-6">
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{  page_elements.table_title }}</h6>
+            </div>
+        
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>{% field_name model 'stock' %}</th>
+                                <th>{% field_name model 'inventory_date' %}</th>
+                                <th>{% field_name model 'product_quantity' %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in stock_list %}
+                            <tr>
+                                <td>{{stock.stock}}</td>
+                                <td>{{stock.inventory_date}}</td>
+                                <td>{{stock.product_quantity}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        
+            <div class="card-footer">
+                {% if is_paginated %}
+                    {% include 'stock/_pagination.html' %}
+                {% endif %}
+            </div>
+        
+        </div>
+    </div>
+
+    <div class="col-md-3">
+
+        <!-- Products Category table -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Products Category Table</h6>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>{% field_name product_category_model 'reference' %}</th>
+                                <th>{% field_name product_category_model 'min_dio' %}</th>
+                                <th>{% field_name product_category_model 'max_dio' %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product_category in product_category_list %}
+                            <tr>
+                                <td>{{product_category.reference}}</td>
+                                <td>{{product_category.min_dio}}</td>
+                                <td>{{product_category.max_dio}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            {% comment %} <div class="card-footer">
+                {% if is_paginated %}
+                    {% include 'stock/_pagination.html' %}
+                {% endif %}
+            </div> {% endcomment %}
+        </div>
+    </div>
+
+
+    <!-- Product category tree -->
+    <div class="col-md-3">
+        {% include 'stock/_product_category_tree.html' with product_category_list=product_category_list %}
+    
+    </div>
+</div>
+
+<!-- Warehouse map Dash -->
+<div class="{% plotly_class name='WarehouseLocation' %}" style="height: 90%; width: 100%">
+    {%plotly_app_bootstrap name="WarehouseLocation" aspect="21by9"%}
+</div>
+    
+{% endblock %}

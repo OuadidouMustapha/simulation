@@ -1,7 +1,6 @@
 from .base import *
 
 STATICFILES_LOCATION = 'static'
-DEBUG = False # FIXME when false statics don't load correctly
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'orchest/static/orchest')

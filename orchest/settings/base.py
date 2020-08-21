@@ -186,9 +186,10 @@ STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # STATICFILES_LOCATION = 'static'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'orchest/static')
-# ]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'orchest/static')
+]
 
 # Redirect page after login
 LOGIN_REDIRECT_URL = "/stock/index"

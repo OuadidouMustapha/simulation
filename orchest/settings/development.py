@@ -22,9 +22,9 @@ INSTALLED_APPS += [
     'debug_toolbar',
 ]
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'orchest/static/orchest')
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'orchest/static/orchest')
+# ]
 
 # DEBUG_TOOLBAR_PANELS = [
 #     'debug_toolbar.panels.versions.VersionsPanel',

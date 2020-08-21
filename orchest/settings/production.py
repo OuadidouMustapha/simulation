@@ -1,6 +1,11 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True # FIXME when false statics don't load correctly
+
+STATICFILES_LOCATION = 'static'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'orchest/static/orchest')
+# ]
 
 # The following settings are for demonstration purpose only.
 # *More details https://simpleisbetterthancomplex.com/tips/2017/07/03/django-tip-20-working-with-multiple-settings-modules.html

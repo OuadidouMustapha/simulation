@@ -19,7 +19,8 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('stock/', include('stock.urls')),
+    path('', include('stock.urls')),
+    # path('stock/', include('stock.urls')),
     path('forecasting/', include('forecasting.urls')),
     path('deployment/', include('deployment.urls')),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),

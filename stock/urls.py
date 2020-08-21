@@ -35,7 +35,7 @@ urlpatterns = [
          name='sale_index'),
     path('purchase/index/', views.PurchaseIndexView.as_view(),
          name='purchase_index'),
-    path('index/', views.DashboardIndexView.as_view(),
+    path('', views.DashboardIndexView.as_view(),
          name='index'),
 
 ]

@@ -23,6 +23,7 @@
             <span>Dashboard</span></a>
     </li> 
     <hr class="sidebar-divider my-2">
+    {% comment %}
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
             aria-controls="collapsePages">
@@ -32,24 +33,21 @@
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{% url 'stock:stock_index' %}">
-                    {% comment %} <i class="fas fa-columns"></i> {% endcomment %}
                     <span>Overview</span></a>
                 </a>
                 <a class="collapse-item" href="{% url 'stock:stock_value' %}">
-                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
                     <span>Stock Value</span></a>
                 </a>
                 <a class="collapse-item" href="{% url 'stock:stock_dio' %}">
-                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
                     <span>Stock DIO</span></a>
                 </a>
                 <a class="collapse-item" href="{% url 'stock:stock_pareto' %}">
-                    {% comment %} <i class="fas fa-chart-bar"></i> {% endcomment %}
                     <span>Pareto Distribution</span></a>
                 </a>
             </div>
         </div>
     </li>
+    {% endcomment %}
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#forecasting-pages" aria-expanded="true"
             aria-controls="forecasting-pages">

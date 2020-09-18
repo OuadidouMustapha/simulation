@@ -4,6 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+autopep8 = "*"
+pylint = "*"
+django-extensions = "*"
+pygraphviz = "*"
 
 [packages]
 django = "==3.0.2"
@@ -25,6 +29,7 @@ daphne = "*"
 redis = "*"
 django-redis = "*"
 channels-redis = "*"
+django-import-export = "*"
 
 [requires]
 python_version = "3.7"

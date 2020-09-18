@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'channels_redis',
     'mptt',  # See details: https://github.com/django-mptt/django-mptt
     'crispy_forms',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -126,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr'#'en-us'
 
 TIME_ZONE = 'Africa/Casablanca'
 
@@ -135,8 +136,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Asynchronous routing configuration required for Dash
 ASGI_APPLICATION = 'orchest.routing.application'
@@ -192,9 +191,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Redirect page after login
 LOGIN_REDIRECT_URL = "/stock/index"
-# Redirect page after logout
+# Redirect page after logout    
 LOGOUT_REDIRECT_URL = "/accounts/login"
 
 # raise th emax limit for file upload 
 # Default: 2621440 (i.e. 2.5 MB) 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440*7
+
+# import-export settings
+# IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+# Crispy settings
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

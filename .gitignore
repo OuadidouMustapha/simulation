@@ -7,6 +7,9 @@
 # Notes
 *.note
 
+# Added after having issue with html files in the template
+*.html.py
+
 # OSX #
 .DS_Store
 .AppleDouble

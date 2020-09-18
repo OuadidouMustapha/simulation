@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 from .models import (ProductCategory, Product, Supplier, Customer, Supply, SupplyDetail,
-                     Order, OrderDetail, Sale, SaleDetail, Warehouse, StockControl)
+                     Order, Sale, SaleDetail, Warehouse, StockControl)
 
 
 class ProductIndexView(LoginRequiredMixin, ListView):

@@ -451,6 +451,8 @@ class Warehouse(CommonMeta):
 
     name = models.CharField(unique=True, max_length=20, blank=True)
     address = models.CharField(max_length=200, blank=True)
+    available_trucks = models.IntegerField(blank=True, null=True)
+    reception_capacity = models.IntegerField(blank=True, null=True)
     lat = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     lon = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
@@ -941,15 +943,25 @@ class Customer(CommonMeta):
         return f'{self.reference}'
 
 class Order(CommonMeta):
-
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
+    reference = models.CharField(max_length=200)
+    # total_amount = models.IntegerField(blank=True, null=True)
+    ordered_quantity = models.IntegerField(blank=True, null=True)
+    unit_price = models.IntegerField(blank=True, null=True)
     ordered_at = models.DateField(blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
+
+    objects = managers.OrderQuerySet.as_manager()
+
 
     def __str__(self):
-        return f'{self.reference}'
+        return f'reference:{self.reference}, product: {self.product}'
 
     def get_product_orders(product_id, start_date, end_date):
         '''
@@ -964,19 +976,19 @@ class Order(CommonMeta):
         return product_order_query
 
 
-class OrderDetail(CommonMeta):
+# class OrderDetail(CommonMeta):
 
-    stock = models.ForeignKey(
-        Stock, on_delete=models.CASCADE)
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, blank=True, null=True)
-    unit_price = models.IntegerField(blank=True, null=True)
-    ordered_quantity = models.IntegerField(blank=True, null=True)
+#     stock = models.ForeignKey(
+#         Stock, on_delete=models.CASCADE)
+#     order = models.ForeignKey(
+#         Order, on_delete=models.CASCADE, blank=True, null=True)
+#     unit_price = models.IntegerField(blank=True, null=True)
+#     ordered_quantity = models.IntegerField(blank=True, null=True)
 
-    objects = managers.OrderDetailQuerySet.as_manager()
+#     objects = managers.OrderDetailQuerySet.as_manager()
 
-    def __str__(self):
-        return f'Order:{self.order}, Stock: {self.stock}'
+#     def __str__(self):
+#         return f'Order:{self.order}, Stock: {self.stock}'
 
 
 class Sale(CommonMeta):  # TODO rename to Delivery

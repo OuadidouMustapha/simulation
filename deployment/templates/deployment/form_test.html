@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  {% crispy form %}
+
+  {% comment %} 
+
+  <form method="post">
+    {% csrf_token %}
+    <table>{{ form.as_table }}</table>
+    <button type="submit">Sign in</button>
+  </form> {% endcomment %}
+{% endblock %}

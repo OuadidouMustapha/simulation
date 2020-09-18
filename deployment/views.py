@@ -10,6 +10,33 @@ from django.utils.decorators import method_decorator
 # from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 
+from django.http import HttpResponseRedirect
+from .forms import AddressForm
+
+
+@method_decorator(login_required, name='dispatch')
+class FormView(TemplateView):
+    template_name = "deployment/form_test.html"
+
+
+def form_handler(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = AddressForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/index/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = AddressForm()
+
+    return render(request, 'deployment/form_test.html', {'form': form})
+
 
 
 # Create your views here.
@@ -20,13 +47,15 @@ from django.contrib.auth.decorators import login_required
 
 # decorators = [never_cache, login_required]
 
+@method_decorator(login_required, name='dispatch')
+class DashboardView(TemplateView):
+    template_name = "deployment/deployment_dashboard.html"
+
 
 @method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name = "deployment/deployment_index.html"
     
-    
-
     
     # def get_context_data(self, **kwargs):
     #     ############################

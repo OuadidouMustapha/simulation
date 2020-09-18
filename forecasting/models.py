@@ -31,8 +31,10 @@ class CommonMeta(models.Model):
 
 class StockForecast(CommonMeta):
 
-    stock = models.ForeignKey(
-        'stock.Stock', on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        'stock.Warehouse', on_delete=models.CASCADE, blank=True, null=True)
     customer = models.ForeignKey(
         'stock.Customer', on_delete=models.CASCADE, blank=True, null=True)
     circuit = models.ForeignKey(
@@ -47,10 +49,10 @@ class StockForecast(CommonMeta):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['stock', 'forecast_date', 'circuit', 'forecast_version'], name='stockforecast_stock_sp_fd_uniq')
+                fields=['product', 'warehouse', 'forecast_date', 'circuit', 'forecast_version'], name='unique_forecast')
         ]
 
     def __str__(self):
-        return f'stock: {self.stock}, forecast_date: {self.forecast_date}, circuit: {self.circuit}'
+        return f'product: {self.product}, warehouse: {self.warehouse}, forecast_date: {self.forecast_date}, circuit: {self.circuit}'
 
 

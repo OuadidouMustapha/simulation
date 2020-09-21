@@ -23,3 +23,6 @@ class StockForecastAccuracyView(LoginRequiredMixin, TemplateView):
 
 class StockForecastAccuracyMadecView(LoginRequiredMixin, TemplateView):
     template_name = "forecasting/stock_forecast_accuracy_madec.html"
+
+class StockForecastAccuracyTestView(LoginRequiredMixin, TemplateView):
+    template_name = "forecasting/stock_forecast_accuracy_test.html"

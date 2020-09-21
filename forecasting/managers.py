@@ -10,6 +10,27 @@ from . import utils  # TODO : Manage classes and functions
 
 
 class StockForecastQuerySet(models.QuerySet):
+    def get_forecasting(self, warehouse_filter, product_filter, circuit_filter, start_date=None, end_date=None):
+        '''get forecast and order query'''
+        filter_kwargs = {}
+        # filter_kwargs['warehouse__in'] = warehouse_filter
+        # filter_kwargs['product__in'] = product_filter
+        # filter_kwargs['circuit__in'] = circuit_filter
+        if start_date is not None:
+            filter_kwargs['forecast_date__gte'] = start_date
+        if end_date is not None:
+            filter_kwargs['forecast_date__lte'] = end_date
+
+        qs = self.filter(**filter_kwargs)
+        qs = qs.select_related('product', 'warehouse', 'circuit', 'customer')
+        # qs = qs.
+        qs = qs.values('product', 'warehouse', 'circuit', 'customer',
+                       'forecast_date', 'forecasted_quantity', 
+                       'forecast_version', 'product__product_ray', 'product__product_type')
+        return qs
+
+
+class OldStockForecastQuerySet(models.QuerySet):
     def get_forecast_versions(self):
         '''Get a list of available forecast versions'''
         qs = self.values_list('forecast_version', flat=True)

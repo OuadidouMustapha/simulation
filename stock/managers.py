@@ -19,7 +19,26 @@ class ProductCategoryQuerySet(models.QuerySet):
         qs = qs.values('reference')
         return qs
 
-class OrderDetailQuerySet(models.QuerySet):
+class OrderQuerySet(models.QuerySet):
+    def get_forecasting(self, warehouse_filter, product_filter, circuit_filter, start_date=None, end_date=None):
+        '''get forecast and order query'''
+        filter_kwargs = {}
+        # filter_kwargs['warehouse__in'] = warehouse_filter
+        # filter_kwargs['product__in'] = product_filter
+        # filter_kwargs['circuit__in'] = circuit_filter
+        if start_date is not None:
+            filter_kwargs['ordered_at__gte'] = start_date
+        if end_date is not None:
+            filter_kwargs['ordered_at__lte'] = end_date
+
+        qs = self.filter(**filter_kwargs)
+        qs = qs.select_related('product', 'warehouse', 'circuit', 'customer')
+        # qs = qs.
+        qs = qs.values('product', 'warehouse', 'circuit', 'customer',
+                       'ordered_at', 'ordered_quantity', 'product__product_ray', 'product__product_type')
+        return qs
+
+
     def _get_group_by_product_filter(self, group_by_product):
         # Prepare filter to be used based on group_by_product option
         filter_kwargs = {}

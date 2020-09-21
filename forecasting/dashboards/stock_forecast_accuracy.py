@@ -40,7 +40,8 @@ chart_by_group_id = prefix + 'chart-by-group'
 table_forecast_dataframe_id = prefix + '-table-forecast-dataframe'
 
 ### Global variable ###
-forecast_version_list = list(StockForecast.objects.get_forecast_versions())
+# forecast_version_list = list(StockForecast.objects.get_forecast_versions())
+forecast_version_list = []
 
 def filter_container():
     filter_container = html.Div([
@@ -134,7 +135,6 @@ def body_container():
                             ],
                             value='forecast_bias',
                         ),
-
                     ])
                 )
             ], sm=12, md=6, lg=6),

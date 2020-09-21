@@ -161,7 +161,7 @@ def get_group_by_distribution_dropdown(div_id, value=''):
                 {'label': 'Warehouse', 'value': 'warehouse'},
                 {'label': 'Customer', 'value': 'customer'},
                 {'label': 'Circuit', 'value': 'circuit'},
-                {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
+                # {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
 
             ],
             value=value,
@@ -249,7 +249,7 @@ def get_mini_card(subtitle_id, title='', subtitle='', icon=''):
     return div
 
 
-def get_datatable_card(div_id, style_data_conditional=None):
+def get_datatable_card(div_id, style_data_conditional=None, **kwargs):
     """
     Build div representing the datatable card
     """
@@ -263,7 +263,9 @@ def get_datatable_card(div_id, style_data_conditional=None):
                     sort_action='native',
                     sort_mode='multi',
                     page_size=20,
-                    style_data_conditional=style_data_conditional
+                    style_data_conditional=style_data_conditional,
+                    # editable=editable,
+                    **kwargs,
                     # style_data_conditional=[
                     # {
                     #     'if': {

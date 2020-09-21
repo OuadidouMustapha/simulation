@@ -75,7 +75,6 @@ checkbox_circuit_list_id = prefix + '-checkbox-circuit-list'
 checkbox_product_range_list_id = prefix + '-checkbox-product-range-list'
 
 ### Global variable ###
-forecast_version_list = list(StockForecast.objects.get_forecast_versions())
 
 def filter_container():
     filter_container = html.Div([

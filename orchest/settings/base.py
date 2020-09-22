@@ -208,6 +208,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # CORS setting
 CORS_ALLOWED_ORIGINS = [
-    'orchestanalytics.com',
+    # 'orchestanalytics.com',
+    # 'www.orchestanalytics.com',
+    'https://orchest-static.s3.amazonaws.com/'
 ]
 

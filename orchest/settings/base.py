@@ -54,11 +54,13 @@ INSTALLED_APPS = [
     'mptt',  # See details: https://github.com/django-mptt/django-mptt
     'crispy_forms',
     'import_export',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -203,3 +205,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440*7
 
 # Crispy settings
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# CORS setting
+CORS_ALLOWED_ORIGINS = [
+    'orchestanalytics.com',
+]
+

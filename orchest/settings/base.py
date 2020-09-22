@@ -207,9 +207,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440*7
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # CORS setting
-CORS_ALLOWED_ORIGINS = [
-    # 'orchestanalytics.com',
-    # 'www.orchestanalytics.com',
-    'https://orchest-static.s3.amazonaws.com/'
-]
-
+# CORS_ALLOWED_ORIGINS = [
+#     'orchestanalytics.com',
+#     'www.orchestanalytics.com',
+#     'orchest-static.s3.amazonaws.com'
+# ]
+CORS_ORIGIN_ALLOW_ALL = True

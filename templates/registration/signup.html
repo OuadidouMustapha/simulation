@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block meta_title %}
-    {% trans "Login" %} 
+    {% trans "Sign Up" %} 
 {% endblock %}
 
 
@@ -22,23 +22,16 @@
                                 <div class="col-lg-6">
                                     <div class="p-5">
                                         <div class="text-center">
-                                            <h1 class="h4 text-gray-900 mb-4">{% trans "Login" %}</h1>
+                                            <h1 class="h4 text-gray-900 mb-4">{% trans "Sign Up" %}</h1>
                                         </div>
 
                                         <form method="post" class="from-group">
                                             {% csrf_token %}
                                             {{form|crispy}}
-                                            {% comment %} <p>Don't have an account? Create one <a href="accounts/register">here</a></p> {% endcomment %}
-                                            <button type="submit" class="btn btn-success">{% trans "Login" %}</button>
+                                            <p><a class="small" href="{% url 'login' %}">{% trans "Login instead?" %}</a></p>
+                                            <button type="submit" class="btn btn-success">{% trans "Sign Up" %}</button>
                                         </form>
 
-                                        <hr>
-                                        <div class="text-center">
-                                            <a class="small" href="{% url 'password_reset' %}">{% trans "Forgot Password?" %}</a>
-                                        </div> 
-                                        <div class="text-center">
-                                            <a class="small" href="{% url 'account:signup' %}">{% trans "Create an account" %}</a>
-                                        </div>
                                         <hr>
 
                                         <!-- Footer -->

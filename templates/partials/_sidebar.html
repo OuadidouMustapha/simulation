@@ -1,15 +1,16 @@
 {% load static %}
+{% load i18n %}
 
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon">
-            <img class="sidebar-brand-icon" src="{% static 'common/img/logo.png' %}" style="width: 100%">
+            <img class="sidebar-brand-icon" src="{% static 'common/base/img/logo.png' %}" style="width: 100%">
 
             {% comment %} <i class="fas fa-signature"></i> {% endcomment %}
         </div>
-            {% comment %} <img class="sidebar-brand-icon" src="{% static 'common/img/logo_tagline.png' %}" style="width: 55%"> {% endcomment %}
+            {% comment %} <img class="sidebar-brand-icon" src="{% static 'common/base/img/logo_tagline.png' %}" style="width: 55%"> {% endcomment %}
         {% comment %} <div class="sidebar-brand-text mx-3"> <sup>Supply CHain </sup>Pulse</div> {% endcomment %}
     </a>
 
@@ -18,12 +19,17 @@
 
     <!-- Nav Items -->
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'stock:index' %}">
-            <i class="fas fa-fw fa-project-diagram"></i>
-            <span>Dashboard</span></a>
+        <a class="nav-link" href="{% url 'admin:index' %}">
+            <i class="fas fa-fw fa-tools"></i>
+            <span>{% trans 'Admin' %}</span></a>
     </li> 
     <hr class="sidebar-divider my-2">
-    {% comment %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'stock:index' %}">
+            <i class="fas fa-fw fa-project-diagram"></i>
+            <span>{% trans 'Dashboard' %}</span></a>
+    </li> 
+    {% comment %} 
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
             aria-controls="collapsePages">
@@ -52,21 +58,27 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#forecasting-pages" aria-expanded="true"
             aria-controls="forecasting-pages">
             <i class="fas fa-fw fa-chart-line"></i>
-            <span>Forecasting</span>
+            <span>{% trans 'Forecasting' %}</span>
             {% comment %} <small class="badge badge-danger">New</small> {% endcomment %}
         </a>
         <div id="forecasting-pages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{% url 'forecasting:stock_forecast_accuracy_madec' %}">
-                    <span>Forecast Accuracy</span></a>
+                <a class="collapse-item" href="{% url 'forecasting:index' %}">
+                    <span>{% trans 'Overview' %}</span></a>
+                </a>
+                <a class="collapse-item" href="{% url 'forecasting:version_list' %}">
+                    <span>{% trans 'Input Interface' %}</span></a>
+                </a>
+                <a class="collapse-item" href="{% url 'forecasting:forecast_accuracy' %}">
+                    <span>{% trans 'Forecast Accuracy' %}</span></a>
                 </a>
             </div>
         </div>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'deployment:deployment_index' %}">
+        <a class="nav-link" href="{% url 'deployment:deployment_dashboard' %}">
             <i class="fas fa-fw fa-truck-loading"></i>
-            <span>Deployment</span></a>
+            <span>{% trans 'Deployment' %}</span></a>
     </li> 
 
     {% comment %} <li class="nav-item">

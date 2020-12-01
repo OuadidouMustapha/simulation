@@ -2,7 +2,6 @@
 {% load static %}
 {% load model_name %}
 {% load plotly_dash %}
-{% load i18n %}
 
 {% block header_title %} {{ page_elements.page_title }} {% endblock %}
 
@@ -11,11 +10,13 @@
 {% block content %}
 
 <!-- stock table -->
-{% comment %} <div class="col-md-6">    
+{% comment %} <div class="col-md-6">
+    
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{  page_elements.table_title }}</h6>
-        </div>    
+        </div>
+    
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -55,8 +56,8 @@
 </div> {% endcomment %}
 
 <!-- stock coverage Dash -->
-{% plotly_direct name="StockForecastAccuracyTest" %} 
-{% trans "Translation test" %}
+{% plotly_direct name="ForecastAccuracyV1" %} 
+
     
 {% plotly_footer %}
 {% endblock %}

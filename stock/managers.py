@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import (CharField, FloatField, DecimalField, IntegerField, DateTimeField, Value,
                               ExpressionWrapper, F, Q, Count, Sum, Avg, Subquery, OuterRef, Case, When, Window)
+from django.db.models.functions import Concat
+
 from common import utils as common_utils  # TODO : Manage classes and functions
 from . import utils  # TODO : Manage classes and functions
 # from . import models
@@ -20,12 +22,39 @@ class ProductCategoryQuerySet(models.QuerySet):
         return qs
 
 class OrderQuerySet(models.QuerySet):
-    def get_forecasting(self, warehouse_filter, product_filter, circuit_filter, start_date=None, end_date=None):
+    def get_historical_order(self, category_id=None, circuit_id=None):
+        ''' Return query that will be used to plot data in plotly '''
+        filter_kwargs = {}
+        if isinstance(category_id, int) and category_id is not None:
+            filter_kwargs['category'] = category_id
+        if isinstance(circuit_id, int) and circuit_id is not None:
+            filter_kwargs['circuit'] = circuit_id
+        qs = self.filter(**filter_kwargs)
+        # qs = qs.select_related('category', 'circuit')
+        # qs = qs.annotate(
+        #     category_circuit=Concat(
+        #         'category__reference', Value('-'), 'circuit__reference',
+        #         output_field=CharField()
+        #     )
+        # )
+        qs = qs.values('category', 'circuit', 'ordered_at', 'ordered_quantity')
+        return qs
+
+
+
+
+    def get_forecasting(self, product_filter, warehouse_filter, circuit_filter, customer_filter, start_date=None, end_date=None):
         '''get forecast and order query'''
         filter_kwargs = {}
-        # filter_kwargs['warehouse__in'] = warehouse_filter
-        # filter_kwargs['product__in'] = product_filter
-        # filter_kwargs['circuit__in'] = circuit_filter
+        if product_filter is not None:
+            filter_kwargs['product__in'] = product_filter
+        if warehouse_filter is not None:
+            filter_kwargs['warehouse__in'] = warehouse_filter
+        if circuit_filter is not None:
+            filter_kwargs['circuit__in'] = circuit_filter
+        if customer_filter is not None:
+            filter_kwargs['customer__in'] = customer_filter
+
         if start_date is not None:
             filter_kwargs['ordered_at__gte'] = start_date
         if end_date is not None:
@@ -218,3 +247,57 @@ class OrderQuerySet(models.QuerySet):
         qs = qs.values('total_ordered_value')
         return qs
     
+class DeliveryQuerySet(models.QuerySet):
+
+    def get_historical_delivery(self, category_id=None, circuit_id=None):
+        ''' Return query that will be used to plot data in plotly '''
+        filter_kwargs = {}
+        if isinstance(category_id, int) and category_id is not None:
+            filter_kwargs['category'] = category_id
+        if isinstance(circuit_id, int) and circuit_id is not None:
+            filter_kwargs['circuit'] = circuit_id
+        qs = self.filter(**filter_kwargs)
+        # qs = qs.select_related('category', 'circuit')
+        # qs = qs.annotate(
+        #     category_circuit=Concat(
+        #         'category__reference', Value('-'), 'circuit__reference',
+        #         output_field=CharField()
+        #     )
+        # )
+        qs = qs.values('category', 'circuit', 'delivered_at', 'delivered_quantity')
+        return qs
+
+
+class WarehouseQuerySet(models.QuerySet):
+    def get_all_warehouses(self):
+        '''
+        return list of unique/distinct warehouses
+        '''
+        return self.annotate(label=F('name'), value=F('id')).values('label', 'value').distinct()
+
+class ProductQuerySet(models.QuerySet):
+    def get_all_products(self):
+        '''
+        return list of unique/distinct products
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+
+    def get_all_products_by_attribute(self, attribute):
+        '''
+        return list of unique/distinct products based on selected attribute
+        '''
+        return self.annotate(label=F(attribute), value=F(attribute)).values('label', 'value').order_by(attribute).distinct(attribute)
+
+class CircuitQuerySet(models.QuerySet):
+    def get_all_circuits(self):
+        '''
+        return list of unique/distinct circuit
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+
+class CustomerQuerySet(models.QuerySet):
+    def get_all_customers(self):
+        '''
+        return list of unique/distinct customer
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()

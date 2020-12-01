@@ -6,7 +6,7 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objs as go
 from django_plotly_dash import DjangoDash
 
-from ..models import SaleDetail, Sale, Order, StockControl, Product, ProductCategory
+from ..models import DeliveryDetail, Delivery, Order, StockControl, Product, ProductCategory
 from .. import utils
 import datetime
 import copy
@@ -240,20 +240,20 @@ def update_top_stock_items_chart(
 def update_sale_pareto_chart(
         category_ids,
         product_ids,
-        sold_at_start,
-        sold_at_end,
+        delivered_at_start,
+        delivered_at_end,
         group_by_field):
 
     # Build filter for the query
     filter_kwargs = {}
-    filter_kwargs['sale__sold_at__gte'] = sold_at_start
-    filter_kwargs['sale__sold_at__lte'] = sold_at_end
+    filter_kwargs['sale__delivered_at__gte'] = delivered_at_start
+    filter_kwargs['sale__delivered_at__lte'] = delivered_at_end
     filter_kwargs['stock__product__category__in'] = ProductCategory.tree.filter(
         pk__in=category_ids).get_descendants(include_self=True)
     filter_kwargs['stock__product__in'] = product_ids
 
     # Get the query
-    qs = SaleDetail.objects.get_cumul_delivered_product_total_cost(filter_kwargs, group_by_field)
+    qs = DeliveryDetail.objects.get_cumul_delivered_product_total_cost(filter_kwargs, group_by_field)
     y_axis = list(qs.values_list(
         'cumul_delivered_product_total_cost_corrected', flat=True))
     pareto_value = y_axis[-1] * (80/100)
@@ -274,9 +274,9 @@ def update_sale_pareto_chart(
     ),
     # Chart layout
     chart_layout = copy.deepcopy(dash_constants.layout)
-    chart_layout['title'] = 'Sales pareto chart'
+    chart_layout['title'] = 'Deliverys pareto chart'
     chart_layout['xaxis'] = dict(title='Product count')
-    chart_layout['yaxis'] = dict(title='Sale value')
+    chart_layout['yaxis'] = dict(title='Delivery value')
     chart_layout['annotations'] = [
         dict(
             x=0.1,
@@ -323,8 +323,8 @@ def update_sale_pareto_chart(
 def update_chart(
         category_ids,
         product_ids,
-        sold_at_start,
-        sold_at_end,
+        delivered_at_start,
+        delivered_at_end,
         group_by_field):
 
     # Chart layout
@@ -335,13 +335,13 @@ def update_chart(
 
     # Build filter for the query
     filter_kwargs = {}
-    filter_kwargs['sale__sold_at__gte'] = sold_at_start
-    filter_kwargs['sale__sold_at__lte'] = sold_at_end
+    filter_kwargs['sale__delivered_at__gte'] = delivered_at_start
+    filter_kwargs['sale__delivered_at__lte'] = delivered_at_end
     filter_kwargs['stock__product__category__in'] = ProductCategory.tree.filter(
         pk__in=category_ids).get_descendants(include_self=True)
     filter_kwargs['stock__product__in'] = product_ids
     # Get the query
-    queryset = SaleDetail.objects.get_cumul_delivered_product_total_cost(
+    queryset = DeliveryDetail.objects.get_cumul_delivered_product_total_cost(
         filter_kwargs, group_by_field)
     
     

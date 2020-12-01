@@ -21,13 +21,13 @@ from django_plotly_dash import DjangoDash
 
 from common import utils as common_utils
 from common.dashboards import dash_constants, dash_utils
-from ..models import StockForecast
+from ..models import Forecast
 
 import base64
 import io
 
 
-app = DjangoDash('StockForecastAccuracyMadec', add_bootstrap_links=True)
+app = DjangoDash('ForecastAccuracyMadec', add_bootstrap_links=True)
 
 ### Used IDs ###
 prefix = 'stock-forecast-accuracy-madec-'
@@ -289,7 +289,7 @@ app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
 #     forecast_version,
 #     dropdown_y_axis):
 #     # Get queryset
-#     qs = StockForecast.objects.get_forecast_accuracy_main_queryset(
+#     qs = Forecast.objects.get_forecast_accuracy_main_queryset(
 #         group_by_product, group_by_distribution, show_by, kind, 
 #         forecast_start_date, forecast_end_date, forecast_version)
 #     # Convert queryset to dataframe

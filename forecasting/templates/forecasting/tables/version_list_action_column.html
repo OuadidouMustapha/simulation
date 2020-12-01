@@ -1,0 +1,6 @@
+{% load i18n %}
+{% if record.file_path %}
+    <a class="btn btn-info btn-sm" href="{% url 'forecasting:forecast_list' record.id %}">{% trans "View" %}</a>
+{% else %}
+    <a class="btn btn-primary btn-sm" href="{% url 'forecasting:version_update' record.id %}">{% trans "Import File" %}</a>
+{% endif %}

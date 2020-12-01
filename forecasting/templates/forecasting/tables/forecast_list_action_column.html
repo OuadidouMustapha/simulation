@@ -1,0 +1,6 @@
+{% load i18n %}
+{% comment %} <a class="btn btn-info btn-sm" href="{% url 'forecasting:version_detail' record.id %}">{% trans "View" %}</a>
+{% if not record.file_path %}
+    <a class="btn btn-primary btn-sm" href="{% url 'forecasting:version_update' record.id %}">{% trans "Import File" %}</a>
+{% endif %} {% endcomment %}
+<a class="btn btn-info btn-sm" href="#">{% trans "View" %}</a>

@@ -1,3 +1,5 @@
+from dateutil.relativedelta import relativedelta
+from datetime import date
 from django.apps import apps
 from django.db import models
 from django.db.models import (Case, CharField, DecimalField, ExpressionWrapper,
@@ -7,15 +9,52 @@ from django.db.models.functions import Abs
 
 from common import utils as common_utils  
 from . import utils  # TODO : Manage classes and functions
+from django.apps import apps
 
 
-class StockForecastQuerySet(models.QuerySet):
-    def get_forecasting(self, warehouse_filter, product_filter, circuit_filter, start_date=None, end_date=None):
+class VersionQuerySet(models.QuerySet):
+    def get_all_versions(self):
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+
+class ForecastQuerySet(models.QuerySet):
+    def get_historical_forecast(self, category_id=None, circuit_id=None, version_id=None):
+        filter_kwargs = {}
+        if category_id is not None:
+            filter_kwargs['category'] = category_id
+        if circuit_id is not None:
+            filter_kwargs['circuit'] = circuit_id
+        if version_id is not None:
+            # Today's date
+            today_date = date.today()
+
+            # Get version object
+            Version = apps.get_model('forecasting', 'Version')
+            version_obj = Version.objects.get(pk=version_id)
+            version_ids = list(
+                Version.objects.filter(
+                    forecast_type=version_obj.forecast_type,
+                    version_date__range=[today_date + relativedelta(months=-6),
+                                        today_date],
+                ).values_list('id', flat=True)
+            )
+            filter_kwargs['version__id__in'] = version_ids
+        qs = self.filter(**filter_kwargs)
+        # qs = qs.select_related('version')
+        qs = qs.values('version__reference', 'forecast_date', 'forecasted_quantity')
+        return qs
+
+    def get_forecasting(self, product_filter, warehouse_filter, circuit_filter, customer_filter, start_date=None, end_date=None):
         '''get forecast and order query'''
         filter_kwargs = {}
-        # filter_kwargs['warehouse__in'] = warehouse_filter
-        # filter_kwargs['product__in'] = product_filter
-        # filter_kwargs['circuit__in'] = circuit_filter
+        if product_filter is not None:
+            filter_kwargs['product__in'] = product_filter
+        if warehouse_filter is not None:
+            filter_kwargs['warehouse__in'] = warehouse_filter
+        if circuit_filter is not None:
+            filter_kwargs['circuit__in'] = circuit_filter
+        if customer_filter is not None:
+            filter_kwargs['customer__in'] = customer_filter
+
         if start_date is not None:
             filter_kwargs['forecast_date__gte'] = start_date
         if end_date is not None:
@@ -23,18 +62,18 @@ class StockForecastQuerySet(models.QuerySet):
 
         qs = self.filter(**filter_kwargs)
         qs = qs.select_related('product', 'warehouse', 'circuit', 'customer')
-        # qs = qs.
         qs = qs.values('product', 'warehouse', 'circuit', 'customer',
                        'forecast_date', 'forecasted_quantity', 
-                       'forecast_version', 'product__product_ray', 'product__product_type')
+                       'version', 'product__product_ray', 'product__product_type')
+        print('qs ', qs)
         return qs
 
 
-class OldStockForecastQuerySet(models.QuerySet):
+class OldForecastQuerySet(models.QuerySet):
     def get_forecast_versions(self):
         '''Get a list of available forecast versions'''
-        qs = self.values_list('forecast_version', flat=True)
-        qs = qs.order_by('-forecast_version').distinct()
+        qs = self.values_list('version', flat=True)
+        qs = qs.order_by('-version').distinct()
         return qs
 
     #################################
@@ -49,8 +88,8 @@ class OldStockForecastQuerySet(models.QuerySet):
         qs = self.filter(**filter_kwargs)
         return qs
 
-    def _filter_by_forecast_version(self, forecast_version):
-        qs = self.filter(forecast_version=forecast_version)
+    def _filter_by_forecast_version(self, version):
+        qs = self.filter(version=version)
         return qs
 
     def _get_forecast_date_truncated(self, kind):
@@ -239,7 +278,7 @@ class OldStockForecastQuerySet(models.QuerySet):
         return qs
 
     #################################
-    def get_forecast_accuracy_main_queryset(self, group_by_product, group_by_distribution, show_by, kind, start_date, end_date, forecast_version):
+    def get_forecast_accuracy_main_queryset(self, group_by_product, group_by_distribution, show_by, kind, start_date, end_date, version):
         # Get subquery to fetch `Orders`
         OrderDetail = apps.get_model('stock', 'OrderDetail')
         orderdetail_sub_query = OrderDetail.objects.get_orderdetail_sub_queryset(
@@ -248,7 +287,7 @@ class OldStockForecastQuerySet(models.QuerySet):
         # Filter the query by forecast date
         qs = self._filter_by_forecast_date(start_date, end_date)
         # Filter the query by forecast version
-        qs = qs._filter_by_forecast_version(forecast_version)
+        qs = qs._filter_by_forecast_version(version)
         # Add truncated date to be able to filter by date, month, year
         qs = qs._get_forecast_date_truncated(kind)
 
@@ -274,7 +313,7 @@ class OldStockForecastQuerySet(models.QuerySet):
 #     qs_list = []
 #     for parent_category in productcategory_sub_query:
 #         child_categories = parent_category.get_descendants(include_self=True)
-#         qs = StockForecast.objects.filter(
+#         qs = Forecast.objects.filter(
 #             stock__product__category__in=list(child_categories)
 #         )
 #         qs = qs.annotate(parent_category=Value(parent_category.reference, CharField()))

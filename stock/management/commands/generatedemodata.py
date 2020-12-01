@@ -2,8 +2,8 @@ from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
 from stock.factories import ProductCategoryFactory
 from stock.models import (ProductCategory, Product, Warehouse, Stock, StockPolicy,
-                           StockControl, Customer, Order, OrderDetail, Sale, SaleDetail, Circuit)
-from forecasting.models import StockForecast
+                           StockControl, Customer, Order, OrderDetail, Delivery, DeliveryDetail, Circuit)
+from forecasting.models import Forecast
 
 '''
 Command 'generatedemodata' parameters file
@@ -39,7 +39,7 @@ class Command(BaseCommand):
     def _clean_db(self):
         for model in [
                 ProductCategory, Product, Warehouse, Stock, StockPolicy,
-                StockControl, Customer, Order, OrderDetail, Sale, SaleDetail, StockForecast, Circuit
+                StockControl, Customer, Order, OrderDetail, Delivery, DeliveryDetail, Forecast, Circuit
             ]:
             model.objects.all().delete()
 

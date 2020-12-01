@@ -61,7 +61,7 @@ def convert_group_by_field_to_attribute(group_by_field, model):
             return 'stock__product'
         elif group_by_field == 'category':
             return 'stock__product__category'
-    elif model == 'SaleDetail':
+    elif model == 'DeliveryDetail':
         if group_by_field == 'product':
             return 'stock__product'
         elif group_by_field == 'category':

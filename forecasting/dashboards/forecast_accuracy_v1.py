@@ -15,9 +15,9 @@ from django_plotly_dash import DjangoDash
 
 from common import utils as common_utils
 from common.dashboards import dash_constants, dash_utils
-from ..models import StockForecast
+from ..models import Forecast
 
-app = DjangoDash('StockForecastAccuracy', add_bootstrap_links=True)
+app = DjangoDash('ForecastAccuracyV1', add_bootstrap_links=True)
 
 ### Used IDs ###
 prefix = 'stock-forecast-accuracy'
@@ -40,7 +40,7 @@ chart_by_group_id = prefix + 'chart-by-group'
 table_forecast_dataframe_id = prefix + '-table-forecast-dataframe'
 
 ### Global variable ###
-# forecast_version_list = list(StockForecast.objects.get_forecast_versions())
+# forecast_version_list = list(Forecast.objects.get_forecast_versions())
 forecast_version_list = []
 
 def filter_container():
@@ -243,7 +243,7 @@ def dataframe_date_filter(
     forecast_version,
     dropdown_y_axis):
     # Get queryset
-    qs = StockForecast.objects.get_forecast_accuracy_main_queryset(
+    qs = Forecast.objects.get_forecast_accuracy_main_queryset(
         group_by_product, group_by_distribution, show_by, kind, 
         forecast_start_date, forecast_end_date, forecast_version)
     # Convert queryset to dataframe

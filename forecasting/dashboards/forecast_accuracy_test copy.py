@@ -24,7 +24,7 @@ from common.dashboards import dash_constants, dash_utils
 import base64
 import io
 
-app = DjangoDash('StockForecastAccuracyTest', add_bootstrap_links=True)
+app = DjangoDash('ForecastAccuracyTest', add_bootstrap_links=True)
 
 genr_l = pd.DataFrame({"Genre": range(5), "value": range(5, 10)})
 

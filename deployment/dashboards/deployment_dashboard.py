@@ -50,7 +50,7 @@ def filter_container():
         dbc.Row([
             dbc.Col([
                 dbc.Col([
-                    dbc.Label('Maximizé'),
+                    dbc.Label('Maximiser'),
                     dcc.Dropdown(
                         id=dropdown_show_by_id,
                         options=[

@@ -30,6 +30,13 @@ redis = "*"
 django-redis = "*"
 channels-redis = "*"
 django-import-export = "*"
+django-extra-views = "*"
+psycopg2-binary = "*"
+django-cors-headers = "*"
+django-filter = "*"
+django-widget-tweaks = "*"
+django-tables2 = "*"
+django-select2 = "*"
 
 [requires]
 python_version = "3.7"

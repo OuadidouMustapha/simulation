@@ -11,7 +11,8 @@ class CustomUser(AbstractUser):
         (4, 'supervisor'),
     )
 
-    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES)
+    user_type = models.PositiveSmallIntegerField(
+        choices=USER_TYPE_CHOICES, default=1)
 
     def __str__(self):
         return self.username

@@ -1,4 +1,3 @@
-import uuid
 import datetime
 
 from django.db import models
@@ -338,8 +337,7 @@ class ProductCategory(MPTTModel):
         (ACTIVE, 'Active'),
         (ARCHIVED, 'Archived'),
     )
-    reference = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    reference = models.CharField(unique=True, max_length=200)
     # Parent attribute uses MPTT model
     parent = TreeForeignKey('self', on_delete=models.CASCADE,
                             null=True, blank=True, related_name='children', db_index=True)
@@ -396,8 +394,7 @@ class ProductCategory(MPTTModel):
 class Product(CommonMeta):
     category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, blank=True, null=True)  # Try this parameter related_name='products'
-    reference = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    reference = models.CharField(unique=True, max_length=20, null=False)
     name = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True)
     cost = models.DecimalField(
@@ -455,8 +452,7 @@ class Product(CommonMeta):
 
 class Warehouse(CommonMeta):
 
-    reference = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    reference = models.CharField(unique=True, max_length=200)
     name = models.CharField(max_length=20, blank=True)
     address = models.CharField(max_length=200, blank=True)
     available_trucks = models.IntegerField(blank=True, null=True)
@@ -931,9 +927,8 @@ class StockControl(CommonMeta):
 
 
 class Circuit(CommonMeta):
-    reference = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
+    reference = models.CharField(unique=True, max_length=200)
     parent = models.ForeignKey(
         'self', on_delete=models.CASCADE, blank=True, null=True)
 
@@ -945,8 +940,7 @@ class Circuit(CommonMeta):
 
 class Customer(CommonMeta):
     # TODO : Separate Customer as a company from the provider as a person
-    reference = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    reference = models.CharField(unique=True, max_length=200)
     name = models.CharField(max_length=200)
     address = models.TextField(blank=True)
     circuit = models.ForeignKey(

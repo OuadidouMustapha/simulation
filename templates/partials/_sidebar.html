@@ -18,12 +18,14 @@
     <hr class="sidebar-divider my-2">
 
     <!-- Nav Items -->
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'admin:index' %}">
-            <i class="fas fa-fw fa-tools"></i>
-            <span>{% trans 'Admin' %}</span></a>
-    </li> 
-    <hr class="sidebar-divider my-2">
+    {% if request.user.is_staff %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'admin:index' %}">
+                <i class="fas fa-fw fa-tools"></i>
+                <span>{% trans 'Admin' %}</span></a>
+        </li> 
+        <hr class="sidebar-divider my-2">
+    {% endif %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'stock:index' %}">
             <i class="fas fa-fw fa-project-diagram"></i>

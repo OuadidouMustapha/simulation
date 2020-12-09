@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_tables2',
     'django_select2',
+    'notifications',
     # 'import_export_celery',
 ]
 
@@ -151,7 +152,8 @@ LOCALE_PATHS = (
 )
 
 
-# Asynchronous routing configuration required for Dash
+# Asynchronous routing configuration required for Dash (TODO for notification)
+# Ref: https://medium.com/@ranjanmp/django-channels-2-notifications-def476d46c86
 ASGI_APPLICATION = 'orchest.routing.application'
 CHANNEL_LAYERS = {
     'default': {
@@ -224,10 +226,21 @@ LOGIN_REDIRECT_URL = "/forecasting/index"
 # Redirect page after logout    
 LOGOUT_REDIRECT_URL = "/account/login"
 
-# SMTP Server TODO use MailGun or SendGrid
-# for development purposes Django lets us store emails as a file
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/sent_emails')
+# # SMTP Server TODO use MailGun or SendGrid
+# # for development purposes Django lets us store emails as a file
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/sent_emails')
+
+
+# to test with SMTP use the following
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'abdeltif.b@gclgroup.com'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+
 
 # raise th emax limit for file upload 
 # Default: 2621440 (i.e. 2.5 MB) 
@@ -266,3 +279,45 @@ DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 # FIXME Security warning! Allow CORS for trusted hosts only
 CORS_ORIGIN_ALLOW_ALL = True
+
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            # 'filename': '/path/to/django/debug.log',
+            'filename': os.path.join(BASE_DIR, 'tmp/log', 'debug.log'),
+            # 'maxBytes': 1024*1024*15, # 15MB
+            # 'backupCount': 10,
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}

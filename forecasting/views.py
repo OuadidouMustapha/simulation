@@ -1,5 +1,9 @@
 # from django.shortcuts import render
 # from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.mixins import PermissionRequiredMixin
+import logging
+from django.core.exceptions import ObjectDoesNotExist
+from account.models import CustomUser
 from django.views.generic.edit import FormMixin
 import locale
 from django.core.paginator import Paginator
@@ -35,7 +39,7 @@ from django.utils.encoding import force_text
 from import_export.formats import base_formats
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
-from .forms import VersionForm
+from .forms import VersionForm, VersionReviewForm
 # from .forms import VersionFilterFormHelper
 from .tables import VersionTable, ForecastTable
 from django.db.models import Count
@@ -43,12 +47,20 @@ from datetime import datetime
 
 from django.db.models import OuterRef, Subquery
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'forecasting/index.html'
+
 # class InputInterfaceView(LoginRequiredMixin, TemplateView):
 #     template_name = 'forecasting/input_interface.html'
 
-class ForecastAccuracyView(LoginRequiredMixin, TemplateView):
+
+class ForecastAccuracyView( TemplateView):
+    # Add this mixin "PermissionRequiredMixin" for permission
+    # permission_required = 'forecasting.validate_version'
+
     # model = Forecast
     # queryset = Forecast.objects.get_forecast_accuracy(OrderDetail)
     template_name = 'forecasting/stock_forecast_accuracy.html'
@@ -57,6 +69,16 @@ class ForecastAccuracyView(LoginRequiredMixin, TemplateView):
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
+    #     session = self.request.session
+
+    #     demo_count = session.get('django_plotly_dash', {})
+    #     ind_use = demo_count.get('ind_use', 0)
+    #     ind_use += 1
+    #     demo_count['ind_use'] = ind_use
+    #     session['django_plotly_dash'] = demo_count
+
+
+
     #     # context['stock_forecast_order'] = Forecast.objects.get_forecast_accuracy(
     #     #     OrderDetail)
     #     context['page_elements'] = {}
@@ -201,33 +223,67 @@ class VersionUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
+        version = form.save(commit=False)
+        version.created_by = self.request.user
+        version.save()
 
         # Get the uploaded file from the form
-        csv_file = self.request.FILES.get(
-            'file_path', None).read().decode('utf-8')
-        # Get version id from the link param
-        version_id = self.kwargs['pk']
-        # Save csv data in the model
-        form.save_csv_data(csv_file, version_id)
-        print('Data saved in the model')
+        my_file_path = self.request.FILES.get('file_path', None)
+        if my_file_path:
+            csv_file = my_file_path.read().decode('utf-8')
+            # Get version id from the link param
+            version_id = self.kwargs['pk']
+            # Save csv data in the model
+            form.save_csv_data(csv_file, version_id)
+            print('Data saved in the model')
 
-        # Success message
-        messages.success(
-            self.request, _('Success: Data processed successfully'))
+            # Success message
+            messages.success(
+                self.request, _('Success: Data processed successfully'))
         return super().form_valid(form)
 
 
-class ForecastListByVersiomView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class ForecastListByVersionView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Forecast
     table_class = ForecastTable
     filterset_class = ForecastFilter
+    form_class = VersionReviewForm
+
     template_name = "forecasting/forecast_list.html"
     paginate_by = 20
     # order_by = 'created_at'
 
+    # def get(self, request, version):
+    #     form = self.form_class()
+    #     # form2 = self.form_class2(None)
+    #     return render(request, self.template_name, {'review_request_form': form})
+
+    # def post(self, request):
+    #     version_id = self.kwargs['version']
+    #     if request.method == 'POST' and 'review_request_submit' in request.POST:
+    #         form = self.form_class(request.POST)
+    #         if form.is_valid:
+    #             user = CustomUser.objects.get(pk=request.POST['approved_by'])
+
+    #             # Success message
+    #             messages.success(
+    #                 request, _('Review request sent to {} ({})').format(user.get_full_name(), user.username))
+
+    #             return redirect(reverse('forecasting:forecast_list', args=[version_id]))
+
+    #         else:
+    #             # Error message
+    #             messages.warning(
+    #                 request, _('Form not valid. Request not sent.'))
+
+    #             return redirect(reverse('forecasting:forecast_list', args=[version_id]))
+    #     # elif request.method=='POST' and 'htmlsubmitbutton2' in request.POST:
+    #     #         ## do what ever you want to do for second function ####
+    #     return render(request, self.template_name, {'review_request_form': form})
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(version=self.kwargs['version'])
+        queryset = queryset.filter(version=self.kwargs['version_id'])
         # queryset = ForecastFilter(self.request.GET, queryset)
         return queryset
 
@@ -240,12 +296,18 @@ class ForecastListByVersiomView(LoginRequiredMixin, SingleTableMixin, FilterView
         # Get params
         category_id = self.request.GET.get('category', None)
         circuit_id = self.request.GET.get('circuit', None)
-        version_id = self.kwargs['version']
+        version_id = self.kwargs['version_id']
+
+        # Get current version object
+        context['version'] = Version.objects.get(pk=version_id)
+
         
         # Orders chart
         print('category_id {} circuit_id {}'.format(category_id, circuit_id))
         category_id = int(category_id) if category_id else None
         circuit_id = int(circuit_id) if circuit_id else None
+        # context['chart_plot'] = chart_plot(category_id, circuit_id, version_id)
+        
         context['order_plot'] = order_plot(category_id, circuit_id)
         context['delivery_plot'] = delivery_plot(category_id, circuit_id)
         context['forecast_plot'] = forecast_plot(category_id, circuit_id, version_id)
@@ -302,7 +364,8 @@ class ForecastListByVersiomView(LoginRequiredMixin, SingleTableMixin, FilterView
         Order.objects.filter()
 
 
-
+        # User objects
+        context['supervisor_users'] = CustomUser.objects.filter(groups__name='supervisor')
 
         return context
     
@@ -395,7 +458,6 @@ def delivery_plot(category_id, circuit_id):
     # print(df)
     return plot_div
 
-
 def forecast_plot(category_id, circuit_id, version_id):
     ''' Get filter params and return a chart ready to use in template '''
     # Get queryset
@@ -439,12 +501,12 @@ def forecast_plot(category_id, circuit_id, version_id):
 
 ##############################""
 # Forecast pivot table 
-def get_pivot_data_context(request, version):
+def get_pivot_data_context(request, version_id):
     _rows_per_page = 20
-    filter = ForecastFilter(request.GET, queryset=Forecast.objects.filter(version_id=version).values('forecast_date').annotate(Count('forecast_date')).order_by('forecast_date').all())
+    filter = ForecastFilter(request.GET, queryset=Forecast.objects.filter(version_id=version_id).values('forecast_date').annotate(Count('forecast_date')).order_by('forecast_date').all())
     forecast_dates = filter.qs
 
-    paginator = Paginator(ForecastFilter(request.GET, Forecast.objects.filter(version_id=version).values(
+    paginator = Paginator(ForecastFilter(request.GET, Forecast.objects.filter(version_id=version_id).values(
         'category', 'category__reference', 'circuit', 'circuit__reference').annotate(Count('category'), Count('circuit')).all()).qs, _rows_per_page)
     page = int(request.GET.get('page', '1'))
     try:
@@ -494,13 +556,13 @@ def get_pivot_data_context(request, version):
         'circuits': circuits,
         'versions': versions,
         'page_obj': page_obj,
-        'version': version,
+        'version_id': version_id,
         'filter': filter
     }
     return context
 
 
-def updateQuantity(request, version):
+def updateQuantity(request, version_id):
     try:
         id = request.GET.get('id')
         quantity = request.GET.get('quantity')
@@ -513,7 +575,7 @@ def updateQuantity(request, version):
         return JsonResponse({"success": False})
 
 
-def addQuantity(request, version):
+def addQuantity(request, version_id):
     # try:
     forecasted_quantity = request.GET.get('forecasted_quantity', None)
     forecast_date = request.GET.get('forecast_date', None)
@@ -523,7 +585,7 @@ def addQuantity(request, version):
 
     forecast_date = datetime.strptime(forecast_date,  "%Y-%m-%d")
     forecast = Forecast(forecasted_quantity=forecasted_quantity, forecast_date=forecast_date,
-                        category_id=category_id, circuit_id=circuit_id, version_id=version)
+                        category_id=category_id, circuit_id=circuit_id, version_id=version_id)
     forecast.save()
     return JsonResponse({'success': True})
     # except Exception:
@@ -531,7 +593,7 @@ def addQuantity(request, version):
     #     return JsonResponse({'success':False})
 
 
-def addForecast(request, version):
+def addForecast(request, version_id):
 
     forecasted_quantity = request.GET.get('forecasted_quantity', None)
     forecast_date = request.GET.get('forecast_date', None)
@@ -544,7 +606,7 @@ def addForecast(request, version):
                         forecast_date=forecast_date, category_id=category_id, circuit_id=circuit_id)
     forecast.save()
     
-    return redirect(reverse('forecasting:forecast_list', args=[version]))
+    return redirect(reverse('forecasting:forecast_list', args=[version_id]))
 
 
     # uploaded_file_url = ''
@@ -582,5 +644,48 @@ def addForecast(request, version):
     #         messages.warning(
     #             request, _('Task cancelled: An error has occurred while processing the file'))
 
-
     # return render(request, 'forecasting/simple_upload.html')
+
+def sendReviewRequest(request, version_id):
+    if request.method == 'GET':
+
+        user_id = request.GET.get('user_id', None)
+        # version = request.GET.get('version', None)
+
+        # try:
+        # Get user object
+        user = CustomUser.objects.get(pk=user_id)
+        
+        # Get version object and update data
+        version = Version.objects.get(pk=version_id)
+        version.approved_by = user
+        version.status = Version.PENDING
+        version.save()
+        # Success message
+        messages.success(
+            request, _('Review request sent to {} ({})').format(user.get_full_name(), user.username))
+
+        return redirect(reverse('forecasting:forecast_list', args=[version_id]))
+
+    # except ObjectDoesNotExist:
+    #     print("Either the user or version doesn't exist.")
+
+    # Error message
+    messages.warning(
+        request, _('Warning: An error has occurred. Request not sent.'))
+
+    return redirect(reverse('forecasting:forecast_list', args=[version_id]))
+
+
+def approveReviewRequest(request, version_id):
+    # Get version object and update data
+    version = Version.objects.get(pk=version_id)
+    version.status = Version.APPROVED
+    version.save()
+    # Success message
+    messages.success(
+        request, _('Request approved.'))
+    logger.info('Request for version {} is approved'.format(version))
+    
+
+    return redirect(reverse('forecasting:forecast_list', args=[version_id]))

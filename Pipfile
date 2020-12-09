@@ -37,6 +37,7 @@ django-filter = "*"
 django-widget-tweaks = "*"
 django-tables2 = "*"
 django-select2 = "*"
+django-notifications-hq = "*"
 
 [requires]
 python_version = "3.7"

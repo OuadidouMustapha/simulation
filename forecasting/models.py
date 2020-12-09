@@ -1,11 +1,12 @@
-# import datetime
 
 from django.db import models
 # from django.db.models import (FloatField, DecimalField, IntegerField, DateTimeField,
 #                               ExpressionWrapper, F, Q, Count, Sum, Avg, Subquery, OuterRef, Case, When, Window)
 from . import managers
+from account.models import CustomUser 
 from django.urls import reverse
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext as _
 
 class CommonMeta(models.Model):
     CREATED = 'Created'
@@ -32,11 +33,20 @@ class CommonMeta(models.Model):
 
 
 class Version(CommonMeta):
+    # TODO add verbose_name with translation
     COMMERCIAL = 'Commercial'
     LOGISTIC = 'Logistic'
     FORECAST_TYPE = (
         (COMMERCIAL, 'Commercial'),
         (LOGISTIC, 'Logistic'),
+    )
+    CREATED = 'Created'
+    PENDING = 'Pending'
+    APPROVED = 'Approved'
+    STATUS = (
+        (CREATED, 'Created'),
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
     )
     reference = models.CharField(unique=True, max_length=200)
     year = models.IntegerField(validators=[MinValueValidator(1900), MaxValueValidator(2900)])
@@ -51,14 +61,34 @@ class Version(CommonMeta):
     # upload_to='forecast_files/%Y/%m/%d/'
     file_path = models.FileField(upload_to='forecast_versions/', blank=True)
     is_budget = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        CustomUser, related_name='created_versions', on_delete=models.CASCADE, blank=True, null=True)
+    approved_by = models.ForeignKey(
+        CustomUser, related_name='approved_versions', on_delete=models.CASCADE, blank=True, null=True)
+    status = models.CharField(
+        max_length=32,
+        choices=STATUS,
+        default=CREATED,
+    )
+
     objects = managers.VersionQuerySet.as_manager()
 
     def __str__(self):
         return str(self.reference)
 
+    class Meta:
+        permissions = (
+            ('request_review', 'Send review request'),
+            ('validate_version', 'Validate a version'),
+        )
+
+
+
     # def get_absolute_url(self):
     #     return reverse('forecasting:version_list')
         # return reverse('forecasting:version_list', pk=self.pk)
+
+
 
 
 

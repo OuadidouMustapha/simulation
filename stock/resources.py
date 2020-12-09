@@ -50,6 +50,19 @@ class ProductResource(resources.ModelResource):
         )
         row['category'] = category_model.id
 
+    # TODO I'm here!!! try this method (optimizing?)
+    # def init_instance(self, row, *args, **kwargs):
+    #     instance = super().init_instance(*args, **kwargs)
+    #     reference = row.get("reference")
+    #     description = row.get("description")
+    #     category, created = Category.objects.get_or_create(
+    #         reference=reference,
+    #     )
+    #     user.role = user.EMPLOYEE
+    #     user.save()
+    #     instance.user = user
+    #     return instance
+
 
 class OrderResource(resources.ModelResource):
     # product = Field(

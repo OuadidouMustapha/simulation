@@ -63,15 +63,139 @@
                 <div class="collapse show" id="collapse-forecast-list" style="">
 
                     <div class="card-body">
-                        <button type="button" class="btn btn-xs btn-primary mb-3" data-toggle="modal" data-target="#exampleModal">
-                            {% trans 'Add'%}
-                        </button>
-                        <button type="button" class="btn btn-xs btn-danger mb-3">
-                            {% trans 'Submit for review'%}
-                        </button>
-                        <button type="button" class="btn btn-xs btn-success mb-3">
-                            {% trans 'Submit'%}
-                        </button>
+                        {% if perms.forecasting.request_review %}
+                            <!-- Add forecast -->
+                            {% with approved_status='Approved' %}     
+                                {% if version.status != approved_status %}
+                                    <button type="button" class="btn btn-xs btn-primary mb-3" data-toggle="modal" data-target="#add-forecast-modal">
+                                        {% trans 'Add'%}
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="add-forecast-modal" tabindex="-1" role="dialog" aria-labelledby="add-forecast-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="add-forecast-modal-label">{% trans 'Add forecast for a date'%}</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+
+                                                <form  action="{% url 'forecasting:ajax_add_forecast' version_id %}" method="get">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <input type="hidden" name="version_id" class="form-control" value="{{version_id}}"  placeholder="Version">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Category'%}</label>
+                                                            <select  class="form-control" id="category" name="category_id">
+                                                                {% for val in categories %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Circuit'%}</label>
+                                                            <select  class="form-control" id="circuit" name="circuit_id" >
+                                                                {% for val in circuits %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Customer'%}</label>
+                                                            <select  class="form-control" id="customer" name="customer_id" >
+                                                                {% for val in cutomers %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Forecast date'%}</label>
+                                                            <input type="date" name="forecast_date" class="form-control" > 
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Forecasted Quantity'%}</label>
+                                                            <input type="number" name="forecasted_quantity" class="form-control">
+                                                        </div>
+                                                        
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-primary">{% trans 'Submit'%}</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                        </div>                    
+                                                    </div>                    
+                                                </form>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+
+                            <!-- Submit review -->
+                            <button type="button" class="btn btn-xs btn-danger mb-3" data-toggle="modal" data-target="#submit-review-modal">
+                                {% trans 'Submit for review'%}
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="submit-review-modal" tabindex="-1" role="dialog" aria-labelledby="submit-review-modal-label" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="submit-review-modal-label">{% trans 'Submit for review'%}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+
+
+                                        {% with approved_status='Approved' %}     
+                                            {% if version.status != approved_status %}
+                                                <form  action="{% url 'forecasting:send_review_request' version_id %}" method="get">
+                                                    <div class="modal-body">
+                                                        {% comment %} <div class="form-group">
+                                                            <input type="hidden" name="version_id" class="form-control" value="{{version}}">
+                                                        </div> {% endcomment %}
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Select the user'%}</label>
+                                                            <select  class="form-control" id="user" name="user_id" >
+                                                                {% for usr in supervisor_users %}
+                                                                    <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}} ({{usr.username}})</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">{% trans 'Submit'%}</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <div class="modal-body">
+                                                    <div> This version has been reviewed and it is already approved by {{ version.approved_by.first_name }} ({{ version.approved_by.username }})</div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if perms.forecasting.validate_version %}
+                            <a href="{% url 'forecasting:approve_review_request' version_id %}" type="button" class="btn btn-xs btn-success mb-3">
+                                {% trans 'Submit'%}
+                            </a>
+                        {% endif %}
 
                         <table id="lead_table" class="table table-hover table-responsive-xl dataTable no-footer">
                         {% comment %} {{ body_data }} {% endcomment %}
@@ -117,66 +241,12 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel"> {% trans 'Add forecast for a date'%} </h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-                <form  action="{% url 'forecasting:ajax_add_forecast' version %}" method="get">
-                <div class="form-group">
-                    <input type="hidden" name="version_id" class="form-control" value="{{version}}"  placeholder="Version">
-                </div>
-                <div class="form-group">
-                    <label>{% trans 'Category'%}</label>
-                    <select  class="form-control" id="category" name="category_id">
-                        {% for val in categories %}
-                            <option value="{{val.id}}">{{val.reference}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
 
-                <div class="form-group">
-                    <label>{% trans 'Circuit'%}</label>
-                    <select  class="form-control" id="circuit" name="circuit_id" >
-                        {% for val in circuits %}
-                            <option value="{{val.id}}">{{val.reference}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
 
-                <div class="form-group">
-                    <label>{% trans 'Customer'%}</label>
-                    <select  class="form-control" id="customer" name="customer_id" >
-                        {% for val in cutomers %}
-                            <option value="{{val.id}}">{{val.reference}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+    
 
-                <div class="form-group">
-                    <label>{% trans 'Forecast date'%}</label>
-                    <input type="date" name="forecast_date" class="form-control" > 
-                </div>
 
-                <div class="form-group">
-                    <label>{% trans 'Forecasted Quantity'%}</label>
-                    <input type="number" name="forecasted_quantity" class="form-control">
-                </div>
-                 
-                  <button type="submit" class="btn btn-primary">{% trans 'Submit'%}</button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
-              </form>
-            </div>
-            
-          </div>
-        </div>
-    </div>
+
     <script>
         
         
@@ -188,7 +258,7 @@
                 params = { 'id': id, 'quantity': quantity } 
                 $.ajax({
                     type: 'GET',
-                    url: "{% url 'forecasting:ajax_update_forecast_qty' version %}",
+                    url: "{% url 'forecasting:ajax_update_forecast_qty' version_id %}",
                     data:  params,
                     async: false,
                     success: function (res) {
@@ -225,7 +295,7 @@
 
                 $.ajax({
                     type: 'GET',
-                    url: "{% url 'forecasting:ajax_add_forecast_qty' version %}",
+                    url: "{% url 'forecasting:ajax_add_forecast_qty' version_id %}",
                     data:  params,
                     async: false,
                     success: function (res) {

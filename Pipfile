@@ -38,6 +38,9 @@ django-widget-tweaks = "*"
 django-tables2 = "*"
 django-select2 = "*"
 django-notifications-hq = "*"
+pystan = "*"
+fbprophet = "*"
+hijri-converter = "*"
 
 [requires]
 python_version = "3.7"

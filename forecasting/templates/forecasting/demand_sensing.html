@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load plotly_dash %}
+{% load i18n %}
+
+{% block header_title %} {% trans 'F-Orchest' %} {% endblock %}
+
+{% plotly_header %}
+
+{% block content %}
+
+<!-- stock coverage Dash -->
+{% plotly_direct name="DemandSensing" %} 
+
+    
+{% plotly_footer %}
+{% endblock %}

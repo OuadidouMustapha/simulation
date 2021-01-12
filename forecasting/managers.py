@@ -11,6 +11,13 @@ from common import utils as common_utils
 from . import utils  # TODO : Manage classes and functions
 from django.apps import apps
 
+class EventDetailQuerySet(models.QuerySet):
+    def get_events(self, product_id, circuit_id):
+        ''' Return all past and future events filtered by product & circuit (used in forchest-dash) '''
+        qs = self.filter(product=product_id, circuit=circuit_id)
+        qs = qs.annotate(ds=F('date'), holiday=F('event__name'))
+        qs = qs.values('ds', 'holiday', 'lower_window', 'upper_window')
+        return qs
 
 class VersionQuerySet(models.QuerySet):
     def get_all_versions(self):

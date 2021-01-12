@@ -1,4 +1,4 @@
-from django_tables2 import tables, TemplateColumn, LinkColumn
+from django_tables2 import tables, TemplateColumn, LinkColumn, CheckBoxColumn
 from .models import Version, Forecast
 from django_tables2.utils import A  # alias for Accessor
 import datetime
@@ -29,7 +29,7 @@ class VersionTable(tables.Table):
         model = Version
         # template_name = "django_tables2/bootstrap.html"
         attrs = {'class': 'table table-sm table-hover table-responsive-md'}
-        fields = ['reference', 'year', 'month', 'forecast_type', 'is_budget', 'description', 'file_path', 'action']
+        fields = ['reference', 'forecast_type', 'description', 'file_path', 'action']
         order_by = ['year', 'month']
 
 class ForecastTable(tables.Table):
@@ -41,3 +41,20 @@ class ForecastTable(tables.Table):
         model = Forecast
         attrs = {'class': 'table table-sm table-hover table-responsive-md'}
         fields = ['product', 'circuit', 'version', 'forecast_date', 'forecasted_quantity', 'action']
+
+
+class ProductToForecastTable(tables.Table):
+    action = TemplateColumn(
+        template_name='forecasting/tables/product_to_forecast_action_column.html',
+        orderable=False)
+    selection = CheckBoxColumn(
+        accessor='product__id',
+        attrs={'th__input': {'onclick': 'selectAllElements(this)'}},
+        orderable=False
+    )
+
+    class Meta:
+        model = Forecast
+        attrs = {'class': 'table table-sm table-hover table-responsive-md'}
+        fields = ['selection', 'product', 'circuit', 'version', 'product__abc_segmentation', 'product__fmr_segmentation',
+                  'version__version_date', 'version__status', 'action']

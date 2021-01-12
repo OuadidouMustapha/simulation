@@ -30,15 +30,31 @@ class CommonMeta(models.Model):
     class Meta:
         abstract = True
 
+class Target(CommonMeta):
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        'stock.ProductCategory', on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        'stock.Warehouse', on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        'stock.Customer', on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
+    version = models.ForeignKey(
+        TargetVersion, on_delete=models.CASCADE, blank=True, null=True)
 
+    targeted_date = models.DateField(
+        blank=True, null=True)
+    targeted_quantity = models.IntegerField(blank=True, null=True)
 
 class Version(CommonMeta):
     # TODO add verbose_name with translation
-    COMMERCIAL = 'Commercial'
-    LOGISTIC = 'Logistic'
+    AUTO = 'Automatic'
+    MANU = 'Manual'
     FORECAST_TYPE = (
-        (COMMERCIAL, 'Commercial'),
-        (LOGISTIC, 'Logistic'),
+        (AUTO, 'Automatic'),
+        (MANU, 'Manual'),
     )
     CREATED = 'Created'
     PENDING = 'Pending'
@@ -49,18 +65,18 @@ class Version(CommonMeta):
         (APPROVED, 'Approved'),
     )
     reference = models.CharField(unique=True, max_length=200)
-    year = models.IntegerField(validators=[MinValueValidator(1900), MaxValueValidator(2900)])
-    month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
+    # year = models.IntegerField(validators=[MinValueValidator(1900), MaxValueValidator(2900)])
+    # month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
     forecast_type = models.CharField(
         max_length=32,
         choices=FORECAST_TYPE,
-        default=COMMERCIAL,
+        default=AUTO,
     )
     version_date = models.DateField(blank=True, null=True)
     description = models.CharField(max_length=255, blank=True)
     # upload_to='forecast_files/%Y/%m/%d/'
     file_path = models.FileField(upload_to='forecast_versions/', blank=True)
-    is_budget = models.BooleanField(default=False)
+    # is_budget = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         CustomUser, related_name='created_versions', on_delete=models.CASCADE, blank=True, null=True)
     approved_by = models.ForeignKey(
@@ -89,9 +105,6 @@ class Version(CommonMeta):
         # return reverse('forecasting:version_list', pk=self.pk)
 
 
-
-
-
 class Forecast(CommonMeta):
 
     product = models.ForeignKey(
@@ -109,6 +122,7 @@ class Forecast(CommonMeta):
     forecast_date = models.DateField(
         blank=True, null=True)
     forecasted_quantity = models.IntegerField(blank=True, null=True)
+    edited_forecasted_quantity = models.IntegerField(blank=True, null=True)
 
     objects = managers.ForecastQuerySet.as_manager()
 
@@ -120,3 +134,43 @@ class Forecast(CommonMeta):
 
     def __str__(self):
         return f'product: {self.product}, warehouse: {self.warehouse}, forecast_date: {self.forecast_date}, circuit: {self.circuit}'
+
+
+class Event(CommonMeta):
+    PROMO = 'Promo'
+    ACTION_MARKETING = 'Action Marketing'
+    HOLIDAY = 'Holiday'
+    CATEGORY = (
+        (PROMO, 'Promo'),
+        (ACTION_MARKETING, 'Action Marketing'),
+        (HOLIDAY, 'Holiday'),
+    )
+
+    reference = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    category = models.CharField(
+        max_length=32,
+        choices=CATEGORY,
+        default=PROMO,
+    )
+
+    def __str__(self):
+        return self.reference
+
+
+class EventDetail(CommonMeta):
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    lower_window = models.IntegerField(default=0, blank=True)
+    upper_window = models.IntegerField(default=1, blank=True)
+
+    objects = managers.EventDetailQuerySet.as_manager()
+
+    def __str__(self):
+        return f'event: {self.event}, date: {self.date}'

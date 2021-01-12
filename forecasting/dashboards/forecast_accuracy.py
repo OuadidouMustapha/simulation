@@ -1,4 +1,4 @@
-from stock.models import Order
+from stock.models import Product, Warehouse, Circuit, Customer, OrderDetail, Order
 from django.utils.translation import gettext as _
 import copy
 import datetime
@@ -24,9 +24,9 @@ from django_plotly_dash import DjangoDash
 from common import utils as common_utils
 from common.dashboards import dash_constants, dash_utils
 from ..models import Forecast, Version
-from stock.models import Product, Warehouse, Circuit, Customer
 
 app = DjangoDash('ForecastAccuracy', add_bootstrap_links=True)
+
 
 # Prepare html ids
 _prefix = 'stock-forecast-accuracy'
@@ -110,7 +110,10 @@ _all_products_type = list(Product.objects.get_all_products_by_attribute(attribut
 _all_warehouses = list(Warehouse.objects.get_all_warehouses())
 _all_circuits = list(Circuit.objects.get_all_circuits())
 _all_customers = list(Customer.objects.get_all_customers())
+_select_all_option = {'label': _('All'), 'value': 'all'}
+_all_customers.insert(0, _select_all_option.copy())
 _all_versions = list(Version.objects.get_all_versions())
+
 # print(_all_warehouses)
 def filter_container():
     filter_container = html.Div([
@@ -146,10 +149,18 @@ def filter_container():
                     dropdown_circuit_list_id, div_circuit_list_id, checkbox_circuit_list_id, _all_circuits, _('Circuits'))
 
             ], sm=12, md=6, lg=3),
-            dbc.Col([
-                dash_utils.get_filter_dropdown(
-                    dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers, _('Customers'))
+            # dbc.Col([
+            #     dash_utils.get_filter_dropdown(
+            #         dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers, _('Customers'))
 
+            # ], sm=12, md=6, lg=3),
+            dbc.Col([
+                dbc.Label(_('Customers')),
+                dcc.Dropdown(
+                    id=dropdown_customer_list_id,
+                    options=_all_customers, 
+                    value='all',
+                ),
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_date_range(
@@ -745,7 +756,7 @@ def dataframe_date_filter(
     forecast_qs = Forecast.objects.get_forecasting(
         product_filter=selected_products, warehouse_filter=selected_warehouses, circuit_filter=selected_circuits, customer_filter=selected_customers, start_date=start_date, end_date=end_date)
 
-    order_qs = Order.objects.get_forecasting(
+    order_qs = OrderDetail.objects.get_forecasting(
         product_filter=selected_products, warehouse_filter=selected_warehouses, circuit_filter=selected_circuits, customer_filter=selected_customers, start_date=start_date, end_date=end_date)
 
     # Convert queryset to dataframe and assign the right column type
@@ -753,7 +764,7 @@ def dataframe_date_filter(
     forecast_df['forecast_date'] = forecast_df['forecast_date'].astype('datetime64[ns]')
 
     order_df = read_frame(order_qs)
-    order_df['ordered_at'] = order_df['ordered_at'].astype('datetime64[ns]')
+    order_df['order__ordered_at'] = order_df['order__ordered_at'].astype('datetime64[ns]')
     
 
     # TODO I'm HERE. Check tmp issue and maybe think to fill empty data by a default value "undefined". Do that to all columns (check graph to understand)
@@ -772,13 +783,13 @@ def dataframe_date_filter(
     forecast_df = forecast_df.groupby([*_group_by_default, 'forecast_date'], as_index=False).agg(
         {'forecasted_quantity': 'sum', 'product__product_type': 'first'})
 
-    # order_df['ordered_at'] = order_df['ordered_at'].dt.strftime(kind)
-    order_df = order_df.groupby([*_group_by_default, 'ordered_at'], as_index=False).agg(
+    # order_df['order__ordered_at'] = order_df['order__ordered_at'].dt.strftime(kind)
+    order_df = order_df.groupby([*_group_by_default, 'order__ordered_at'], as_index=False).agg(
         {'ordered_quantity': 'sum'})
 
     merged_df = pd.merge(forecast_df, order_df, how='left', left_on=[
         *_group_by_default, 'forecast_date'], right_on=[
-        *_group_by_default, 'ordered_at'])  # .dropna()
+        *_group_by_default, 'order__ordered_at'])  # .dropna()
 
     # Prepare data & columns to be returned
     data = merged_df.to_dict('records')
@@ -1093,6 +1104,8 @@ dash_utils.select_all_callbacks(
     app, dropdown_product_list_id, div_product_list_id, checkbox_product_list_id)
 dash_utils.select_all_callbacks(
     app, dropdown_circuit_list_id, div_circuit_list_id, checkbox_circuit_list_id)
+dash_utils.select_all_callbacks(
+    app, dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id)
 dash_utils.select_all_callbacks(
     app, dropdown_product_range_list_id, div_product_range_list_id, checkbox_product_range_list_id)
 

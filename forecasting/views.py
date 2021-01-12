@@ -15,7 +15,7 @@ import plotly.graph_objs as go
 import plotly.offline as py
 
 from django_tables2.views import SingleTableMixin
-from .filtersets import VersionFilter, ForecastFilter
+from .filtersets import VersionFilter, ForecastFilter, ProductToForecastFilter
 from django_filters.views import FilterView
 from extra_views import SearchableListMixin
 from tablib import Dataset
@@ -41,7 +41,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from .forms import VersionForm, VersionReviewForm
 # from .forms import VersionFilterFormHelper
-from .tables import VersionTable, ForecastTable
+from .tables import VersionTable, ForecastTable, ProductToForecastTable
 from django.db.models import Count
 from datetime import datetime
 
@@ -303,7 +303,7 @@ class ForecastListByVersionView(LoginRequiredMixin, SingleTableMixin, FilterView
 
         
         # Orders chart
-        print('category_id {} circuit_id {}'.format(category_id, circuit_id))
+        # print('category_id {} circuit_id {}'.format(category_id, circuit_id))
         category_id = int(category_id) if category_id else None
         circuit_id = int(circuit_id) if circuit_id else None
         # context['chart_plot'] = chart_plot(category_id, circuit_id, version_id)
@@ -359,7 +359,7 @@ class ForecastListByVersionView(LoginRequiredMixin, SingleTableMixin, FilterView
             'previous_version',
         )
 
-        print('pivot_table_qs ', pivot_table_qs)
+        # print('pivot_table_qs ', pivot_table_qs)
 
         Order.objects.filter()
 
@@ -566,7 +566,7 @@ def updateQuantity(request, version_id):
     try:
         id = request.GET.get('id')
         quantity = request.GET.get('quantity')
-        print(request)
+        # print(request)
         Forecast.objects.filter(id=id).update(forecasted_quantity=quantity)
 
         return JsonResponse({"success": True})
@@ -689,3 +689,36 @@ def approveReviewRequest(request, version_id):
     
 
     return redirect(reverse('forecasting:forecast_list', args=[version_id]))
+
+class ForchestView(TemplateView):
+    template_name = 'forecasting/forchest.html'
+
+class DemandSensingView(TemplateView):
+    template_name = 'forecasting/demand_sensing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # create some context to send over to Dash:
+        dash_context = self.request.session.get("django_plotly_dash", dict())
+        dash_context['dash_context'] = {
+            'version_id': self.kwargs['version_id'],
+            'product_id': self.kwargs['product_id'],
+            'circuit_id': self.kwargs['circuit_id'],
+        }
+        self.request.session['django_plotly_dash'] = dash_context
+
+        return context
+
+
+class SelectProductToForecastView(LoginRequiredMixin, SingleTableMixin, FilterView):
+    model = Forecast
+    table_class = ProductToForecastTable
+    filterset_class = ProductToForecastFilter
+
+    template_name = "forecasting/product_to_forecast_table.html"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.distinct('product', 'circuit', 'version')
+        return queryset

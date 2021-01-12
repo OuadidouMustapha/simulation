@@ -21,13 +21,13 @@ from account.models import CustomUser
 
 class VersionForm(forms.ModelForm):
     reference = forms.CharField(disabled=True)
-    year = forms.CharField(disabled=True)
-    month = forms.CharField(disabled=True)
+    # year = forms.CharField(disabled=True)
+    # month = forms.CharField(disabled=True)
     forecast_type = forms.CharField(disabled=True)
 
     class Meta:
         model = Version
-        fields = ('reference', 'year', 'month', 'forecast_type', 'is_budget',
+        fields = ('reference', 'forecast_type',
                   'file_path', 'description',)
         exclude = ('created_by',)
 
@@ -42,8 +42,8 @@ class VersionForm(forms.ModelForm):
                 Column('reference',
                        css_class='form-group col-md-3 mb-0'),
                 Column('forecast_type', css_class='form-group col-md-3 mb-0'),
-                Column('year', css_class='form-group col-md-3 mb-0'),
-                Column('month', css_class = 'form-group col-md-3 mb-0'),
+                # Column('year', css_class='form-group col-md-3 mb-0'),
+                # Column('month', css_class = 'form-group col-md-3 mb-0'),
                 css_class='form-row'
             ),
             Row(
@@ -51,10 +51,10 @@ class VersionForm(forms.ModelForm):
                 Column('description', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            Row(
-                Column('is_budget', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row'
-            ),
+            # Row(
+            #     Column('is_budget', css_class='form-group col-md-4 mb-0'),
+            #     css_class='form-row'
+            # ),
             Submit('submit', _('Submit'))
         )
 

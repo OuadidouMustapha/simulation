@@ -7,7 +7,7 @@ from notifications.signals import notify
 from .models import Version
 
 @receiver(pre_save, sender=Version)
-def send_email_if_review_request(sender, instance, **kwargs):
+def send_email_if_review_requested(sender, instance, **kwargs):
     ''' Send email to supervisor uppon review request '''
     try:
         old_instance = Version.objects.get(id=instance.id)
@@ -24,6 +24,29 @@ def send_email_if_review_request(sender, instance, **kwargs):
             instance.created_by.first_name, instance.created_by.last_name, instance.created_by.username, instance.reference)
         from_email = settings.EMAIL_HOST_USER
         # recipient_list = [old_instance.approved_by.email]
+        recipient_list = ['abdeltif.b@gclgroup.com']
+        # Send email
+        send_mail(subject, message, from_email,
+                  recipient_list, fail_silently=False)
+
+@receiver(pre_save, sender=Version)
+def send_email_if_review_approved(sender, instance, **kwargs):
+    ''' Send email to supervisor uppon review request '''
+    try:
+        old_instance = Version.objects.get(id=instance.id)
+    except Version.DoesNotExist:  # to handle initial object creation
+        return None  # just exiting from signal
+
+    if old_instance.status != instance.APPROVED and instance.status == instance.APPROVED:
+        # Notify the user
+        notify.send(sender=instance.approved_by, recipient=instance.created_by, verb='approved',
+                    description='your review request', action_object=instance, level='info')
+        # Prepare email parameters
+        subject = 'Review request for {} is approved'.format(instance.reference)
+        message = 'Your review request to {} {} ({}) for the reference "{}" has been approved.\nPlease login to the app for details.'.format(
+            instance.approved_by.first_name, instance.approved_by.last_name, instance.approved_by.username, instance.reference)
+        from_email = settings.EMAIL_HOST_USER
+        # recipient_list = [old_instance.created_by.email]
         recipient_list = ['abdeltif.b@gclgroup.com']
         # Send email
         send_mail(subject, message, from_email,

@@ -31,6 +31,7 @@ urlpatterns = [
     path('deployment/', include('deployment.urls')),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
     path('select2/', include('django_select2.urls')),
+    path('inventory', include('inventory.urls')),
     path('inbox/notifications/',
         include(notifications.urls, namespace='notifications')),
 ]

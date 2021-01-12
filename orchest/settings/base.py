@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django_select2',
     'notifications',
     # 'import_export_celery',
+    'inventory.apps.InventoryConfig',
 ]
 
 MIDDLEWARE = [

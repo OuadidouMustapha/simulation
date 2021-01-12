@@ -78,8 +78,7 @@ def get_product_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id)
     ])
     return div
 
-
-def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder):
+def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder, select_all=True):
     div = html.Div([
         dbc.Label(placeholder),
         dcc.Dropdown(
@@ -95,10 +94,10 @@ def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, o
                 id=checkbox_select_all_id,
                 options=[
                     {"label": "Select All", "value": "All"}],
-                value=["All"],
+                value=["All" if select_all else ''],
+                labelStyle={'display': 'block', 'cursor': 'pointer', 'margin-top': '10px'},
             ),
         ),
-
     ])
     return div
 

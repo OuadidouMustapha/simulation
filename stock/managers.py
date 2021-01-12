@@ -20,6 +20,11 @@ class ProductCategoryQuerySet(models.QuerySet):
         )
         qs = qs.values('reference')
         return qs
+    def get_all_productcategory(self):
+        '''
+        return list of unique/distinct productscategory
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
 
 class OrderQuerySet(models.QuerySet):
     def get_orders_for_prophet(self, product_id, circuit_id):
@@ -320,6 +325,12 @@ class ProductQuerySet(models.QuerySet):
         return list of unique/distinct products
         '''
         return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+
+    def get_all_status_of_products(self):
+        '''
+        return list of unique/distinct status
+        '''
+        return self.annotate(label=F('status'), value=F('status')).values('label', 'value').order_by('status').distinct('status')
 
     def get_all_products_by_attribute(self, attribute):
         '''

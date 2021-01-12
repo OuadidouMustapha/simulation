@@ -25,7 +25,7 @@ urlpatterns = [
          name='product_index'),
     path('index/', views.StockIndexView.as_view(),
          name='stock_index'),
-    path('stock/value/', views.StockValueView.as_view(),
+    path('value/', views.StockValueView.as_view(),
          name='stock_value'),
     path('dio/', views.StockDioView.as_view(),
          name='stock_dio'),

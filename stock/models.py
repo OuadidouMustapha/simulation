@@ -318,11 +318,12 @@ class CommonMeta(models.Model):
         max_length=32,
         choices=STATUS,
         default=CREATED,
+        null=True, blank=True
     )
     # added_by = models.ForeignKey(settings.AUTH_USER_MODEL, )
     # modified_by = models.ForeignKey(settings.AUTH_USER_MODEL)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -392,24 +393,59 @@ class ProductCategory(MPTTModel):
 
 
 class Product(CommonMeta):
+    # ABC segmentation
+    A = 'A'
+    B = 'B'
+    C = 'C'
+    ABC_SEGMENTATION = (
+        (A, 'Extremely important (A)'),
+        (B, 'Moderately important (B)'),
+        (C, 'Relatively unimportant (C)'),
+    )
+
+    F = 'F'
+    M = 'M'
+    R = 'R'
+    FMR_SEGMENTATION = (
+        (F, 'Frequently consumed (F)'),
+        (M, 'Moderately consumed (M)'),
+        (R, 'Rarely consumed (R)'),
+    )
+
+    id = models.BigAutoField(primary_key=True)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, blank=True, null=True)  # Try this parameter related_name='products'
-    reference = models.CharField(unique=True, max_length=20, null=False)
+    reference = models.CharField(unique=True, max_length=20)
     name = models.CharField(max_length=200, blank=True, null=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     cost = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
     weight = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-    weight_unit = models.TextField(blank=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    weight_unit = models.TextField(blank=True, null=True)
     volume = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-    volume_unit = models.TextField(blank=True)
+    volume_unit = models.TextField(blank=True, null=True)
     package_size = models.IntegerField(blank=True, null=True)
     pallet_size = models.IntegerField(blank=True, null=True)
     product_type = models.CharField(max_length=20, blank=True, null=True)
     product_ray = models.CharField(max_length=20, blank=True, null=True)
     product_universe = models.CharField(max_length=20, blank=True, null=True)
+    abc_segmentation = models.CharField(
+        max_length=32,
+        choices=ABC_SEGMENTATION,
+        # default=A,
+        null=True, blank=True
+    )
+    fmr_segmentation = models.CharField(
+        max_length=32,
+        choices=FMR_SEGMENTATION,
+        # default=F,
+        null=True, blank=True
+    )
+
 
     objects = managers.ProductQuerySet.as_manager()
 
@@ -451,10 +487,10 @@ class Product(CommonMeta):
 
 
 class Warehouse(CommonMeta):
-
+    id = models.BigAutoField(primary_key=True)
     reference = models.CharField(unique=True, max_length=200)
-    name = models.CharField(max_length=20, blank=True)
-    address = models.CharField(max_length=200, blank=True)
+    name = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
     available_trucks = models.IntegerField(blank=True, null=True)
     reception_capacity = models.IntegerField(blank=True, null=True)
     lat = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
@@ -472,6 +508,258 @@ class Warehouse(CommonMeta):
         return f'{self.name}'
 
 
+class Circuit(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, blank=True, null=True)
+
+    objects = managers.CircuitQuerySet.as_manager()
+    
+
+    def __str__(self):
+        return f'{self.reference}'
+
+class Customer(CommonMeta):
+    # TODO : Separate Customer as a company from the provider as a person
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+
+    
+    objects = managers.CustomerQuerySet.as_manager()
+
+
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['reference', 'circuit'], name='customer_reference_circuit_uniq')
+    #     ]
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class Supplier(CommonMeta):
+    # TODO : Separate provider as a company from the provider as a person
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(max_length=200, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class Supply(CommonMeta):
+
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=True, max_length=200)
+    supplied_at = models.DateField(blank=True, null=True)
+    total_amount = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class SupplyDetail(CommonMeta):
+
+    supply = models.ForeignKey(
+        Supply, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    # supply_type = local, import
+    unit_price = models.IntegerField(blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Supply: {self.supply}, product: {self.product}'
+
+class Order(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    ordered_at = models.DateField(blank=True, null=True)
+    tour = models.CharField(max_length=200, blank=True, null=True)
+    # warehouse = models.ForeignKey(
+    #     Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    # product = models.ForeignKey(
+    #     Product, on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(
+    #     ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    # circuit = models.ForeignKey(
+    #     Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    # customer = models.ForeignKey(
+    #     Customer, on_delete=models.CASCADE, blank=True, null=True)
+    # total_amount = models.IntegerField(blank=True, null=True)
+    # ordered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
+    # unit_price = models.IntegerField(blank=True, null=True)
+
+    objects = managers.OrderQuerySet.as_manager()
+
+
+    def __str__(self):
+        return self.reference
+
+    def get_product_orders(product_id, start_date, end_date):
+        '''
+        TODO : add default parameters
+        Return list of order of one product between a range of date
+        '''
+        product_order = OrderDetail.objects.filter(
+            product=product_id)
+        product_order_query = Order.objects.filter(Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
+            'reference', 'ordered_at', 'orderdetail__product', 'orderdetail__ordered_quantity')
+
+        return product_order_query
+
+
+class OrderDetail(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+
+    order_line = models.IntegerField(blank=True, null=True)
+    ordered_quantity = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    discount = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+
+    objects = managers.OrderDetailQuerySet.as_manager()
+
+    def __str__(self):
+        return f'Order:{self.order}, order_line {self.order_line}'
+
+class Delivery(CommonMeta):  # TODO rename to Delivery
+    id = models.BigAutoField(primary_key=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(max_length=200, blank=True, null=True)
+    delivered_at = models.DateField(blank=True, null=True)
+    # warehouse = models.ForeignKey(
+    #     Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    # product = models.ForeignKey(
+    #     Product, on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(
+    #     ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    # circuit = models.ForeignKey(
+    #     Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    # customer = models.ForeignKey(
+    #     Customer, on_delete=models.CASCADE, blank=True, null=True)
+    # supplier = models.ForeignKey(
+    #     Supplier, on_delete=models.CASCADE, blank=True, null=True)
+    # delivered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
+    # total_amount = models.IntegerField(blank=True, null=True)
+    
+    objects = managers.DeliveryQuerySet.as_manager()
+
+
+    def __str__(self):
+        return f'order:{self.order}, reference: {self.reference}'
+
+    def get_product_sales(product_id, start_date, end_date):
+        '''
+        TODO : add default parameters
+        Return list of sales of one product between a range of date
+        '''
+        product_sales = DeliveryDetail.objects.filter(
+            product=product_id)
+        product_sales_query = Delivery.objects.filter(Q(saledetail__in=product_sales) & Q(delivered_at__gte=start_date) & Q(delivered_at__lte=end_date)).values(
+            'reference', 'delivered_at', 'saledetail__product', 'saledetail__delivered_quantity')
+
+        return product_sales_query
+
+
+class DeliveryDetail(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    delivery = models.ForeignKey(
+        Delivery, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+
+    delivered_quantity = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    tariff = models.CharField(max_length=200, blank=True, null=True)
+    discount = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+        
+    # objects = DeliveryDetailQuerySet.as_manager()
+
+    def __str__(self):
+        return f'sale:{self.sale}, Stock: {self.stock}'
+
+    def get_products():
+        # TODO : delete this methode if not used Or update it (We already have a similar functtion in `product` class)
+        '''
+        Get list of products with order(s)
+        [{'label': 'P03600', 'value': 1}, {'label': 'P03601', 'value': 2}]
+        This format is compatible with Plotly data input
+        '''
+        return list(DeliveryDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label', 'value').distinct())
+
+    def get_avg_quantity_in_date_range(delivered_at_start, delivered_at_end):
+        '''
+        delivered_at_start : start date sold at 
+        delivered_at_end : end date sold at 
+        '''
+        queryset = DeliveryDetail.objects.filter(
+            sale__delivered_at__gte=delivered_at_start,
+            sale__delivered_at__lte=delivered_at_end
+        ).values(
+            'product__reference'
+        ).annotate(
+            avg_quantity=Avg('delivered_quantity')
+        )
+        return queryset
+
+
+class Invoice(CommonMeta):
+
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    sale = models.ForeignKey(
+        Delivery, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=True, max_length=200)
+    invoicing_date = models.DateField(blank=True, null=True)
+    # may add other fields like billing method, coupon, credit..
+    total_amount = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'reference:{self.reference}'
+
+
+####### deprecated tables ##########
+
+
 class Stock(CommonMeta):
     warehouse = models.ForeignKey(
         Warehouse, on_delete=models.CASCADE, blank=True, null=True)
@@ -484,8 +772,8 @@ class Stock(CommonMeta):
 
 class StockPolicy(CommonMeta):
     stock = models.OneToOneField(
-        Stock, 
-        on_delete=models.CASCADE, 
+        Stock,
+        on_delete=models.CASCADE,
         # primary_key=True,
     )
     safety_stock = models.IntegerField(blank=True, null=True)
@@ -744,7 +1032,7 @@ class StockControl(CommonMeta):
         """TODO : add default parameters
         Return list of sales of one product between a range of date
         [{'inventory_date': * , 'product_quantity': *, 'total_cost': *}]
-        
+
         Parameters
         ----------
         start_date : [type]
@@ -761,7 +1049,7 @@ class StockControl(CommonMeta):
             [description], by default 'year'
         group_by : str, optional
             [description], by default 'product'
-        
+
         Other Parameters
         ----------------
         **kwargs : xxx, optional
@@ -774,7 +1062,7 @@ class StockControl(CommonMeta):
         """
         def annotate_avg_dio_to_stock(stock_queryset, group_by='product', avg_sale_period='year'):
             """[summary]
-            
+
             Parameters
             ----------
             stock_queryset : queryset
@@ -783,7 +1071,7 @@ class StockControl(CommonMeta):
                 [description], by default 'product'
             avg_sale_period : str, optional
                 [description], by default 'year'
-            
+
             Returns
             -------
             queryset
@@ -924,217 +1212,7 @@ class StockControl(CommonMeta):
             qs, group_by=group_by, avg_sale_period=avg_sale_period)
 
         return qs
-
-
-class Circuit(CommonMeta):
-    name = models.CharField(max_length=200)
-    reference = models.CharField(unique=True, max_length=200)
-    parent = models.ForeignKey(
-        'self', on_delete=models.CASCADE, blank=True, null=True)
-
-    objects = managers.CircuitQuerySet.as_manager()
-    
-
-    def __str__(self):
-        return f'{self.reference}'
-
-class Customer(CommonMeta):
-    # TODO : Separate Customer as a company from the provider as a person
-    reference = models.CharField(unique=True, max_length=200)
-    name = models.CharField(max_length=200)
-    address = models.TextField(blank=True)
-    circuit = models.ForeignKey(
-        Circuit, on_delete=models.CASCADE, blank=True, null=True)
-
-    
-    objects = managers.CustomerQuerySet.as_manager()
-
-
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['reference', 'circuit'], name='customer_reference_circuit_uniq')
-    #     ]
-
-    def __str__(self):
-        return f'{self.reference}'
-
-class Order(CommonMeta):
-    warehouse = models.ForeignKey(
-        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, blank=True, null=True)
-    category = models.ForeignKey(
-        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
-    circuit = models.ForeignKey(
-        Circuit, on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(max_length=200, blank=True, null=True)
-    # total_amount = models.IntegerField(blank=True, null=True)
-    ordered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
-    unit_price = models.IntegerField(blank=True, null=True)
-    ordered_at = models.DateField(blank=True, null=True)
-
-    objects = managers.OrderQuerySet.as_manager()
-
-
-    def __str__(self):
-        return f'reference:{self.reference}, product: {self.product}'
-
-    def get_product_orders(product_id, start_date, end_date):
-        '''
-        TODO : add default parameters
-        Return list of order of one product between a range of date
-        '''
-        product_order = OrderDetail.objects.filter(
-            product=product_id)
-        product_order_query = Order.objects.filter(Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
-            'reference', 'ordered_at', 'orderdetail__product', 'orderdetail__ordered_quantity')
-
-        return product_order_query
-
-
-# class OrderDetail(CommonMeta):
-
-#     stock = models.ForeignKey(
-#         Stock, on_delete=models.CASCADE)
-#     order = models.ForeignKey(
-#         Order, on_delete=models.CASCADE, blank=True, null=True)
-#     unit_price = models.IntegerField(blank=True, null=True)
-#     ordered_quantity = models.IntegerField(blank=True, null=True)
-
-#     objects = managers.OrderDetailQuerySet.as_manager()
-
-#     def __str__(self):
-#         return f'Order:{self.order}, Stock: {self.stock}'
-
-
-class Delivery(CommonMeta):  # TODO rename to Delivery
-
-    warehouse = models.ForeignKey(
-        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, blank=True, null=True)
-    category = models.ForeignKey(
-        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
-    circuit = models.ForeignKey(
-        Circuit, on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(max_length=200, blank=True, null=True)
-    delivered_at = models.DateField(blank=True, null=True)
-    delivered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
-    
-    objects = managers.DeliveryQuerySet.as_manager()
-
-
-    def __str__(self):
-        return f'order:{self.order}, reference: {self.reference}'
-
-    def get_product_sales(product_id, start_date, end_date):
-        '''
-        TODO : add default parameters
-        Return list of sales of one product between a range of date
-        '''
-        product_sales = DeliveryDetail.objects.filter(
-            product=product_id)
-        product_sales_query = Delivery.objects.filter(Q(saledetail__in=product_sales) & Q(delivered_at__gte=start_date) & Q(delivered_at__lte=end_date)).values(
-            'reference', 'delivered_at', 'saledetail__product', 'saledetail__delivered_quantity')
-
-        return product_sales_query
-
-
-class DeliveryDetail(CommonMeta):
-    stock = models.ForeignKey(
-        Stock, on_delete=models.CASCADE)
-    sale = models.ForeignKey(
-        Delivery, on_delete=models.CASCADE, blank=True, null=True)
-    unit_price = models.IntegerField(blank=True, null=True)
-    delivered_quantity = models.IntegerField(blank=True, null=True)
-
-    objects = DeliveryDetailQuerySet.as_manager()
-
-    def __str__(self):
-        return f'sale:{self.sale}, Stock: {self.stock}'
-
-    def get_products():
-        # TODO : delete this methode if not used Or update it (We already have a similar functtion in `product` class)
-        '''
-        Get list of products with order(s)
-        [{'label': 'P03600', 'value': 1}, {'label': 'P03601', 'value': 2}]
-        This format is compatible with Plotly data input
-        '''
-        return list(DeliveryDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label', 'value').distinct())
-
-    def get_avg_quantity_in_date_range(delivered_at_start, delivered_at_end):
-        '''
-        delivered_at_start : start date sold at 
-        delivered_at_end : end date sold at 
-        '''
-        queryset = DeliveryDetail.objects.filter(
-            sale__delivered_at__gte=delivered_at_start,
-            sale__delivered_at__lte=delivered_at_end
-        ).values(
-            'product__reference'
-        ).annotate(
-            avg_quantity=Avg('delivered_quantity')
-        )
-        return queryset
-
-
-class Invoice(CommonMeta):
-
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    sale = models.ForeignKey(
-        Delivery, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    invoicing_date = models.DateField(blank=True, null=True)
-    # may add other fields like billing method, coupon, credit..
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'reference:{self.reference}'
-
-
-class Supplier(CommonMeta):
-    # TODO : Separate provider as a company from the provider as a person
-    name = models.CharField(max_length=200)
-    address = models.TextField(blank=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-
-class Supply(CommonMeta):
-
-    supplier = models.ForeignKey(
-        Supplier, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    supplied_at = models.DateField(blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-
-class SupplyDetail(CommonMeta):
-
-    supply = models.ForeignKey(
-        Supply, on_delete=models.CASCADE, blank=True, null=True)
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, blank=True, null=True)
-    # supply_type = local, import
-    unit_price = models.IntegerField(blank=True, null=True)
-    quantity = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'Supply: {self.supply}, product: {self.product}'
-
+##############################################
 
 # Deleted table (table `ProductQuantity` added instead)
 # class StockOperation(models.Model):

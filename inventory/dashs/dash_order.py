@@ -18,18 +18,19 @@ from dash.dependencies import ClientsideFunction, Input, Output, State
 from django.db.models import Q
 from django.utils.translation import gettext as _
 from django_plotly_dash import DjangoDash
-from inventory.models import Location, StockCheck, Operation
+from inventory.models import Location, StockCheck
 from plotly import offline
 from stock.models import Product, ProductCategory, Order, Customer, OrderDetail
 from dash.exceptions import PreventUpdate
-from django.db.models import Avg, Count, Min, Sum
+from django.db.models import Avg, Count, Min, Sum,F
 import cufflinks as cf
 import numpy as np
 import statistics
 from django_pandas.io import read_frame
 import cufflinks as cf
 from plotly.subplots import make_subplots
-import colorlover, plotly
+import time
+
 
 cf.offline.py_offline.__PLOTLY_OFFLINE_INITIALIZED = True
 
@@ -48,7 +49,6 @@ figure_most_ordred_categories_id = dash_utils.generate_html_id(_prefix, 'figure_
 # ------------------------------------------------------------------------------------------------------------
 
 details_product_list_id = dash_utils.generate_html_id(_prefix, 'details_product_list_id')
-details_customer_list_id = dash_utils.generate_html_id(_prefix, 'details_customer_list_id')
 
 # --------------------------------------------Dropdown  list -------------------------------------------------
 
@@ -74,16 +74,10 @@ checkbox_statut_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_statut_
 
 input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id')
 
-table_forecast_dataframe_id = _prefix + '-table-forecast-dataframe'
-
 _all_products = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
-_all_customers = list(Customer.objects.get_all_customers())[:1]
-_all_status = list(Product.objects.get_all_status_of_products())[:100]
-
-print('i am here ')
-# _all_orderDetails = OrderDetail.objects.all()
-# _all_orders = Order.objects.all()
+_all_customers = list(Customer.objects.get_all_customers())[0:10]
+_all_status = list(Product.objects.get_all_status_of_products())
 
 layout = dict(
     autosize=True,
@@ -91,6 +85,8 @@ layout = dict(
     hovermode="closest",
     plot_bgcolor="#F9F9F9",
 )
+
+import colorlover, plotly
 
 cs12 = colorlover.scales['12']['qual']['Paired']
 
@@ -108,14 +104,11 @@ def filter_container():
                 dash_utils.get_filter_dropdown(
                     dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id, _all_status, 'Status')
             ], sm=12, md=6, lg=4),
-            html.Details([
-                html.Summary(_('Customer')),
-                dbc.Col([
-                    dash_utils.get_filter_dropdown(
-                        dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers,
-                        'Customers')
-                ], sm=12, md=6, lg=4),
-            ], id=details_customer_list_id, open=False),
+            dbc.Col([
+                dash_utils.get_filter_dropdown(
+                    dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers,
+                    'Customers')
+            ], sm=12, md=6, lg=4),
             dbc.Col([
                 dash_utils.get_date_range(
                     input_date_range_id,
@@ -156,10 +149,13 @@ def body_container():
                                             dcc.Tab(
                                                 label='Graph Number Of Orders          ',
                                                 value='what-is',
-                                                children=html.Div(
-                                                    [dcc.Graph(id=figure_count_orders_id)],
-                                                    className="",
-                                                ),
+                                                children=
+                                                    dcc.Loading(
+                                                        html.Div(
+                                                            [dcc.Graph(id=figure_count_orders_id)],
+                                                            className="",
+                                                        ),
+                                                    ),
                                             ),
                                             dcc.Tab(
                                                 label='Number Of Ordered Products',
@@ -167,13 +163,16 @@ def body_container():
                                                 children=html.Div(
                                                     className='control-tab',
                                                     children=[
-                                                        html.Div(
-                                                            className='app-controls-block',
-                                                            children=html.Div(
-                                                                [dcc.Graph(id=figure_count_product_id)],
-                                                                className="",
+                                                        dcc.Loading(
+                                                            html.Div(
+                                                                className='app-controls-block',
+                                                                children=html.Div(
+                                                                    [dcc.Graph(id=figure_count_product_id)],
+                                                                    className="",
+                                                                ),
                                                             ),
                                                         ),
+
                                                     ]
                                                 )
                                             ),
@@ -200,10 +199,12 @@ def body_container():
                                             dcc.Tab(
                                                 label='Top 10 Ordred Products',
                                                 value='what-is',
-                                                children=html.Div(
-                                                    [dcc.Graph(id=figure_most_ordred_product_id)],
-                                                    className="",
-                                                ),
+                                                children=dcc.Loading(
+                                                            html.Div(
+                                                                [dcc.Graph(id=figure_most_ordred_product_id)],
+                                                                className="",
+                                                            )
+                                                        ),
                                             ),
                                             dcc.Tab(
                                                 label='Top 10 Customers Making Orders',
@@ -211,11 +212,13 @@ def body_container():
                                                 children=html.Div(
                                                     className='control-tab',
                                                     children=[
-                                                        html.Div(
-                                                            className='app-controls-block',
-                                                            children=html.Div(
-                                                                [dcc.Graph(id=figure_most_ordred_customer_id)],
-                                                                className="",
+                                                        dcc.Loading(
+                                                            html.Div(
+                                                                className='app-controls-block',
+                                                                children=html.Div(
+                                                                    [dcc.Graph(id=figure_most_ordred_customer_id)],
+                                                                    className="",
+                                                                ),
                                                             ),
                                                         ),
                                                     ]
@@ -227,11 +230,13 @@ def body_container():
                                                 children=html.Div(
                                                     className='control-tab',
                                                     children=[
-                                                        html.Div(
-                                                            className='app-controls-block',
-                                                            children=html.Div(
-                                                                [dcc.Graph(id=figure_most_ordred_categories_id)],
-                                                                className="",
+                                                        dcc.Loading(
+                                                            html.Div(
+                                                                className='app-controls-block',
+                                                                children=html.Div(
+                                                                    [dcc.Graph(id=figure_most_ordred_categories_id)],
+                                                                    className="",
+                                                                ),
                                                             ),
                                                         ),
                                                     ]
@@ -247,18 +252,19 @@ def body_container():
             ]),
             html.Div(
                 [
-                    html.Div(
-                        [dcc.Graph(id=figure_pie_statuts_product_id)],
-                        className="pretty_container",
+                    dcc.Loading(
+                        html.Div(
+                            className='app-controls-block',
+                            children=
+                            html.Div(
+                                [dcc.Graph(id=figure_pie_statuts_product_id)],
+                                className="pretty_container",
+                            ),
+                        ),
                     ),
                 ],
                 className="shadow-lg p-12 mb-5 bg-white rounded",
             ),
-            dbc.Row([
-                dbc.Col([
-                    dash_utils.get_datatable_card(table_forecast_dataframe_id)
-                ], sm=12, md=12, lg=12),
-            ]),
 
         ],
         id="mainContainer",
@@ -271,14 +277,8 @@ app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
 
 
 @app.callback(
-    [
-        Output(figure_count_orders_id, "figure"),
-        Output(figure_count_product_id, "figure"),
-        Output(figure_most_ordred_product_id, "figure"),
-        Output(figure_most_ordred_customer_id, "figure"),
-        Output(figure_most_ordred_categories_id, "figure"),
-        Output(figure_pie_statuts_product_id, "figure"),
-    ],
+
+    Output(figure_count_orders_id, "figure"),
     [
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
@@ -288,111 +288,156 @@ app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_order_count_product_figure(selected_products, selected_categories, selected_customers, selected_status,
-                                    start_date, end_date):
+def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
+                            end_date):
+
     results = OrderDetail.objects.filter(
-            product__in=selected_products,
-            # product__category__in=selected_categories,
-            # product__status__in=selected_status,
-            order__ordered_at__gte=start_date,
-            # customer__in=selected_customers,
-            order__ordered_at__lte=end_date)
-
-    results = results.select_related('order', 'product')
-    results = results.values('order__ordered_at', 'ordered_quantity','product','customer','product__category__reference','product__status')
-    print(results)
-    print('result done')
-
-
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date)
+    results = results.values('order__ordered_at','order').distinct()
+    results = results.values('order__ordered_at').annotate(count=Count('order'))
+    results = results.values('order__ordered_at', 'count')
+    #
+    # x = list(results.values_list('order__ordered_at', flat=True))
+    # y = list(results.values_list('count', flat=True))
+    #
+    # figure = go.Figure(data=[
+    #     dict(x=x, y=y, type='bar')
+    # ])
 
     order_df = read_frame(results)
 
-    print('desert')
-
-    order_count_products_df = order_df.groupby(
-        by=['order__ordered_at'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index()
-
-
-    order_count_orders_df = order_df.groupby(
+    order_df = order_df.groupby(
         by=['order__ordered_at'],
     ).size().reset_index(name='counts')
 
-    order_most_ordred_product_df = order_df.groupby(
-        by=['product'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-
-    order_most_ordred_customer_df = order_df.groupby(
-        by=['customer'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-
-    order_most_ordred_category_df = order_df.groupby(
-        by=['product__category__reference'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-
-
-
-    order_status_df = order_df.groupby(
-        by=['product__status'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index().sort_values(['ordered_quantity'],ascending=True)
-
-    orderd_category_df = order_df.groupby(
-        by=['product__category__reference'],
-    ).agg({
-        'ordered_quantity': 'sum',
-    }).reset_index().sort_values(['ordered_quantity'],ascending=True)
-
-    figure_pie = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
-
-    figure_pie.add_trace(go.Pie(labels=order_status_df['product__status'], values=order_status_df['ordered_quantity'], name=""),1, 1)
-
-    figure_pie.add_trace(go.Pie(labels=orderd_category_df['product__category__reference'], values=orderd_category_df['ordered_quantity'], name=""),1, 2)
-
-    figure_pie.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-    figure_pie.update_layout(
-        title_text="Pie Chart",
-        annotations=[
-            dict(text='Status', x=0.21, y=0.5, font_size=20, showarrow=False),
-            dict(text='Categories', x=0.805, y=0.5, font_size=20, showarrow=False)
-        ]
-    )
-
-    figure_most_ordred_category = order_most_ordred_category_df.iplot(
+    figure = order_df.iplot(
         asFigure=True,
-        kind='barh',
+        kind='bar',
         barmode='stack',
-        x=['product__category__reference'],
-        y=['ordered_quantity'],
+        x=['order__ordered_at'],
+        y=['count'],
         theme='white',
         title='title',
         xTitle='date',
-        yTitle='Most 10 Order categories',
+        # yTitle='Numbre of Orders',
     )
 
-    figure_most_ordred_customer = order_most_ordred_customer_df.iplot(
+    return figure
+
+
+@app.callback(
+
+    Output(figure_count_product_id, "figure"),
+    [
+        Input(dropdown_product_list_id, "value"),
+        Input(dropdown_categorie_list_id, "value"),
+        Input(dropdown_customer_list_id, "value"),
+        Input(dropdown_statut_list_id, "value"),
+        Input(input_date_range_id, 'start_date'),
+        Input(input_date_range_id, 'end_date'),
+    ]
+)
+def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
+                            end_date):
+    results = OrderDetail.objects.filter(
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date
+    )
+
+    # order_df = read_frame(results)
+    #
+    # order_df = order_df.groupby(
+    #     by=['order__ordered_at'],
+    # ).agg({
+    #     'ordered_quantity': 'sum',
+    # }).reset_index()
+    #
+    # figure = order_df.iplot(
+    #     asFigure=True,
+    #     kind='bar',
+    #     barmode='stack',
+    #     x=['order__ordered_at'],
+    #     y=['ordered_quantity'],
+    #     theme='white',
+    #     title='title',
+    #     xTitle='date',
+    #     yTitle='Numbre of Products',
+    # )
+    # return figure
+
+    qs = results.values('order__ordered_at')
+    qs = qs.annotate(ordered_quantity_sum=Sum(F('ordered_quantity')))
+    qs = qs.values('order__ordered_at', 'ordered_quantity_sum')
+
+    # x = list(qs.values_list('order__ordered_at', flat=True))
+    # y = list(qs.values_list('ordered_quantity_sum', flat=True))
+    #
+    # figure = go.Figure(data=[
+    #     dict(x=x, y=y, type='bar')
+    # ])
+
+    order_df = read_frame(qs)
+
+
+    figure = order_df.iplot(
         asFigure=True,
-        kind='barh',
+        kind='bar',
         barmode='stack',
-        x=['customer'],
-        y=['ordered_quantity'],
+        x=['order__ordered_at'],
+        y=['ordered_quantity_sum'],
         theme='white',
         title='title',
         xTitle='date',
-        yTitle='Most Order Custmoers',
+        # yTitle='Numbre of Products',
     )
 
-    figure_most_ordred_product = order_most_ordred_product_df.iplot(
+    return figure
+
+
+@app.callback(
+
+    Output(figure_most_ordred_product_id, "figure"),
+    [
+        Input(dropdown_product_list_id, "value"),
+        Input(dropdown_categorie_list_id, "value"),
+        Input(dropdown_customer_list_id, "value"),
+        Input(dropdown_statut_list_id, "value"),
+        Input(input_date_range_id, 'start_date'),
+        Input(input_date_range_id, 'end_date'),
+    ]
+)
+def plot_most_order_product_figure(selected_products, selected_categories, selected_customers, selected_status,
+                                   start_date, end_date):
+    results = OrderDetail.objects.filter(
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date)
+    # results = results.values('product', 'ordered_quantity')
+    results = results.values('product')
+    results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results = results.order_by('ordered_quantity')[0:10]
+
+    order_df = read_frame(results)
+
+    # order_df = order_df.groupby(
+    #     by=['product'],
+    # ).agg({
+    #     'ordered_quantity': 'sum',
+    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)[:10]
+
+    figure = order_df.iplot(
         asFigure=True,
         kind='barh',
         barmode='stack',
@@ -403,387 +448,164 @@ def plot_order_count_product_figure(selected_products, selected_categories, sele
         xTitle='date',
         yTitle='Most Ordered  Products',
     )
+    return figure
 
-    figure_count_orders = order_count_orders_df.iplot(
-        asFigure=True,
-        kind='bar',
-        barmode='stack',
-        x=['order__ordered_at'],
-        y=['counts'],
-        theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Numbre of Orders',
-    )
 
-    figure_count_product = order_count_products_df.iplot(
+@app.callback(
+
+    Output(figure_most_ordred_customer_id, "figure"),
+
+    [
+        Input(dropdown_product_list_id, "value"),
+        Input(dropdown_categorie_list_id, "value"),
+        Input(dropdown_customer_list_id, "value"),
+        Input(dropdown_statut_list_id, "value"),
+        Input(input_date_range_id, 'start_date'),
+        Input(input_date_range_id, 'end_date'),
+    ]
+)
+def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_customers, selected_status,
+                                    start_date, end_date):
+    results = OrderDetail.objects.filter(
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date)
+
+    results = results.values('customer')
+    results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results = results.order_by('ordered_quantity')[0:10]
+
+
+    order_df = read_frame(results)
+
+    figure = order_df.iplot(
         asFigure=True,
-        kind='bar',
+        kind='barh',
         barmode='stack',
-        x=['order__ordered_at'],
+        x=['customer'],
         y=['ordered_quantity'],
         theme='white',
         title='title',
         xTitle='date',
-        yTitle='Numbre of Products',
+        yTitle='Most Order Custmoers',
     )
-    return figure_count_orders,figure_count_product,figure_most_ordred_product,figure_most_ordred_customer, figure_most_ordred_category,figure_pie
+    return figure
 
 
-# @app.callback(
-#
-#     Output(figure_count_orders_id, "figure"),
-#     [
-#         Input(table_forecast_dataframe_id, 'data'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_order_count_figure(data,end):
-#     # results = OrderDetail.objects.filter(
-#     #         product__in=selected_products,
-#     #         # product__category__in=selected_categories,
-#     #         # product__status__in=selected_status,
-#     #         order__ordered_at__gte=start_date,
-#     #         # customer__in=selected_customers,
-#     #         order__ordered_at__lte=end_date
-#     # )
-#
-#     # results = results.values('order__ordered_at','order')
-#
-#     print('1182')
-#
-#     order_df = pd.DataFrame.from_dict(data)
-#
-#
-#     # order_df = order_df.groupby(
-#     #     by=['order__ordered_at','order'],
-#     # ).size()
-#
-#     if len(order_df) == 0:
-#         figure = order_df.iplot(
-#             asFigure=True,
-#             kind='bar',
-#             barmode='stack',
-#             x=None,
-#             y=None,
-#             theme='white',
-#             title='title',
-#             xTitle='date',
-#             yTitle='Numbre of Orders',
-#         )
-#     else:
-#         order_df = order_df.groupby(
-#             by=['order__ordered_at'],
-#         ).size().reset_index(name='counts')
-#
-#         figure = order_df.iplot(
-#             asFigure=True,
-#             kind='bar',
-#             barmode='stack',
-#             x=['order__ordered_at'],
-#             y=['counts'],
-#             theme='white',
-#             title='title',
-#             xTitle='date',
-#             yTitle='Numbre of Orders',
-#         )
-#     return figure
-#
-#
-# @app.callback(
-#
-#     Output(figure_count_product_id, "figure"),
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_order_count_product_figure(selected_products, selected_categories, selected_customers, selected_status,
-#                                     start_date, end_date):
-#     # results = OrderDetail.objects.filter(
-#     #         product__in=selected_products,
-#     #         # product__category__in=selected_categories,
-#     #         # product__status__in=selected_status,
-#     #         order__ordered_at__gte=start_date,
-#     #         # customer__in=selected_customers,
-#     #         order__ordered_at__lte=end_date)
-#
-#     results = _all_orderDetails.values('order__ordered_at', 'ordered_quantity')
-#
-#     print('2')
-#
-#     order_df = read_frame(results)
-#
-#     print('1')
-#
-#     order_df = order_df.groupby(
-#         by=['order__ordered_at'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index()
-#
-#     figure = order_df.iplot(
-#         asFigure=True,
-#         kind='bar',
-#         barmode='stack',
-#         x=['order__ordered_at'],
-#         y=['ordered_quantity'],
-#         theme='white',
-#         title='title',
-#         xTitle='date',
-#         yTitle='Numbre of Products',
-#     )
-#     return figure
+@app.callback(
+
+    Output(figure_most_ordred_categories_id, "figure"),
+
+    [
+        Input(dropdown_product_list_id, "value"),
+        Input(dropdown_categorie_list_id, "value"),
+        Input(dropdown_customer_list_id, "value"),
+        Input(dropdown_statut_list_id, "value"),
+        Input(input_date_range_id, 'start_date'),
+        Input(input_date_range_id, 'end_date'),
+    ]
+)
+def plot_most_order_categories_figure(selected_products, selected_categories, selected_customers, selected_status,
+                                      start_date, end_date):
+    results = OrderDetail.objects.filter(
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date)
+
+    results = results.values('product__category__reference')
+    results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results = results.order_by('ordered_quantity')[0:10]
+
+    order_df = read_frame(results)
 
 
-#
-#
-# @app.callback(
-#
-#     Output(figure_most_ordred_product_id, "figure"),
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_most_order_product_figure(selected_products,selected_categories,selected_customers,selected_status,start_date,end_date):
-#     results = OrderDetail.objects.filter(
-#             product__in=selected_products,
-#             # product__category__in=selected_categories,
-#             # product__status__in=selected_status,
-#             order__ordered_at__gte=start_date,
-#             # customer__in=selected_customers,
-#             order__ordered_at__lte=end_date)
-#     results = results.values('product','ordered_quantity')
-#
-#     order_df = read_frame(results)
-#
-#     print(order_df)
-#
-#     order_df = order_df.groupby(
-#         by=['product'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-#
-#     figure = order_df.iplot(
-#         asFigure=True,
-#         kind='barh',
-#         barmode='stack',
-#         x=['product'],
-#         y=['ordered_quantity'],
-#         theme='white',
-#         title='title',
-#         xTitle='date',
-#         yTitle='Most Ordered  Products',
-#     )
-#     return figure
-#
-# @app.callback(
-#
-#     Output(figure_most_ordred_customer_id, "figure"),
-#
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_most_order_custmoer_figure(selected_products,selected_categories,selected_customers,selected_status,start_date,end_date):
-#
-#     results = OrderDetail.objects.filter(
-#         product__in=selected_products,
-#         # product__category__in=selected_categories,
-#         # product__status__in=selected_status,
-#         order__ordered_at__gte=start_date,
-#         # customer__in=selected_customers,
-#         order__ordered_at__lte=end_date)
-#
-#     results = results.values('customer','ordered_quantity')
-#
-#     order_df = read_frame(results)
-#
-#     print(order_df)
-#
-#     order_df = order_df.groupby(
-#         by=['customer'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-#
-#     figure = order_df.iplot(
-#         asFigure=True,
-#         kind='barh',
-#         barmode='stack',
-#         x=['customer'],
-#         y=['ordered_quantity'],
-#         theme='white',
-#         title='title',
-#         xTitle='date',
-#         yTitle='Most Order Custmoers',
-#     )
-#     return figure
-#
-# @app.callback(
-#
-#     Output(figure_most_ordred_categories_id, "figure"),
-#
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_most_order_categories_figure(selected_products,selected_categories,selected_customers,selected_status,start_date,end_date):
-#
-#     results = OrderDetail.objects.filter(
-#         product__in=selected_products,
-#         # product__category__in=selected_categories,
-#         # product__status__in=selected_status,
-#         order__ordered_at__gte=start_date,
-#         # customer__in=selected_customers,
-#         order__ordered_at__lte=end_date)
-#
-#     results = results.values('product__category__reference','ordered_quantity')
-#
-#     order_df = read_frame(results)
-#
-#     print(order_df)
-#
-#     order_df = order_df.groupby(
-#         by=['product__category__reference'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index().sort_values(['ordered_quantity'],ascending=True)[:10]
-#
-#     figure = order_df.iplot(
-#         asFigure=True,
-#         kind='barh',
-#         barmode='stack',
-#         x=['product__category__reference'],
-#         y=['ordered_quantity'],
-#         theme='white',
-#         title='title',
-#         xTitle='date',
-#         yTitle='Most 10 Order categories',
-#     )
-#     return figure
-#
-# @app.callback(
-#
-#     Output(figure_pie_statuts_product_id, "figure"),
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def plot_pie_statuts_product_figure(selected_products,selected_categories,selected_customers,selected_status,start_date,end_date):
-#     results = OrderDetail.objects.filter(
-#             product__in=selected_products,
-#             # product__category__in=selected_categories,
-#             # product__status__in=selected_status,
-#             order__ordered_at__gte=start_date,
-#             # customer__in=selected_customers,
-#             order__ordered_at__lte=end_date)
-#     results = results.values('product__status','ordered_quantity','product__category__reference')
-#
-#     order_df = read_frame(results)
-#
-#     orderd_category_df = read_frame(results)
-#
-#     order_df = order_df.groupby(
-#         by=['product__status'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index().sort_values(['ordered_quantity'],ascending=True)
-#
-#     orderd_category_df = orderd_category_df.groupby(
-#         by=['product__category__reference'],
-#     ).agg({
-#         'ordered_quantity': 'sum',
-#     }).reset_index().sort_values(['ordered_quantity'],ascending=True)
-#
-#     figure = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
-#
-#     figure.add_trace(go.Pie(labels=order_df['product__status'], values=order_df['ordered_quantity'], name=""),1, 1)
-#
-#     figure.add_trace(go.Pie(labels=orderd_category_df['product__category__reference'], values=orderd_category_df['ordered_quantity'], name=""),1, 2)
-#
-#     figure.update_traces(hole=.4, hoverinfo="label+percent+name")
-#
-#     figure.update_layout(
-#         title_text="Pie Chart",
-#         annotations=[
-#             dict(text='Status', x=0.21, y=0.5, font_size=20, showarrow=False),
-#             dict(text='Categories', x=0.805, y=0.5, font_size=20, showarrow=False)
-#         ]
-#     )
-#     return figure
+    figure = order_df.iplot(
+        asFigure=True,
+        kind='barh',
+        barmode='stack',
+        x=['product__category__reference'],
+        y=['ordered_quantity'],
+        theme='white',
+        title='title',
+        xTitle='date',
+        yTitle='Most 10 Order categories',
+    )
+    return figure
 
-#
-# @app.callback(
-#     [
-#         # Dataframe
-#         Output(table_forecast_dataframe_id, 'data'),
-#         Output(table_forecast_dataframe_id, 'columns'),
-#     ],
-#     [
-#         Input(dropdown_product_list_id, "value"),
-#         Input(dropdown_categorie_list_id, "value"),
-#         Input(dropdown_customer_list_id, "value"),
-#         Input(dropdown_statut_list_id, "value"),
-#         Input(input_date_range_id, 'start_date'),
-#         Input(input_date_range_id, 'end_date'),
-#     ]
-# )
-# def dataframe_date_filter(selected_products, selected_categories, selected_customers, selected_status, start_date,
-#                           end_date):
-#     results = OrderDetail.objects.filter(
-#         product__in=selected_products,
-#         # product__category__in=selected_categories,
-#         # product__status__in=selected_status,
-#         order__ordered_at__gte=start_date,
-#         # customer__in=selected_customers,
-#         order__ordered_at__lte=end_date
-#     )
-#
-#     # results = Order.objects.filter(
-#     #     # product__category__in=selected_categories,
-#     #     # product__status__in=selected_status,
-#     #     ordered_at__gte=start_date,
-#     #     # customer__in=selected_customers,
-#     #     ordered_at__lte=end_date
-#     # )
-#
-#     results = results.values('order__ordered_at')
-#
-#     print(results)
-#
-#     order_df = read_frame(results)
-#
-#     data = order_df.to_dict('records')
-#
-#     columns = [{"name": i, "id": i} for i in order_df.columns]
-#
-#     return data,columns
+
+@app.callback(
+
+    Output(figure_pie_statuts_product_id, "figure"),
+    [
+        Input(dropdown_product_list_id, "value"),
+        Input(dropdown_categorie_list_id, "value"),
+        Input(dropdown_customer_list_id, "value"),
+        Input(dropdown_statut_list_id, "value"),
+        Input(input_date_range_id, 'start_date'),
+        Input(input_date_range_id, 'end_date'),
+    ]
+)
+def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_customers, selected_status,
+                                    start_date, end_date):
+    results = OrderDetail.objects.filter(
+        product__in=selected_products,
+        # product__category__in=selected_categories,
+        # product__status__in=selected_status,
+        order__ordered_at__gte=start_date,
+        # customer__in=selected_customers,
+        order__ordered_at__lte=end_date)
+    results = results.values('product__status', 'ordered_quantity', 'product__category__reference')
+
+    results_category = results.values('product__category__reference')
+    results_category = results_category.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results_category = results_category.order_by('ordered_quantity')
+
+
+    results_status = results.values('product__status')
+    results_status = results_status.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results_status = results_status.order_by('ordered_quantity')
+
+
+    # order_df = order_df.groupby(
+    #     by=['product__status'],
+    # ).agg({
+    #     'ordered_quantity': 'sum',
+    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)
+    #
+    # orderd_category_df = orderd_category_df.groupby(
+    #     by=['product__category__reference'],
+    # ).agg({
+    #     'ordered_quantity': 'sum',
+    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)
+
+    order_df = read_frame(results_status)
+
+    orderd_category_df = read_frame(results_category)
+
+    figure = make_subplots(rows=1, cols=2, specs=[[{'type': 'domain'}, {'type': 'domain'}]])
+
+    figure.add_trace(go.Pie(labels=order_df['product__status'], values=order_df['ordered_quantity'], name=""), 1, 1)
+
+    figure.add_trace(
+        go.Pie(labels=orderd_category_df['product__category__reference'], values=orderd_category_df['ordered_quantity'],
+               name=""), 1, 2)
+
+    figure.update_traces(hole=.4, hoverinfo="label+percent+name")
+
+    figure.update_layout(
+        title_text="Pie Chart",
+        annotations=[
+            dict(text='Status', x=0.21, y=0.5, font_size=20, showarrow=False),
+            dict(text='Categories', x=0.805, y=0.5, font_size=20, showarrow=False)
+        ]
+    )
+    return figure
 
 
 dash_utils.select_all_callbacks(

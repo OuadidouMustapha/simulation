@@ -641,6 +641,8 @@ class OrderDetail(CommonMeta):
         max_digits=11, decimal_places=2, blank=True, null=True)
     discount = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
+    
+    desired_at = models.DateTimeField(auto_now_add=True)
 
     objects = managers.OrderDetailQuerySet.as_manager()
 

@@ -128,7 +128,6 @@ def filter_container():
     ])
     return filter_container
 
-
 def body_container():
     body_container = html.Div(
         [
@@ -309,12 +308,17 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #     dict(x=x, y=y, type='bar')
     # ])
 
+    start_time_2 = time.time()
+
+
     order_df = read_frame(results)
 
-    order_df = order_df.groupby(
-        by=['order__ordered_at'],
-    ).size().reset_index(name='counts')
+    # order_df = order_df.groupby(
+    #     by=['order__ordered_at'],
+    # ).size().reset_index(name='counts')
+    print("--- %s seconds ------- rrad data frame  ---" % (time.time() - start_time_2))
 
+    start_time_3 = time.time()
     figure = order_df.iplot(
         asFigure=True,
         kind='bar',
@@ -324,8 +328,25 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         theme='white',
         title='title',
         xTitle='date',
-        # yTitle='Numbre of Orders',
+        yTitle='Numbre of Orders',
     )
+
+    print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_3))
+
+    start_time_4 = time.time()
+
+    x = list(results.values_list('order__ordered_at', flat=True))
+    y = list(results.values_list('count', flat=True))
+
+    print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_))
+
+    figure = go.Figure(data=[
+        dict(x=x, y=y, type='bar')
+    ])
+
+    print("--- %s seconds ------- go figure  ---" % (time.time() - start_time_4))
+
+
 
     return figure
 
@@ -378,12 +399,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     qs = qs.annotate(ordered_quantity_sum=Sum(F('ordered_quantity')))
     qs = qs.values('order__ordered_at', 'ordered_quantity_sum')
 
-    # x = list(qs.values_list('order__ordered_at', flat=True))
-    # y = list(qs.values_list('ordered_quantity_sum', flat=True))
-    #
-    # figure = go.Figure(data=[
-    #     dict(x=x, y=y, type='bar')
-    # ])
 
     order_df = read_frame(qs)
 
@@ -431,11 +446,6 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
 
     order_df = read_frame(results)
 
-    # order_df = order_df.groupby(
-    #     by=['product'],
-    # ).agg({
-    #     'ordered_quantity': 'sum',
-    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)[:10]
 
     figure = order_df.iplot(
         asFigure=True,
@@ -572,17 +582,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     results_status = results_status.order_by('ordered_quantity')
 
 
-    # order_df = order_df.groupby(
-    #     by=['product__status'],
-    # ).agg({
-    #     'ordered_quantity': 'sum',
-    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)
-    #
-    # orderd_category_df = orderd_category_df.groupby(
-    #     by=['product__category__reference'],
-    # ).agg({
-    #     'ordered_quantity': 'sum',
-    # }).reset_index().sort_values(['ordered_quantity'], ascending=True)
 
     order_df = read_frame(results_status)
 

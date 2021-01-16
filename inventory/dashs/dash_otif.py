@@ -61,7 +61,7 @@ input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id'
 
 _all_products = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
-_all_customers = list(Customer.objects.get_all_customers())
+_all_customers = list(Customer.objects.get_all_customers())[0:10]
 _all_status = list(Product.objects.get_all_status_of_products())
 
 layout = dict(
@@ -239,10 +239,10 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
                                               end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        product__category__in=selected_categories,
-        product__status__in=selected_status,
+        #product__category__in=selected_categories,
+        #product__status__in=selected_status,
         order__ordered_at__gte=start_date,
-        customer__in=selected_customers,
+        #customer__in=selected_customers,
         order__ordered_at__lte=end_date
     )
 

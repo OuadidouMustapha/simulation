@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_table
 
+
 # Common parameters
 ###################
 # Plotly chart config parameter
@@ -23,12 +24,12 @@ import dash_table
 #     return config
 
 
-
 # Common elements
 #################
 def generate_html_id(prefix, id_variable):
     generated_id = prefix + '-' + id_variable.replace('_', '-')
     return generated_id
+
 
 def get_category_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id):
     div = html.Div([
@@ -78,15 +79,14 @@ def get_product_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id)
     ])
     return div
 
-def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder, select_all=True):
+def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder, select_all=True,multi=True):
     div = html.Div([
         dbc.Label(placeholder),
         dcc.Dropdown(
             id=dropdown_id,
             placeholder=placeholder,
             options=options,
-            # value=list(Product.get_products().values_list('value', flat=True)),
-            multi=True
+            multi=multi
         ),
         html.Div(
             id=div_checklist_id,
@@ -131,6 +131,7 @@ def get_group_by_dropdown(div_id):
     ])
     return div
 
+
 def get_group_by_product_dropdown(div_id, value='product'):
     div = html.Div([
         dbc.Label('Product field'),
@@ -141,11 +142,11 @@ def get_group_by_product_dropdown(div_id, value='product'):
                 {'label': 'Product Rayon', 'value': 'product_ray'},
                 {'label': 'Product Universe', 'value': 'product_universe'},
                 {'label': 'Category',
-                    'value': 'product_category_parent_level_0'},
+                 'value': 'product_category_parent_level_0'},
                 {'label': 'Sub-Category - Level 1',
-                    'value': 'product_category_parent_level_1'},
+                 'value': 'product_category_parent_level_1'},
                 {'label': 'Sub-Category - Level 2',
-                    'value': 'product_category_parent_level_2'},
+                 'value': 'product_category_parent_level_2'},
             ],
             value=value,
         ),
@@ -201,11 +202,12 @@ def get_date_range(div_id, label='Select date range', year_range=5):
                 start_date_placeholder_text='Select a date range',
                 end_date=datetime.datetime.now().date(),
                 start_date=datetime.datetime.now().date(
-                )-datetime.timedelta(days=365.25*year_range)
+                ) - datetime.timedelta(days=365.25 * year_range)
             ),
         ])
     ])
     return div
+
 
 # Templates builder
 ###################
@@ -227,7 +229,8 @@ def get_chart_card(div_id, filter_div=None, footer_div=None):
     return div
 
 
-def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, icon=None, dropdown_div=None, datatable_div=None):
+def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, icon=None, dropdown_div=None,
+                  datatable_div=None):
     """
     Build div representing mini card
     """
@@ -239,8 +242,17 @@ def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, ico
         dbc.Row([
             html.Div([
                 dbc.Row([
+
                     dbc.Col([
-                        title,
+                        dbc.Row([
+
+                            dbc.Col([
+                                html.I(className=icon + ' fa-2x')
+                            ], sm=12, md=2, lg=2) if icon is not None else None,
+                            dbc.Col([
+                                title
+                            ], sm=12, md=10, lg=10)
+                        ])
                     ], sm=12, md=10, lg=10, className='font-weight-bold text-primary mb-1'),
                     dcc.Loading(
                         html.Div([
@@ -255,8 +267,8 @@ def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, ico
                         dropdown_div,
                         html.Br(),
                         datatable_div,
-                    ], 
-                    # id=subtitle_id,
+                    ],
+                        # id=subtitle_id,
                         # className='text-primary'
                     ),
                 )
@@ -336,6 +348,7 @@ def get_div_card(div_id):
 
     return div
 
+
 def get_dash_layout(filter_div, body_div):
     div = html.Div(
         [
@@ -353,6 +366,7 @@ def get_dash_layout(filter_div, body_div):
         ], style={'background-color': '#f8f9fc'}
     )
     return div
+
 
 def build_modal_info_overlay(id, side, content):
     """
@@ -389,7 +403,6 @@ def build_modal_info_overlay(id, side, content):
 
 
 def select_all_callbacks(app, dropdown_id, div_checklist_id, checklist_select_all):
-
     @app.callback(
         Output(dropdown_id, "value"),
         [Input(checklist_select_all, "value")],
@@ -400,19 +413,19 @@ def select_all_callbacks(app, dropdown_id, div_checklist_id, checklist_select_al
             return [i["value"] for i in options]
         raise PreventUpdate()
 
-    @app.callback(
-        Output(div_checklist_id, "children"),
-        [Input(dropdown_id, "value")],
-        [State(dropdown_id, "options"), State(checklist_select_all, "value")],
-    )
-    def update_checklist(selected, select_options, checked):
-        if len(selected) < len(select_options) and len(checked) == 0:
-            raise PreventUpdate()
-
-        elif len(selected) < len(select_options) and len(checked) == 1:
-            return get_checklist_select_all(checklist_select_all, value=[])
-
-        elif len(selected) == len(select_options) and len(checked) == 1:
-            raise PreventUpdate()
-
-        return get_checklist_select_all(checklist_select_all)
+    # @app.callback(
+    #     Output(div_checklist_id, "children"),
+    #     [Input(dropdown_id, "value")],
+    #     [State(dropdown_id, "options"), State(checklist_select_all, "value")],
+    # )
+    # def update_checklist(selected, select_options, checked):
+    #     if len(selected) < len(select_options) and len(checked) == 0:
+    #         raise PreventUpdate()
+    #
+    #     elif len(selected) < len(select_options) and len(checked) == 1:
+    #         return get_checklist_select_all(checklist_select_all, value=[])
+    #
+    #     elif len(selected) == len(select_options) and len(checked) == 1:
+    #         raise PreventUpdate()
+    #
+    #     return get_checklist_select_all(checklist_select_all)

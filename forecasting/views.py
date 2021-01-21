@@ -15,7 +15,7 @@ import plotly.graph_objs as go
 import plotly.offline as py
 
 from django_tables2.views import SingleTableMixin
-from .filtersets import VersionFilter, ForecastFilter, ProductToForecastFilter
+from .filtersets import VersionFilter, ForecastFilter, VersionDetailFilter
 from django_filters.views import FilterView
 from extra_views import SearchableListMixin
 from tablib import Dataset
@@ -27,7 +27,7 @@ from django.views import View
 from django.urls import reverse, reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
-from .models import Forecast, Version
+from .models import Forecast, Version, VersionDetail
 from .forms import ForecastForm
 from stock.models import Warehouse, Product, ProductCategory, Order, Delivery, Customer, Circuit
 from .resources import ForecastResource
@@ -39,9 +39,9 @@ from django.utils.encoding import force_text
 from import_export.formats import base_formats
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
-from .forms import VersionForm, VersionReviewForm
+from .forms import VersionForm, VersionDetailReviewForm
 # from .forms import VersionFilterFormHelper
-from .tables import VersionTable, ForecastTable, ProductToForecastTable
+from .tables import VersionTable, ForecastTable, VersionDetailTable
 from django.db.models import Count
 from datetime import datetime
 
@@ -247,7 +247,7 @@ class ForecastListByVersionView(LoginRequiredMixin, SingleTableMixin, FilterView
     model = Forecast
     table_class = ForecastTable
     filterset_class = ForecastFilter
-    form_class = VersionReviewForm
+    form_class = VersionDetailReviewForm
 
     template_name = "forecasting/forecast_list.html"
     paginate_by = 20
@@ -678,6 +678,7 @@ def sendReviewRequest(request, version_id):
 
 
 def approveReviewRequest(request, version_id):
+    ''' Deprecated. See the new function'''
     # Get version object and update data
     version = Version.objects.get(pk=version_id)
     version.status = Version.APPROVED
@@ -686,39 +687,37 @@ def approveReviewRequest(request, version_id):
     messages.success(
         request, _('Request approved.'))
     logger.info('Request for version {} is approved'.format(version))
-    
-
     return redirect(reverse('forecasting:forecast_list', args=[version_id]))
 
-class ForchestView(TemplateView):
-    template_name = 'forecasting/forchest.html'
 
-class DemandSensingView(TemplateView):
-    template_name = 'forecasting/demand_sensing.html'
+# class ForchestView(TemplateView):
+#     template_name = 'forecasting/forchest.html'
+
+
+class ForchestView(LoginRequiredMixin, TemplateView):
+    template_name = 'forecasting/forchest.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # create some context to send over to Dash:
         dash_context = self.request.session.get("django_plotly_dash", dict())
         dash_context['dash_context'] = {
-            'version_id': self.kwargs['version_id'],
-            'product_id': self.kwargs['product_id'],
-            'circuit_id': self.kwargs['circuit_id'],
+            'versiondetail_id': self.kwargs['versiondetail_id'],
         }
         self.request.session['django_plotly_dash'] = dash_context
 
         return context
 
 
-class SelectProductToForecastView(LoginRequiredMixin, SingleTableMixin, FilterView):
-    model = Forecast
-    table_class = ProductToForecastTable
-    filterset_class = ProductToForecastFilter
+class VersionDetailView(LoginRequiredMixin, SingleTableMixin, FilterView):
+    model = VersionDetail
+    table_class = VersionDetailTable
+    filterset_class = VersionDetailFilter
 
-    template_name = "forecasting/product_to_forecast_table.html"
+    template_name = "forecasting/versiondetail_list.html"
     paginate_by = 20
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.distinct('product', 'circuit', 'version')
-        return queryset
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     queryset = queryset.distinct('product', 'circuit', 'version')
+    #     return queryset

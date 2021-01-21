@@ -3,7 +3,7 @@ from fbprophet import Prophet
 from django_pandas.io import read_frame
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
-from forecasting.models import Version, Forecast
+from forecasting.models import Version, VersionDetail, Forecast
 from stock.models import OrderDetail
 from datetime import date, datetime, timedelta
 
@@ -93,17 +93,44 @@ class Command(BaseCommand):
             'order__ordered_at': 'ds',
             'ordered_quantity': 'y',
         })
-
-        # TODO The following line is used to filter the df and keep 1 selected circuit
-        # TODO DELETE
-        df = df[(df['circuit'] == 4686550636307245)
-                & (df['product'] == 258791003609130)
-                & (df['ds'] < date(2020, 11, 12))]
+        print('original df', df)
 
         # Get all products & customers
         _all_products = df['product'].unique()
         _all_customers = df['customer'].unique()
         _all_circuits = df['circuit'].unique()
+
+        # TODO The following line is used to filter the df and keep 1 selected circuit
+        # FIXME DELETE
+        # top_customer_df = df.groupby(
+        #     by=['customer', 'product', 'ds'],
+        #     as_index=False
+        # ).agg({
+        #     'y': 'count',
+        # }).reset_index(
+        # ).sort_values(
+        #     by=['y'],
+        #     ascending = True,
+        #     # na_position = 'first',
+        # )
+        # top_customer_df = top_customer_df['customer'].unique()[:2000]
+
+
+        # top_customer_df = df[].groupby(
+        #     ['customer', 'product', 'ds'])['customer']
+        # top_customer_df = top_customer_df.size().nlargest(200).reset_index(name='top_customer')
+        # top_customer_df = top_customer_df['top_customer'].unique()
+        top_customer_list = df['customer'].value_counts()[:10000].index.tolist()
+
+        print('top_customer_df\n', top_customer_list)
+
+        df = df[(
+            # (df['circuit'] == 4686550636307245) &
+            # (df['customer'].isin(top_customer_list)) &
+            (df['product'] == 258791003609130) &
+            (df['ds'] < date(2020, 10, 31))
+        )]
+        print('df length', df)
 
 
         # Create a version for this forecast
@@ -144,11 +171,12 @@ class Command(BaseCommand):
         # Run Prophet model on all {product, customer} combinaison
         for p in list(set(_all_products) - set(products_with_existing_forecast)):
             _bulk_forecast = []
+            _forecasted_circuit_id = []
 
 
             customer_list_df = df.loc[(df['y'] > 0)]
             customer_list_df = customer_list_df.groupby(
-                by=['customer', 'ds'],
+                by=['customer'],
                 as_index=False
             ).agg({
                 'y': 'count',
@@ -158,10 +186,12 @@ class Command(BaseCommand):
                 by=['y'],
                 ascending=False,
             )
-            print('List of customers with data > 0: \n', customer_list_df.head(15))
 
-            
-            for c in _all_customers:#[:min(len(_all_customers), 200)]:
+            customer_positive_list = customer_list_df['customer'].tolist()
+            print('List of customers with data > 0: \n', customer_positive_list)
+
+            # [:min(len(_all_customers), 200)]:
+            for c in list(set(_all_customers) & set(customer_positive_list)):
                 # Extract filtered data as dataframe
                 sub_df = df.loc[(df['product'] == p) & (df['customer'] == c)]
                 # Group df by date and aggreate values (sum)
@@ -203,9 +233,13 @@ class Command(BaseCommand):
                         for i, row in forecast.iterrows()
                     ]
                     _bulk_forecast.extend(forecasts)
-
+                    
                     # Count up
                     _added_forecasts += 1
+
+                    # Append circuit
+                    if circuit_id not in _forecasted_circuit_id:
+                        _forecasted_circuit_id.append(circuit_id)
 
 
                     self.stdout.write(
@@ -227,6 +261,22 @@ class Command(BaseCommand):
             # Bulk create for the product
             self.stdout.write('Runing bulk creation of forecasts for product %s' % (p))
             Forecast.objects.bulk_create(_bulk_forecast)
+
+            # Bulk create version detail
+            self.stdout.write(
+                'Runing bulk creation of version detail for version: %s, product: %s, circuits %s' % (version_id, p, ','.join(str(x) for x in _forecasted_circuit_id)))
+            _version_detail_objects = [
+                VersionDetail(
+                    version_id=version_id,
+                    product_id=p,
+                    circuit_id=c,
+                )
+                for c in _forecasted_circuit_id
+            ]
+            VersionDetail.objects.bulk_create(_version_detail_objects)
+            print('Done')
+
+
         
         self.stdout.write(self.style.SUCCESS(
             '%s forecasts are saved successfully in %s sec . %s forecasts skipped cause of insufficient data' % (_added_forecasts, time.time()-start_time, _skipped_forecasts)))

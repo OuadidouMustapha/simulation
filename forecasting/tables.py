@@ -1,5 +1,5 @@
 from django_tables2 import tables, TemplateColumn, LinkColumn, CheckBoxColumn
-from .models import Version, Forecast
+from .models import Version, Forecast, VersionDetail
 from django_tables2.utils import A  # alias for Accessor
 import datetime
 
@@ -43,18 +43,18 @@ class ForecastTable(tables.Table):
         fields = ['product', 'circuit', 'version', 'forecast_date', 'forecasted_quantity', 'action']
 
 
-class ProductToForecastTable(tables.Table):
+class VersionDetailTable(tables.Table):
     action = TemplateColumn(
-        template_name='forecasting/tables/product_to_forecast_action_column.html',
+        template_name='forecasting/tables/versiondetail_list_action_column.html',
         orderable=False)
     selection = CheckBoxColumn(
-        accessor='product__id',
+        accessor='id',
         attrs={'th__input': {'onclick': 'selectAllElements(this)'}},
         orderable=False
     )
 
     class Meta:
-        model = Forecast
+        model = VersionDetail
         attrs = {'class': 'table table-sm table-hover table-responsive-md'}
-        fields = ['selection', 'product', 'circuit', 'version', 'product__abc_segmentation', 'product__fmr_segmentation',
-                  'version__version_date', 'version__status', 'action']
+        fields = ['selection', 'product', 'circuit', 'product__abc_segmentation',
+                  'product__fmr_segmentation', 'version', 'version__version_date', 'status']

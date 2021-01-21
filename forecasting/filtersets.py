@@ -2,7 +2,7 @@
 # from django_select2.forms import Select2Widget
 from datetime import datetime
 import django_filters
-from .models import Version, Forecast
+from .models import Version, VersionDetail, Forecast
 from stock.models import Product, Circuit
 
 class VersionFilter(django_filters.FilterSet):
@@ -21,7 +21,7 @@ class ForecastFilter(django_filters.FilterSet):
         model = Forecast
         fields = ['category', 'circuit']
 
-class ProductToForecastFilter(django_filters.FilterSet):
+class VersionDetailFilter(django_filters.FilterSet):
     # circuit = django_filters.ModelChoiceFilter(
     #     queryset=Circuit.objects.all(),
     #     widget=Select2Widget
@@ -33,6 +33,6 @@ class ProductToForecastFilter(django_filters.FilterSet):
     )
 
     class Meta:
-        model = Forecast
-        fields = ['version', 'version__version_date', 'version__status',
-                  'product__abc_segmentation', 'product__fmr_segmentation', 'circuit']
+        model = VersionDetail
+        fields = ['product', 'circuit', 'product__abc_segmentation',
+                  'product__fmr_segmentation', 'version', 'version__version_date', 'status']

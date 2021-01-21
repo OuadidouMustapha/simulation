@@ -3,7 +3,6 @@ from forecasting.dashboards import forecast_accuracy
 from forecasting.dashboards import forecast_accuracy_madec
 from forecasting.dashboards import forecast_accuracy_v1
 from forecasting.dashboards import forchest
-from forecasting.dashboards import demand_sensing
 from . import views
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
@@ -41,10 +40,10 @@ urlpatterns = [
          views.sendReviewRequest, name='send_review_request'),
     path('forecast/v<int:version_id>/approve-review-request',
          views.approveReviewRequest, name='approve_review_request'),
-    path('forchest', views.ForchestView.as_view(), name='forchest'),
-    path('demand_sensing/<int:version_id>/<int:product_id>/<int:circuit_id>',   
-         views.DemandSensingView.as_view(), name='demand_sensing'),
-    path('product', views.SelectProductToForecastView.as_view(), name='product'),
+#     path('forchest', views.ForchestView.as_view(), name='forchest'),
+    path('forchest/<int:versiondetail_id>',
+         views.ForchestView.as_view(), name='forchest'),
+    path('version-detail', views.VersionDetailView.as_view(), name='version_detail'),
 
 #     url(r'^input_interface/(?P<pk>\d+)/$',
 #         views.UpdateProductView.as_view(), name='input_interface_update'),

@@ -57,77 +57,88 @@ def get_chart_card(div_id, filter_div=None, footer_div=None):
         html.Div([
             filter_div,
             dcc.Loading(
-                dcc.Graph(id=div_id, config=dict(displaylogo=False, showLink=False, responsive=True, showTips=True)),
+                dcc.Graph(id=div_id, config=dict(
+                    displaylogo=False, showLink=False, showTips=True)),
             ),
             footer_div,
         ], className='card-body')
     ], className='card shadow mb-4 py-3')
     return div
 
-def get_datatable_card(div_id, style_data_conditional=None, **kwargs):
+def get_datatable_card(div_id, style_data_conditional=None, in_card=True, **kwargs):
     ''' Build div representing the datatable card '''
-    div = html.Div([
-        html.Div([
-            dcc.Loading(
-                dash_table.DataTable(
-                    id=div_id,
-                    page_action='native',
-                    filter_action='native',
-                    sort_action='native',
-                    sort_mode='multi',
-                    page_size=20,
-                    style_data_conditional=style_data_conditional,
-                    # editable=editable,
-                    **kwargs,
-                    # style_data_conditional=[
-                    # {
-                    #     'if': {
-                    #         'column_id': 'Region',
-                    #     },
-                    #     'backgroundColor': 'dodgerblue',
-                    #     'color': 'white'
-                    # },
-                    # {
-                    #     'if': {
-                    #         'column_id': 'Pressure',
+    div = dcc.Loading(
+        dash_table.DataTable(
+            id=div_id,
+            page_action='native',
+            filter_action='native',
+            sort_action='native',
+            sort_mode='multi',
+            page_size=20,
+            style_data_conditional=style_data_conditional,
+            # editable=editable,
+            **kwargs,
+            # style_data_conditional=[
+            # {
+            #     'if': {
+            #         'column_id': 'Region',
+            #     },
+            #     'backgroundColor': 'dodgerblue',
+            #     'color': 'white'
+            # },
+            # {
+            #     'if': {
+            #         'column_id': 'Pressure',
 
-                    #         # since using .format, escape { with {{
-                    #         'filter_query': '{{Pressure}} = {}'.format(df['Pressure'].max())
-                    #     },
-                    #     'backgroundColor': '#85144b',
-                    #     'color': 'white'
-                    # },
-                    # {
-                    #     'if': {
-                    #         # comparing columns to each other
-                    #         'filter_query': '{total_forecasted_quantity} < {total_ordered_quantity}',
-                    #         'column_id': 'total_forecasted_quantity'
-                    #     },
-                    #     'backgroundColor': '#3D9970'
-                    # },
-                    # ]
-                )
-            )
-        ], className='card-body')
-    ], className='card shadow mb-4 py-3')
-
+            #         # since using .format, escape { with {{
+            #         'filter_query': '{{Pressure}} = {}'.format(df['Pressure'].max())
+            #     },
+            #     'backgroundColor': '#85144b',
+            #     'color': 'white'
+            # },
+            # {
+            #     'if': {
+            #         # comparing columns to each other
+            #         'filter_query': '{total_forecasted_quantity} < {total_ordered_quantity}',
+            #         'column_id': 'total_forecasted_quantity'
+            #     },
+            #     'backgroundColor': '#3D9970'
+            # },
+            # ]
+        )
+    )
+    if in_card:
+        div = html.Div([
+            html.Div([
+                div
+            ], className='card-body')
+        ], className='card shadow mb-4 py-3')
     return div
 
 def get_dash_layout(filter_div, body_div):
     ''' Return the dashboard page with defined html elements separated into two parts, filter and body '''
-    div = html.Div(
-        [
-            html.Div(
-                [
-                    html.Div([
-                        filter_div,
-                    ], className='card-body')
-                ], className='card bg-light shadow mb-4 py-3'
-            ),
+    if (filter_div is not None) and (body_div is not None):
+        div = html.Div(
+            [
+                html.Div(
+                    [
+                        html.Div([
+                            filter_div,
+                        ], className='card-body')
+                    ], className='card bg-light shadow mb-4 py-3'
+                ),
 
-            html.Div([
-                body_div,
-            ]),
-        ], style={'background-color': '#f8f9fc'}
-    )
+                html.Div([
+                    body_div,
+                ]),
+            ], style={'background-color': '#f8f9fc'}
+        )
+    else:
+        div = html.Div(
+            [
+                html.Div([
+                    body_div,
+                ]),
+            ], style={'background-color': '#f8f9fc'}
+        )
     return div

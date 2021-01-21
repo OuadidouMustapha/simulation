@@ -30,24 +30,6 @@ class CommonMeta(models.Model):
     class Meta:
         abstract = True
 
-class Target(CommonMeta):
-    product = models.ForeignKey(
-        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
-    category = models.ForeignKey(
-        'stock.ProductCategory', on_delete=models.CASCADE, blank=True, null=True)
-    warehouse = models.ForeignKey(
-        'stock.Warehouse', on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(
-        'stock.Customer', on_delete=models.CASCADE, blank=True, null=True)
-    circuit = models.ForeignKey(
-        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
-    version = models.ForeignKey(
-        TargetVersion, on_delete=models.CASCADE, blank=True, null=True)
-
-    targeted_date = models.DateField(
-        blank=True, null=True)
-    targeted_quantity = models.IntegerField(blank=True, null=True)
-
 class Version(CommonMeta):
     # TODO add verbose_name with translation
     AUTO = 'Automatic'
@@ -55,14 +37,6 @@ class Version(CommonMeta):
     FORECAST_TYPE = (
         (AUTO, 'Automatic'),
         (MANU, 'Manual'),
-    )
-    CREATED = 'Created'
-    PENDING = 'Pending'
-    APPROVED = 'Approved'
-    STATUS = (
-        (CREATED, 'Created'),
-        (PENDING, 'Pending'),
-        (APPROVED, 'Approved'),
     )
     reference = models.CharField(unique=True, max_length=200)
     # year = models.IntegerField(validators=[MinValueValidator(1900), MaxValueValidator(2900)])
@@ -77,15 +51,7 @@ class Version(CommonMeta):
     # upload_to='forecast_files/%Y/%m/%d/'
     file_path = models.FileField(upload_to='forecast_versions/', blank=True)
     # is_budget = models.BooleanField(default=False)
-    created_by = models.ForeignKey(
-        CustomUser, related_name='created_versions', on_delete=models.CASCADE, blank=True, null=True)
-    approved_by = models.ForeignKey(
-        CustomUser, related_name='approved_versions', on_delete=models.CASCADE, blank=True, null=True)
-    status = models.CharField(
-        max_length=32,
-        choices=STATUS,
-        default=CREATED,
-    )
+    
 
     objects = managers.VersionQuerySet.as_manager()
 
@@ -94,8 +60,8 @@ class Version(CommonMeta):
 
     class Meta:
         permissions = (
-            ('request_review', 'Send review request'),
-            ('validate_version', 'Validate a version'),
+            ('can_request_review', 'Can send review request'),
+            ('can_validate_version', 'Can validate a version'),
         )
 
 
@@ -104,6 +70,35 @@ class Version(CommonMeta):
     #     return reverse('forecasting:version_list')
         # return reverse('forecasting:version_list', pk=self.pk)
 
+class VersionDetail(CommonMeta):
+    AUTO_GENERATED = 'Auto Generated'
+    CONFIRMED = 'Confirmed'
+    SENT_FOR_REVIEW = 'Sent For Review'
+    APPROVED = 'Approved'
+    REJECTED = 'Rejected'
+
+    STATUS = (
+        (AUTO_GENERATED, 'Auto Generated'),
+        (CONFIRMED, 'Confirmed'),
+        (SENT_FOR_REVIEW, 'Sent For Review'),
+        (APPROVED, 'Approved'),
+        (REJECTED, 'Rejected'),
+    )
+    version = models.ForeignKey(
+        Version, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
+    created_by = models.ForeignKey(
+        CustomUser, related_name='created_versions', on_delete=models.CASCADE, blank=True, null=True)
+    approved_by = models.ForeignKey(
+        CustomUser, related_name='approved_versions', on_delete=models.CASCADE, blank=True, null=True)
+    status = models.CharField(
+        max_length=32,
+        choices=STATUS,
+        default=AUTO_GENERATED,
+)
 
 class Forecast(CommonMeta):
 
@@ -136,6 +131,36 @@ class Forecast(CommonMeta):
         return f'product: {self.product}, warehouse: {self.warehouse}, forecast_date: {self.forecast_date}, circuit: {self.circuit}'
 
 
+class Target(CommonMeta):
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        'stock.ProductCategory', on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        'stock.Warehouse', on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        'stock.Customer', on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
+    targeted_date = models.DateField(
+        blank=True, null=True)
+    targeted_quantity = models.IntegerField(blank=True, null=True)
+
+class PlannedOrder(CommonMeta):
+    product = models.ForeignKey(
+        'stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(
+    #     'stock.ProductCategory', on_delete=models.CASCADE, blank=True, null=True)
+    # warehouse = models.ForeignKey(
+    #     'stock.Warehouse', on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        'stock.Customer', on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
+    planned_at = models.DateField(
+        blank=True, null=True)
+    planned_quantity = models.IntegerField(blank=True, null=True)
+
 class Event(CommonMeta):
     PROMO = 'Promo'
     ACTION_MARKETING = 'Action Marketing'
@@ -165,8 +190,8 @@ class EventDetail(CommonMeta):
         'stock.Circuit', on_delete=models.CASCADE, blank=True, null=True)
     event = models.ForeignKey(
         Event, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
     lower_window = models.IntegerField(default=0, blank=True)
     upper_window = models.IntegerField(default=1, blank=True)
 

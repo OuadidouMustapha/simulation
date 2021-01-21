@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from tablib import Dataset
 import csv
 from io import TextIOWrapper
-from .models import Version, Forecast
+from .models import Version, VersionDetail, Forecast
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
@@ -59,11 +59,11 @@ class VersionForm(forms.ModelForm):
         )
 
 
-class VersionReviewForm(forms.ModelForm):
+class VersionDetailReviewForm(forms.ModelForm):
     # created_by = forms.CharField(disabled=True)
 
     class Meta:
-        model = Version
+        model = VersionDetail
         fields = ('approved_by',)
 
 

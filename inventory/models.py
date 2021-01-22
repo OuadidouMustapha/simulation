@@ -1,11 +1,6 @@
 from django.db import models
-
-from stock.models import Product
+from stock.models import Product, Warehouse
 from . import managers
-
-
-# Create your models here.
-
 
 class CommonMeta(models.Model):
     CREATED = 'Created'
@@ -28,68 +23,62 @@ class CommonMeta(models.Model):
         abstract = True
 
 class Location(CommonMeta):
-    reference    = models.CharField(unique=True, max_length=20, null=False)
-    name         = models.CharField(max_length=200, blank=True, null=True)
-    description  = models.TextField(blank=True)
-    product      = models.ManyToManyField(Product)
+    product = models.ManyToManyField(Product)
+    reference = models.CharField(unique=True, max_length=20, null=False)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True)
+
     objects = managers.LocationQuerySet.as_manager()
 
     def __str__(self):
         return f'{self.reference}'
+
 class Operation(CommonMeta):
-
-
-    reference  = models.CharField(unique=False, max_length=20, null=True)
-    product    = models.ForeignKey('stock.Product', on_delete=models.CASCADE, blank=True, null=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, blank=True, null=True)
-    operation_date = models.DateField(blank=True, null=True)
-    quantity = models.DecimalField(max_digits=20, decimal_places=2, default='1')
     A = 'A'
     Q = 'Q'
     R = 'R'
-    CREATED = 'Created'
     STATUS = (
         (A, 'A'),
         (Q, 'Q'),
         (R, 'R'),
     )
+    product = models.ForeignKey('stock.Product', on_delete=models.CASCADE, blank=True, null=True)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=False, max_length=20, null=True)
+    operation_date = models.DateField(blank=True, null=True)
+    quantity = models.DecimalField(max_digits=20, decimal_places=2, default='1')
     status = models.CharField(
         max_length=32,
         choices=STATUS,
-        default=CREATED,
+        default=A,
     )
 
     def __str__(self):
         return f'{self.reference}'
 
 class StockCheck(CommonMeta):
-
-    reference  = models.CharField(unique=False, max_length=20, null=False)
-    product    = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
-    check_date = models.DateField(blank=True, null=True)
-    location = models.ForeignKey(
-        Location, on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.IntegerField(blank=True, null=True)
     A = 'A'
     Q = 'Q'
     R = 'R'
-    CREATED = 'Created'
     STATUS = (
         (A, 'A'),
         (Q, 'Q'),
         (R, 'R'),
     )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=False, max_length=20, null=False) # FIXME shouldn't this be unique?
+    check_date = models.DateField(blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
     status = models.CharField(
         max_length=32,
         choices=STATUS,
-        default=CREATED,
+        default=A,
     )
-    objects = managers.StockCheckQuerySet.as_manager()
 
+    objects = managers.StockCheckQuerySet.as_manager()
 
     def __str__(self):
         return f'{self.reference}'
-
-
-
-

@@ -70,17 +70,12 @@ def body_container():
                     dash_utils.get_mini_card(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',
                                              subtitle=
                                              
-                                             dbc.Col([
-                                                 dbc.Row([
-                                                     html.P('Dash converts Python classes into HTML'),
-                                                ]),
-                                                 dbc.Row([
+                                                dbc.Col([
                                                     dbc.Progress(
                                                         id='400',
                                                         striped=True,
-                                                    )
-                                                 ])
-                                             ]),
+                                                    ),
+                                                ]),
 
                                             )
                 ], sm=12, md=4, lg=4),

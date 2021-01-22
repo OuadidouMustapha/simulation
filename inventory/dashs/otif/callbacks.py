@@ -1,38 +1,46 @@
-from django.db.models import Case, When, IntegerField, Sum, F
-from django_pandas.io import read_frame
-
-from ids import *
-from dash.dependencies import Input, Output
-
-from stock.models import OrderDetail
-
-from plotly.subplots import make_subplots
-from .app import app
-
+import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
 import plotly.graph_objs as go
-
+from common.dashboards import dash_utils
+from dash.dependencies import Input, Output
+from django.utils.translation import gettext as _
+from django_plotly_dash import DjangoDash
+from stock.models import Product, ProductCategory, Customer, OrderDetail
+from django_pandas.io import read_frame
+import cufflinks as cf
+import numpy as np
+from plotly.subplots import make_subplots
+from django.db.models import F, ExpressionWrapper, DateTimeField,IntegerField,Case, CharField, Value, When,Sum
+from multiprocessing import  Pool
+import multiprocessing as mp
+from django.db import connection
 import pandas as pd
+import resource
+from .app import app
+from .ids import *
 
 
 @app.callback(
 
-    Output(figure_customer_id, "figure"),
+    Output(FIGURE_CUSTOMER_ID, "figure"),
     [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
+        Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
+        Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
+        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(INPUT_DATE_RANGE_ID, 'start_date'),
+        Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
 def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_categories, selected_customers,
                                               selected_status, start_date,
                                               end_date):
+
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        #product__status__in=selected_status,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -42,56 +50,54 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
 
     # train = parallelize_dataframe(results, read_frame)
 
-    results = results.annotate(
-        Not_Delivered=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity=0, then=1),
-            When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
-            When(order__delivery__delivered_at=None, then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
-        Partially_Delivered_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
+    results  = results.annotate(
+        Not_Delivered =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity=0,then=1),
+                When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
+                When(order__delivery__delivered_at=None, then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
+        Partially_Delivered_In_Time =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'), desired_at__gte= F('order__delivery__delivered_at'),then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
         Partially_Delivered_Not_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__lt=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
+                     order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
+                     desired_at__lt=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
         Delivered_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
-        Delivered_Not_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        )
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
+        Delivered_Not_In_Time =
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            )
     )
-    results = results.values('customer_id', 'customer__reference').annotate(
+    results  = results.values('customer_id','customer__reference').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
-        Delivered_In_Time=Sum('Delivered_In_Time'),
-        Delivered_Not_In_Time=Sum('Delivered_Not_In_Time'),
-    ).values('customer', 'customer__reference', 'Not_Delivered', 'Partially_Delivered_In_Time',
-             'Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time')
+        Delivered_In_Time =Sum('Delivered_In_Time'),
+        Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
+    ).values('customer','customer__reference', 'Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
+
 
     df = pd.DataFrame.from_records(results)
 
@@ -102,6 +108,8 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
     # figure = go.Figure(data=[
     #     dict(x=x, y=y, type='bar')
     # ])
+
+
 
     #
     #
@@ -175,8 +183,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
             'rgb(0,255, 0)',
         ],
         x=['customer'],
-        y=['Not_Delivered', 'Partially_Delivered_In_Time', 'Partially_Delivered_Not_In_Time', 'Delivered_In_Time',
-           'Delivered_Not_In_Time'],
+        y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         theme='white',
         title='title',
         xTitle='customer',
@@ -197,27 +204,28 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
 
     return figure
 
-
 #
 @app.callback(
     [
-        Output(figure_otif_id, "figure"),
+        Output(FIGURE_OTIF_ID, "figure"),
     ],
     [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
+        Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
+        Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
+        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(INPUT_DATE_RANGE_ID, 'start_date'),
+        Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
-                            end_date):
+def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,end_date):
+
+
+
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        #product__status__in=selected_status,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -227,63 +235,60 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
     # train = parallelize_dataframe(results, read_frame)
 
-    results = results.annotate(
-        Not_Delivered=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity=0, then=1),
-            When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
-            When(order__delivery__delivered_at=None, then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
-        Partially_Delivered_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
+    results  = results.annotate(
+        Not_Delivered =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity=0,then=1),
+                When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
+                When(order__delivery__delivered_at=None, then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
+        Partially_Delivered_In_Time =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'), desired_at__gte= F('order__delivery__delivered_at'),then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
         Partially_Delivered_Not_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__lt=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
+                     order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
+                     desired_at__lt=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
         Delivered_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
-        Delivered_Not_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        )
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
+        Delivered_Not_In_Time =
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            )
     )
 
-    results = results.values('order__ordered_at', ).annotate(
+    results  = results.values('order__ordered_at',).annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
-        Delivered_In_Time=Sum('Delivered_In_Time'),
-        Delivered_Not_In_Time=Sum('Delivered_Not_In_Time'),
-    ).values('order__ordered_at', 'Not_Delivered', 'Partially_Delivered_In_Time', 'Partially_Delivered_Not_In_Time',
-             'Delivered_In_Time', 'Delivered_Not_In_Time')
+        Delivered_In_Time =Sum('Delivered_In_Time'),
+        Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
+    ).values('order__ordered_at','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
     df_data = read_frame(results)
 
+
     def otif(row):
-        sum = row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row['Partially_Delivered_Not_In_Time'] + row[
-            'Delivered_In_Time'] + row['Delivered_Not_In_Time']
+        sum = row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row['Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time']
         if sum != 0:
             return (row['Delivered_In_Time'] / sum) * 100
         else:
@@ -306,6 +311,18 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         xTitle='Ordered Date',
         yTitle='Number of Orders',
     )
+
+
+
+
+
+
+
+
+
+
+
+
 
     # ----------------------------------------------------{}-----------------------------------------------------------------------
 
@@ -427,29 +444,29 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #         yTitle='Number of Orders',
     #     )
 
-    return figure, '2222222222222222222'
-
-
+    return figure,'2222222222222222222'
 #
 #
 @app.callback(
 
-    Output(figure_ordersDetails_id, "figure"),
+    Output(FIGURE_ORDERSDETAILS_ID, "figure"),
     [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
+        Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
+        Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
+        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(INPUT_DATE_RANGE_ID, 'start_date'),
+        Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
 def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
                             end_date):
+
+
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        #product__status__in=selected_status,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -459,58 +476,57 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
     # train = parallelize_dataframe(results, read_frame)
 
-    results = results.annotate(
-        Not_Delivered=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity=0, then=1),
-            When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
-            When(order__delivery__delivered_at=None, then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
-        Partially_Delivered_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
+    results  = results.annotate(
+        Not_Delivered =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity=0,then=1),
+                When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
+                When(order__delivery__delivered_at=None, then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
+        Partially_Delivered_In_Time =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'), desired_at__gte= F('order__delivery__delivered_at'),then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
         Partially_Delivered_Not_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__lt=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
+                     order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
+                     desired_at__lt=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
         Delivered_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        ),
-        Delivered_Not_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=None,
-            output_field=IntegerField()
-        )
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            ),
+        Delivered_Not_In_Time =
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                default=None,
+                output_field=IntegerField()
+            )
     )
-    results = results.values('order__ordered_at').annotate(
+    results  = results.values('order__ordered_at').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
-        Delivered_In_Time=Sum('Delivered_In_Time'),
-        Delivered_Not_In_Time=Sum('Delivered_Not_In_Time'),
-    ).values('order__ordered_at', 'Not_Delivered', 'Partially_Delivered_In_Time', 'Partially_Delivered_Not_In_Time',
-             'Delivered_In_Time', 'Delivered_Not_In_Time')
+        Delivered_In_Time =Sum('Delivered_In_Time'),
+        Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
+    ).values('order__ordered_at','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
+
 
     df = pd.DataFrame.from_records(results)
+
 
     figure = df.iplot(
         asFigure=True,
@@ -524,13 +540,13 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             'rgb(0,255, 0)',
         ],
         x=['order__ordered_at'],
-        y=['Not_Delivered', 'Partially_Delivered_In_Time', 'Partially_Delivered_Not_In_Time', 'Delivered_In_Time',
-           'Delivered_Not_In_Time'],
+        y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         theme='white',
         title='title',
         xTitle='date ',
         yTitle='Number of Orders',
     )
+
 
     # ///////////////////////////////////////////////////////////////////////////////////////{ With Data Frames }////////////////////////////////////////////////////////////////////////////////
     # results = OrderDetail.objects.filter(
@@ -649,28 +665,28 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #     )
 
     return figure
-
-
 #
 #
 @app.callback(
 
-    Output(figure_orders_id, "figure"),
+    Output(FIGURE_ORDERS_ID, "figure"),
     [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
+        Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
+        Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
+        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(INPUT_DATE_RANGE_ID, 'start_date'),
+        Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
 def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
                             end_date):
+
+
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        #product__status__in=selected_status,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -680,61 +696,60 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
     # train = parallelize_dataframe(results, read_frame)
 
-    results = results.annotate(
-        Not_Delivered=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity=0, then=1),
-            When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
-            When(order__delivery__delivered_at=None, then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
-        Partially_Delivered_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
+    results  = results.annotate(
+        Not_Delivered =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity=0,then=1),
+                When(order__delivery__deliverydetail__delivered_quantity=None, then=1),
+                When(order__delivery__delivered_at=None, then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
+        Partially_Delivered_In_Time =
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'), desired_at__gte= F('order__delivery__delivered_at'),then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
         Partially_Delivered_Not_In_Time=
-        Case(
-            When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
-                 order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
-                 desired_at__lt=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
+            Case(
+                When(order__delivery__deliverydetail__delivered_quantity__lt=F('ordered_quantity'),
+                     order__delivery__deliverydetail__delivered_quantity__gt=F('ordered_quantity'),
+                     desired_at__lt=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
         Delivered_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        ),
-        Delivered_Not_In_Time=
-        Case(
-            When(
-                order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
-            default=0,
-            output_field=IntegerField()
-        )
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            ),
+        Delivered_Not_In_Time =
+            Case(
+                When(
+                    order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
+                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                default=0,
+                output_field=IntegerField()
+            )
     )
 
-    results = results.values('order__ordered_at', 'order').annotate(
+    results  = results.values('order__ordered_at','order').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
-        Delivered_In_Time=Sum('Delivered_In_Time'),
-        Delivered_Not_In_Time=Sum('Delivered_Not_In_Time'),
-    ).values('order__ordered_at', 'order', 'Not_Delivered', 'Partially_Delivered_In_Time',
-             'Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time')
+        Delivered_In_Time =Sum('Delivered_In_Time'),
+        Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
+    ).values('order__ordered_at','order','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
     df_data = read_frame(results)
 
-    print(results, "hello mustapha")
+    print(results,"hello mustapha")
+
+
 
     df_data['sum_all'] = df_data.apply(
         lambda
@@ -783,11 +798,11 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         by=['order__ordered_at'],
         as_index=False
     ).agg({
-        'Order Partially_Delivered_Not_In_Time': 'sum',
-        'Order Delivered_In_Time': 'sum',
-        'Order Delivered_Not_In_Time': 'sum',
-        'Order Partially_Delivered_In_Time': 'sum',
-        'Order Not_Delivered': 'sum',
+        'Order Partially_Delivered_Not_In_Time':'sum',
+        'Order Delivered_In_Time':'sum',
+        'Order Delivered_Not_In_Time':'sum',
+        'Order Partially_Delivered_In_Time':'sum',
+        'Order Not_Delivered':'sum',
     })
 
     # def otif(row):
@@ -801,6 +816,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     # df_data['OTIF'] = df_data.apply(
     #     lambda row: otif(row),
     #     axis=1)
+
 
     figure = df_data.iplot(
         asFigure=True,
@@ -990,26 +1006,26 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #     )
 
     return figure
-
-
 #
 #
 @app.callback(
 
     [
-        Output(figure_pie_orderDetail_id, "figure"),
-        Output(figure_pie_order_id, "figure"),
-        Output(mini_card_subtitle_bias_percent_id, 'children'),
-        Output(mini_card_subtitle_mape_id, 'children'),
-        Output(mini_card_subtitle_mad_id, 'children'),
+        Output(FIGURE_PIE_ORDERDETAIL_ID, "figure"),
+        Output(FIGURE_PIE_ORDER_ID, "figure"),
+        Output(MINI_CARD_SUBTITLE_MAPE_ID, 'children'),
+        Output(MINI_CARD_SUBTITLE_MAD_ID, 'children'),
+        Output("400", "value"), 
+        Output("400", "children"),
+        Output("400", "color")   
     ],
     [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
+        Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
+        Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
+        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(INPUT_DATE_RANGE_ID, 'start_date'),
+        Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
 def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_customers, selected_status,
@@ -1023,11 +1039,16 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         order__ordered_at__lte=end_date
     )
 
-    #
+    Number_of_deliveries  = results.values('order__delivery').distinct()
+    train = read_frame(Number_of_deliveries)
+    
+    Number_of_deliveries  = Number_of_deliveries.count()
+    
+    
+    print(Number_of_deliveries,'googlearth')
 
-    count_deliveries = results.values('order__delivery').distinct().count()
 
-    # train = parallelize_dataframe(results, read_frame)
+    print(train ,'FC BB')
 
     results = results.annotate(
         Not_Delivered=
@@ -1074,18 +1095,17 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     # ************************************
 
-    results_order = results.values('order').annotate(
+    results_order  = results.values('order').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
-        Delivered_In_Time=Sum('Delivered_In_Time'),
-        Delivered_Not_In_Time=Sum('Delivered_Not_In_Time'),
-    ).values('order', 'Not_Delivered', 'Partially_Delivered_In_Time', 'Partially_Delivered_Not_In_Time',
-             'Delivered_In_Time', 'Delivered_Not_In_Time')
+        Delivered_In_Time =Sum('Delivered_In_Time'),
+        Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
+    ).values('order','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
     df_data_order = read_frame(results_order)
 
-    print(df_data_order, len(df_data_order.index), 'ouadidou')
+    print(df_data_order,len(df_data_order.index),'ouadidou')
 
     Number_of_orders = len(df_data_order.index)
 
@@ -1134,8 +1154,8 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     df_data_order = df_data_order.agg({
         'Order Not_Delivered': 'sum',
-        'Order Delivered_In_Time': 'sum',
-        'Order Partially_Delivered_In_Time': 'sum',
+        'Order Delivered_In_Time':'sum',
+        'Order Partially_Delivered_In_Time':'sum',
         'Order Partially_Delivered_Not_In_Time': 'sum',
         'Order Delivered_Not_In_Time': 'sum',
     }).reset_index()
@@ -1152,10 +1172,11 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     df_data = read_frame(results)
 
+
     labels = df_data.index
     values = df_data.values
 
-    print(labels, values, 'desert')
+    print(labels,values,'desert')
 
     df_data = df_data.agg({
         'Not_Delivered': 'sum',
@@ -1165,19 +1186,21 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         'Delivered_Not_In_Time': 'sum',
     }).reset_index()
 
-    sum_all = df_data[0][0] + df_data[0][1] + df_data[0][2] + df_data[0][3] + df_data[0][4]
+    sum_all = df_data[0][0]+df_data[0][1]+df_data[0][2]+df_data[0][3]+df_data[0][4]
 
-    if sum_all != 0:
+    if sum_all!=0:
 
-        OTIF = (df_data[0][0] / sum_all) * 100
+        OTIF = (df_data[0][0]/sum_all)*100
 
     else:
         OTIF = 0
 
-    OTIF = round(OTIF, 3)
+    OTIF = round(OTIF, 1)
+
 
     figure_pie_orderDetail = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
-    figure_pie_order = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+    figure_pie_order =  make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+
 
     figure_pie_order.add_trace(
         go.Pie(
@@ -1195,7 +1218,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
                 ]
             },
         )
-        , 1, 1)
+    , 1, 1)
 
     figure_pie_orderDetail.add_trace(
         go.Pie(
@@ -1213,7 +1236,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
                 ]
             },
         )
-        , 1, 1)
+    , 1, 1)
 
     figure_pie_orderDetail.update_traces(hole=.4, hoverinfo="label+percent+name")
     figure_pie_order.update_traces(hole=.4, hoverinfo="label+percent+name")
@@ -1335,18 +1358,30 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     #         xTitle='customer',
     #         yTitle='Number of Orders',
     #     )
+    
+    if OTIF>=80 : 
+        color  = 'success' 
+    elif OTIF>= 20 and OTIF<80 :
+        color  = "info" 
+    elif OTIF>= 10 and OTIF<20 :
+        color  = 'warning' 
+    else :
+        color  = "danger"
+    
+    
 
-    return figure_pie_orderDetail, figure_pie_order, str(OTIF) + '%', Number_of_orders, count_deliveries
+
+    return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,OTIF,str(OTIF)+'%' if OTIF >= 5 else "",color
 
 
 dash_utils.select_all_callbacks(
-    app, dropdown_product_list_id, div_product_list_id, checkbox_product_list_id)
+    app, DROPDOWN_PRODUCT_LIST_ID, DIV_PRODUCT_LIST_ID, CHECKBOX_PRODUCT_LIST_ID)
 
 dash_utils.select_all_callbacks(
-    app, dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id)
+    app, DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID)
 
 dash_utils.select_all_callbacks(
-    app, dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id)
+    app, DROPDOWN_CATEGORIE_LIST_ID, DIV_CATEGORIE_LIST_ID, CHECKBOX_CATEGORIE_LIST_ID)
 
 dash_utils.select_all_callbacks(
-    app, dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id)
+    app, DROPDOWN_STATUT_LIST_ID, DIV_STATUT_LIST_ID, CHECKBOX_STATUT_LIST_ID)

@@ -351,3 +351,9 @@ class CustomerQuerySet(models.QuerySet):
         return list of unique/distinct customer
         '''
         return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+class SupplierQuerySet(models.QuerySet):
+    def get_all_suppliers(self):
+        '''
+        return list of unique/distinct customer
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()

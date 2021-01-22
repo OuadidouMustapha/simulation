@@ -1,5 +1,5 @@
 
-
+from .app import app
 from common.dashboards import  dash_utils
 from stock.models import Product, ProductCategory, Customer
 
@@ -8,8 +8,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from django.utils.translation import gettext as _
 import colorlover
+import dash_daq as daq
 
-from ids import *
+from .ids import *
 
 _all_products   = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
@@ -26,22 +27,22 @@ def filter_container():
         dbc.Row([
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id, _all_categories,
+                    DROPDOWN_CATEGORIE_LIST_ID, DIV_CATEGORIE_LIST_ID, CHECKBOX_CATEGORIE_LIST_ID, _all_categories,
                     'Categories')
             ], sm=12, md=6, lg=4),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id, _all_status, 'Status')
+                    DROPDOWN_STATUT_LIST_ID, DIV_STATUT_LIST_ID, CHECKBOX_STATUT_LIST_ID, _all_status, 'Status')
             ], sm=12, md=6, lg=4),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers,
+                    DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID, _all_customers,
                     'Customers',select_all=False,multi=False),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=4),
             dbc.Col([
                 dash_utils.get_date_range(
-                    input_date_range_id,
+                    INPUT_DATE_RANGE_ID,
                     label=_('Time horizon'),
                     year_range=2
                 ),
@@ -52,9 +53,9 @@ def filter_container():
             html.Summary(_('Products')),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_product_list_id, div_product_list_id, checkbox_product_list_id, _all_products, '')
+                    DROPDOWN_PRODUCT_LIST_ID, DIV_PRODUCT_LIST_ID, CHECKBOX_PRODUCT_LIST_ID, _all_products, '')
             ], sm=12, md=12, lg=12),
-        ], id=details_product_list_id, open=False),
+        ], id=DETAILS_PRODUCT_LIST_ID, open=False),
 
 
     ])
@@ -66,19 +67,34 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card(mini_card_subtitle_bias_percent_id,title='OTIF Global',
-                                             subtitle='')
+                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',
+                                             subtitle=
+                                             
+                                             dbc.Col([
+                                                 dbc.Row([
+                                                     html.P('Dash converts Python classes into HTML'),
+                                                ]),
+                                                 dbc.Row([
+                                                    dbc.Progress(
+                                                        id='400',
+                                                        striped=True,
+                                                    )
+                                                 ])
+                                             ]),
+
+                                            )
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                    dash_utils.get_mini_card(mini_card_subtitle_mad_id, title='Number of Orders ',
+                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_MAD_ID, title='Number of Orders ',
                                              subtitle='', icon='fas fa-clipboard-list'),
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                    dash_utils.get_mini_card(mini_card_subtitle_mape_id,title='Number of Deliveries',subtitle='',icon='fas fa-dolly')
+                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_MAPE_ID,title='Number of Deliveries',subtitle='',icon='fas fa-dolly')
                 ], sm=12, md=4, lg=4),
             ]),
             dbc.Row([
                 dbc.Col([
+                
                     html.Div(
                         id='forna-body-1',
                         className='shadow-lg p-12 mb-5  rounded',
@@ -96,7 +112,7 @@ def body_container():
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
-                                                        [dcc.Graph(id=figure_customer_id)],
+                                                        [dcc.Graph(id=FIGURE_CUSTOMER_ID)],
                                                         className="",
                                                     )
                                                 ),
@@ -111,7 +127,7 @@ def body_container():
                                                             className='app-controls-block',
                                                             children=dcc.Loading(
                                                                 html.Div(
-                                                                    [dcc.Graph(id=figure_otif_id)],
+                                                                    [dcc.Graph(id=FIGURE_OTIF_ID)],
                                                                     className="",
                                                                 )
                                                             ),
@@ -143,7 +159,7 @@ def body_container():
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
-                                                        [dcc.Graph(id=figure_ordersDetails_id)],
+                                                        [dcc.Graph(id=FIGURE_ORDERSDETAILS_ID)],
                                                         className="",
                                                     )
                                                 ),
@@ -158,7 +174,7 @@ def body_container():
                                                             className='app-controls-block',
                                                             children=dcc.Loading(
                                                                 html.Div(
-                                                                    [dcc.Graph(id=figure_orders_id)],
+                                                                    [dcc.Graph(id=FIGURE_ORDERS_ID)],
                                                                     className="",
                                                                 )
                                                             ),
@@ -183,10 +199,10 @@ def body_container():
                             [
                                 dbc.Row([
                                     dbc.Col([
-                                        dcc.Graph(id=figure_pie_orderDetail_id)
+                                        dcc.Graph(id=FIGURE_PIE_ORDERDETAIL_ID)
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
-                                        dcc.Graph(id=figure_pie_order_id)
+                                        dcc.Graph(id=FIGURE_PIE_ORDER_ID)
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],
@@ -204,4 +220,4 @@ def body_container():
     return body_container
 
 
-app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
+layout = dash_utils.get_dash_layout(filter_container(), body_container())

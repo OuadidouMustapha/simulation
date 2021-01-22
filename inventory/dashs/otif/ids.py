@@ -6,53 +6,50 @@ _prefix = 'otif'
 
 
 # ------------------------------------------{Id Graph}--------------------------------------------------------
-
-figure_customer_id = dash_utils.generate_html_id(_prefix, 'figure_customer_id')
-figure_ordersDetails_id = dash_utils.generate_html_id(_prefix, 'figure_orderDetails_id')
-figure_otif_id = dash_utils.generate_html_id(_prefix, 'figure_otif_id')
-figure_most_ordred_product_id = dash_utils.generate_html_id(_prefix, 'figure_most_ordred_product_id')
-figure_most_ordred_customer_id = dash_utils.generate_html_id(_prefix, 'figure_most_ordred_customer_id')
-figure_pie_orderDetail_id = dash_utils.generate_html_id(_prefix, 'figure_pie_orderDetail_id')
-figure_pie_order_id = dash_utils.generate_html_id(_prefix, 'figure_pie_order_id')
-figure_most_ordred_categories_id = dash_utils.generate_html_id(_prefix, 'figure_pie_ordred_categories_id')
-figure_orders_id = dash_utils.generate_html_id(_prefix, 'figure_orders_id')
+FIGURE_CUSTOMER_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_CUSTOMER_ID')
+FIGURE_ORDERSDETAILS_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_ORDERDETAILS_ID')
+FIGURE_OTIF_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_OTIF_ID')
+FIGURE_MOST_ORDRED_CATEGORIES_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_PIE_ORDRED_CATEGORIES_ID')
+FIGURE_MOST_ORDRED_CUSTOMER_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_MOST_ORDRED_CUSTOMER_ID')
+FIGURE_MOST_ORDRED_PRODUCT_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_MOST_ORDRED_PRODUCT_ID')
+FIGURE_ORDERS_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_ORDERS_ID')
+FIGURE_PIE_ORDERDETAIL_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_PIE_ORDERDETAIL_ID')
+FIGURE_PIE_ORDER_ID = dash_utils.generate_html_id(_prefix, 'FIGURE_PIE_ORDER_ID')
 
 # ------------------------------------------------------------------------------------------------------------
 
-details_product_list_id = dash_utils.generate_html_id(_prefix, 'details_product_list_id')
+DETAILS_PRODUCT_LIST_ID = dash_utils.generate_html_id(_prefix, 'DETAILS_PRODUCT_LIST_ID')
 
 # -------------------------------------------- Dropdown  list -------------------------------------------------
 
-dropdown_product_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_product_list_id')
-dropdown_categorie_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_categorie_list_id')
-dropdown_order_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_order_list_id')
-dropdown_customer_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_customer_list_id')
-dropdown_statut_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_statut_list_id')
+DROPDOWN_PRODUCT_LIST_ID = dash_utils.generate_html_id(_prefix, 'DROPDOWN_PRODUCT_LIST_ID')
+DROPDOWN_CATEGORIE_LIST_ID = dash_utils.generate_html_id(_prefix, 'DROPDOWN_CATEGORIE_LIST_ID')
+DROPDOWN_ORDER_LIST_ID = dash_utils.generate_html_id(_prefix, 'DROPDOWN_ORDER_LIST_ID')
+DROPDOWN_CUSTOMER_LIST_ID = dash_utils.generate_html_id(_prefix, 'DROPDOWN_CUSTOMER_LIST_ID')
+DROPDOWN_STATUT_LIST_ID = dash_utils.generate_html_id(_prefix, 'DROPDOWN_STATUT_LIST_ID')
 
 # --------------------------------------------Div list -------------------------------------------
 
-div_product_list_id = dash_utils.generate_html_id(_prefix, 'div_product_list_id')
-div_order_list_id = dash_utils.generate_html_id(_prefix, 'div_order_list_id')
-div_categorie_list_id = dash_utils.generate_html_id(_prefix, 'div_categorie_list_id')
-div_customer_list_id = dash_utils.generate_html_id(_prefix, 'div_customer_list_id')
-div_statut_list_id = dash_utils.generate_html_id(_prefix, 'div_statut_list_id')
+DIV_PRODUCT_LIST_ID = dash_utils.generate_html_id(_prefix, 'DIV_PRODUCT_LIST_ID')
+DIV_ORDER_LIST_ID = dash_utils.generate_html_id(_prefix, 'DIV_ORDER_LIST_ID')
+DIV_CATEGORIE_LIST_ID = dash_utils.generate_html_id(_prefix, 'DIV_CATEGORIE_LIST_ID')
+DIV_CUSTOMER_LIST_ID = dash_utils.generate_html_id(_prefix, 'DIV_CUSTOMER_LIST_ID')
+DIV_STATUT_LIST_ID = dash_utils.generate_html_id(_prefix, 'DIV_STATUT_LIST_ID')
 
 # --------------------------------------------Checkbox list --------------------------------------
-checkbox_product_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_product_list_id')
-checkbox_categorie_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_categorie_list_id')
-checkbox_order_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_order_list_id')
-checkbox_customer_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_customer_list_id')
-checkbox_statut_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_statut_list_id')
-
+CHECKBOX_PRODUCT_LIST_ID = dash_utils.generate_html_id(_prefix, 'CHECKBOX_PRODUCT_LIST_ID')
+CHECKBOX_CATEGORIE_LIST_ID = dash_utils.generate_html_id(_prefix, 'CHECKBOX_CATEGORIE_LIST_ID')
+CHECKBOX_ORDER_LIST_ID = dash_utils.generate_html_id(_prefix, 'CHECKBOX_ORDER_LIST_ID')
+CHECKBOX_CUSTOMER_LIST_ID = dash_utils.generate_html_id(_prefix, 'CHECKBOX_CUSTOMER_LIST_ID')
+CHECKBOX_STATUT_LIST_ID = dash_utils.generate_html_id(_prefix, 'CHECKBOX_STATUT_LIST_ID')
 
 # ------------------------------------------------Mini Cards ------------------------------
-mini_card_subtitle_bias_percent_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_bias_percent_id')
 
-mini_card_subtitle_mad_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_mad_id')
-
-mini_card_subtitle_mape_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_mape_id' )
+MINI_CARD_SUBTITLE_BIAS_PERCENT_ID = dash_utils.generate_html_id(_prefix, 'MINI_CARD_SUBTITLE_BIAS_PERCENT_ID')
+MINI_CARD_SUBTITLE_MAD_ID = dash_utils.generate_html_id(_prefix, 'MINI_CARD_SUBTITLE_MAD_ID')
+MINI_CARD_SUBTITLE_MAPE_ID = dash_utils.generate_html_id(_prefix, 'MINI_CARD_SUBTITLE_MAPE_ID' )
 
 
 # -----------------------------------------------------------------------------------------
 
-input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id')
+INPUT_DATE_RANGE_ID = dash_utils.generate_html_id(_prefix, 'INPUT_DATE_RANGE_ID')

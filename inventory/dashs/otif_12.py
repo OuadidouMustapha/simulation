@@ -12,8 +12,6 @@ from django_pandas.io import read_frame
 import cufflinks as cf
 from plotly.subplots import make_subplots
 
-import colorlover, plotly
-
 cf.offline.py_offline.__PLOTLY_OFFLINE_INITIALIZED = True
 
 app = DjangoDash('otif', add_bootstrap_links=True)
@@ -34,7 +32,7 @@ figure_orders_id = dash_utils.generate_html_id(_prefix, 'figure_orders_id')
 
 details_product_list_id = dash_utils.generate_html_id(_prefix, 'details_product_list_id')
 
-# -------------------------------------------- Dropdown  list -------------------------------------------------
+# --------------------------------------------Dropdown  list -------------------------------------------------
 
 dropdown_product_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_product_list_id')
 dropdown_categorie_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_categorie_list_id')
@@ -43,7 +41,6 @@ dropdown_customer_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_custo
 dropdown_statut_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_statut_list_id')
 
 # --------------------------------------------Div list -------------------------------------------
-
 div_product_list_id = dash_utils.generate_html_id(_prefix, 'div_product_list_id')
 div_order_list_id = dash_utils.generate_html_id(_prefix, 'div_order_list_id')
 div_categorie_list_id = dash_utils.generate_html_id(_prefix, 'div_categorie_list_id')
@@ -61,7 +58,7 @@ input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id'
 
 _all_products = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
-_all_customers = list(Customer.objects.get_all_customers())[0:10]
+_all_customers = list(Customer.objects.get_all_customers())
 _all_status = list(Product.objects.get_all_status_of_products())
 
 layout = dict(
@@ -70,6 +67,8 @@ layout = dict(
     hovermode="closest",
     plot_bgcolor="#F9F9F9",
 )
+
+import colorlover, plotly
 
 cs12 = colorlover.scales['12']['qual']['Paired']
 
@@ -170,11 +169,11 @@ def body_container():
                         children=[
                             dcc.Tabs(
                                 id='forna-tabs-1',
-                                value='what-is',
+                                value='what-is-y',
                                 children=[
                                     dcc.Tab(
                                         label='OrdersDetails by Date',
-                                        value='what-is',
+                                        value='show-sequences',
                                         children=html.Div(
                                             [dcc.Graph(id=figure_ordersDetails_id)],
                                             className="",
@@ -239,10 +238,10 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
                                               end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        #product__category__in=selected_categories,
-        #product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__status__in=selected_status,
         order__ordered_at__gte=start_date,
-        #customer__in=selected_customers,
+        customer__in=selected_customers,
         order__ordered_at__lte=end_date
     )
 
@@ -291,29 +290,21 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
 
         new_df['Not Delivered'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
+                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else 0,
             axis=1)
-        new_df['Partially Delivered In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-            axis=1)
-
-        new_df['Partially Delivered Not In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-            axis=1)
+        new_df['Partially Delivered'] = new_df.apply(
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity else 0, axis=1)
         new_df['Delivered In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else 0,
             axis=1)
         new_df['Delivered Not In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else 0,
             axis=1)
         df_data = new_df.groupby(['customer_id']).agg({
             'Not Delivered': 'sum',
-            'Partially Delivered In Time': 'sum',
-            'Partially Delivered Not In Time': 'sum',
+            'Partially Delivered': 'sum',
             'Delivered In Time': 'sum',
             'Delivered Not In Time': 'sum',
         }).reset_index()
@@ -327,10 +318,9 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
                 'rgb(255,165,0)',
                 'rgb(0, 204, 0)',
                 'rgb(0, 48, 240)',
-                'rgb(0,255, 0)',
             ],
             x=['customer_id'],
-            y=['Not Delivered', 'Partially Delivered In Time','Partially Delivered Not In Time', 'Delivered In Time', 'Delivered Not In Time'],
+            y=['Not Delivered', 'Partially Delivered', 'Delivered In Time', 'Delivered Not In Time'],
             theme='white',
             title='title',
             xTitle='customer',
@@ -420,35 +410,27 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
         new_df['Not Delivered'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
+                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else 0,
             axis=1)
-        new_df['Partially Delivered In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-            axis=1)
-
-        new_df['Partially Delivered Not In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-            axis=1)
+        new_df['Partially Delivered'] = new_df.apply(
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity else 0, axis=1)
         new_df['Delivered In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else 0,
             axis=1)
         new_df['Delivered Not In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else 0,
             axis=1)
         df_data = new_df.groupby(['customer_id']).agg({
             'Not Delivered': 'sum',
-            'Partially Delivered In Time': 'sum',
-            'Partially Delivered Not In Time': 'sum',
+            'Partially Delivered': 'sum',
             'Delivered In Time': 'sum',
             'Delivered Not In Time': 'sum',
         }).reset_index()
 
         def otif(row):
-            sum = row['Not Delivered'] + row['Partially Delivered In Time']+ row['Partially Delivered Not In Time'] + row['Delivered In Time'] + row[
+            sum = row['Not Delivered'] + row['Partially Delivered'] + row['Delivered In Time'] + row[
                 'Delivered Not In Time']
             if sum != 0:
                 return (row['Delivered In Time'] / sum) * 100
@@ -558,29 +540,21 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
         new_df['Not Delivered'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
+                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else 0,
             axis=1)
-        new_df['Partially Delivered In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-            axis=1)
-
-        new_df['Partially Delivered Not In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-            axis=1)
+        new_df['Partially Delivered'] = new_df.apply(
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity else 0, axis=1)
         new_df['Delivered In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else 0,
             axis=1)
         new_df['Delivered Not In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else 0,
             axis=1)
         df_data = new_df.groupby(['ordered_at']).agg({
             'Not Delivered': 'sum',
-            'Partially Delivered In Time': 'sum',
-            'Partially Delivered Not In Time':'sum',
+            'Partially Delivered': 'sum',
             'Delivered In Time': 'sum',
             'Delivered Not In Time': 'sum',
         }).reset_index()
@@ -594,10 +568,9 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
                 'rgb(255,165,0)',
                 'rgb(0, 204, 0)',
                 'rgb(0, 48, 240)',
-                'rgb(0,255, 0)',
             ],
             x='ordered_at',
-            y=['Not Delivered', 'Partially Delivered In Time','Partially Delivered Not In Time', 'Delivered In Time', 'Delivered Not In Time'],
+            y=['Not Delivered', 'Partially Delivered', 'Delivered In Time', 'Delivered Not In Time'],
             theme='white',
             title='title',
             xTitle='customer',
@@ -620,6 +593,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     return figure
 
 
+
 @app.callback(
 
     Output(figure_orders_id, "figure"),
@@ -634,6 +608,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 )
 def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
                             end_date):
+
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         product__category__in=selected_categories,
@@ -686,8 +661,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         errors="raise"
     )
 
-    print(new_df)
-
     if new_df.size != 0:
 
         new_df['Not Delivered'] = new_df.apply(
@@ -695,14 +668,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
                 row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
             axis=1)
         new_df['Partially Delivered In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-            axis=1)
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity  and row.desired_at >= row.delivered_at else None, axis=1)
 
         new_df['Partially Delivered Not In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-            axis=1)
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None, axis=1)
         new_df['Delivered In Time'] = new_df.apply(
             lambda
                 row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
@@ -711,85 +680,72 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             lambda
                 row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
             axis=1)
-        df_data = new_df.groupby(['order__id']).agg({
+        df_data = new_df.groupby(['ordered_at']).agg({
             'Not Delivered': 'sum',
             'Partially Delivered In Time': 'sum',
             'Partially Delivered Not In Time': 'sum',
             'Delivered In Time': 'sum',
-            'ordered_at': 'first',
             'Delivered Not In Time': 'sum',
         }).reset_index()
 
-        df_data['sum_all'] = df_data.apply(
-            lambda
-                row: row['Not Delivered'] + row['Partially Delivered In Time'] + row[
-                'Partially Delivered Not In Time'] + row['Delivered In Time'] + row['Delivered Not In Time'],
-            axis=1)
+        # df_data['sum_all'] = df_data.apply(
+        #     lambda
+        #         row: row['Not Delivered']+row['Partially Delivered In Time']+row['Partially Delivered Not In Time']+row['Delivered In Time']+row['Delivered Not In Time'],
+        #     axis=1)
+        #
+        # df_data['Order Not Delivered'] = df_data.apply(
+        #     lambda
+        #         row: 1 if row['Not Delivered'] == row['sum_all'] and row['Not Delivered']!=0 else None,
+        #     axis=1
+        # )
+        #
+        # df_data['Order Partially Delivered In Time'] = df_data.apply(
+        #     lambda row: 1 if (
+        #             row['Partially Delivered Not In Time'] == 0
+        #             and row['Delivered Not In Time'] == 0
+        #             and ( row['Delivered In Time']<row['sum_all'] or
+        #                   row['Partially Delivered In Time']!=0 ) and
+        #             row['Delivered In Time']!=row['sum_all'] and
+        #             row['sum_all']!=0
+        #     ) else 0, axis=1)
+        #
+        # df_data['Order Partially Delivered Not In Time'] = df_data.apply(
+        #     lambda row: 1 if ( row['Partially Delivered Not In Time']!=0 or (row['Delivered Not In Time']<row['sum_all'] and row['Delivered Not In Time']!=0 )) and  row['sum_all']!=0  else 0, axis=1)
+        #
+        # df_data['Order Delivered In Time'] = df_data.apply(
+        #     lambda
+        #         row: 1 if row['Delivered In Time'] == row['sum_all'] and row['Delivered In Time']!=0 else None,
+        #     axis=1
+        # )
+        #
+        # df_data['Order Delivered Not In Time'] = df_data.apply(
+        #     lambda
+        #         row: 1 if row['Delivered Not In Time']!=0 and row['Delivered Not In Time']+row['Delivered In Time'] == row['sum_all']  else None,
+        #     axis=1
+        # )
 
-        df_data['Order Not Delivered'] = df_data.apply(
-            lambda
-                row: 1 if row['Not Delivered'] == row['sum_all'] and row['Not Delivered'] != 0 else None,
-            axis=1
-        )
+        # def otif(row):
+        #     sum = row['Not Delivered'] + row['Partially Delivered'] + row['Delivered In Time'] + row[
+        #         'Delivered Not In Time']
+        #     if sum != 0:
+        #         return (row['Delivered In Time'] / sum) * 100
+        #     else:
+        #         return 0
+        #
+        # df_data['OTIF'] = df_data.apply(
+        #     lambda row: otif(row),
+        #     axis=1)
 
-        df_data['Order Partially Delivered In Time'] = df_data.apply(
-            lambda row: 1 if (
-                    row['Partially Delivered Not In Time'] == 0
-                    and row['Delivered Not In Time'] == 0
-                    and row['Not Delivered'] < row['sum_all']
-                    and (
-                            row['Delivered In Time'] < row['sum_all']
+        print(df_data,'----------------------------------------------------')
 
-                            or row['Partially Delivered In Time'] != 0
-                    )
-                    and row['Delivered In Time'] <= row['sum_all']
-                    and row['sum_all'] != 0
-            ) else None, axis=1)
+        df_data.sort_values(by=['ordered_at'], inplace=True, ascending=False)
 
-        df_data['Order Partially Delivered Not In Time'] = df_data.apply(
-            lambda row: 1 if (row['Partially Delivered Not In Time'] != 0 or (
-                        row['Delivered Not In Time'] < row['sum_all'] and row['Delivered Not In Time'] != 0)) and row[
-                                 'sum_all'] != 0 else None, axis=1)
-
-        df_data['Order Delivered In Time'] = df_data.apply(
-            lambda
-                row: 1 if row['Delivered In Time'] == row['sum_all'] and row['Delivered In Time'] != 0 else None,
-            axis=1
-        )
-
-        df_data['Order Delivered Not In Time'] = df_data.apply(
-            lambda
-                row: 1 if row['Delivered Not In Time'] != 0 and row['Delivered Not In Time'] + row[
-                'Delivered In Time'] == row['sum_all'] else None,
-            axis=1
-        )
-
-        def otif(row):
-            sum = row['Not Delivered'] + row['Partially Delivered Not In Time'] + row['Partially Delivered In Time'] + \
-                  row['Delivered In Time'] + row['Delivered Not In Time']
-            if sum != 0:
-                return (row['Delivered In Time'] / sum) * 100
-            else:
-                return 0
-
-        df_data['OTIF'] = df_data.apply(
-            lambda row: otif(row),
-            axis=1)
-
-        print(df_data)
-
-        figure = df_data.iplot(
+        figure = new_df.iplot(
             asFigure=True,
             kind='bar',
             barmode='group',
-            x='ordered_at',
-            y=[
-                'Order Partially Delivered Not In Time',
-                'Order Delivered In Time',
-                'Order Delivered Not In Time',
-                'Order Partially Delivered In Time',
-                'Order Not Delivered'
-            ],
+            x=['customer_id'],
+            y=None,
             theme='white',
             title='title',
             xTitle='customer',
@@ -810,7 +766,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         )
 
     return figure
-
 
 @app.callback(
 
@@ -882,30 +837,22 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
         new_df['Not Delivered'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
+                row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else 0,
             axis=1)
-        new_df['Partially Delivered In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-            axis=1)
-
-        new_df['Partially Delivered Not In Time'] = new_df.apply(
-            lambda
-                row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-            axis=1)
+        new_df['Partially Delivered'] = new_df.apply(
+            lambda row: 1 if 0 < row.delivered_quantity < row.ordered_quantity else 0, axis=1)
         new_df['Delivered In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else 0,
             axis=1)
         new_df['Delivered Not In Time'] = new_df.apply(
             lambda
-                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
+                row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else 0,
             axis=1)
         df_data = new_df.agg({
             'Not Delivered': 'sum',
+            'Partially Delivered': 'sum',
             'Delivered In Time': 'sum',
-            'Partially Delivered In Time': 'sum',
-            'Partially Delivered Not In Time': 'sum',
             'Delivered Not In Time': 'sum',
         }).reset_index()
 

@@ -35,6 +35,9 @@ static/
 
 # Distribution / packaging
 .Python
+.idea
+*.sql
+venv/
 env/
 build/*.log
 *.pot

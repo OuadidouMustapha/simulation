@@ -26,10 +26,6 @@ import dash_table
 
 # Common elements
 #################
-def generate_html_id(prefix, id_variable):
-    generated_id = prefix + '-' + id_variable.replace('_', '-')
-    return generated_id
-
 
 def get_category_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id):
     div = html.Div([
@@ -429,3 +425,9 @@ def select_all_callbacks(app, dropdown_id, div_checklist_id, checklist_select_al
     #         raise PreventUpdate()
     #
     #     return get_checklist_select_all(checklist_select_all)
+
+def generate_html_id(prefix, id_variable):
+    ''' Add prefix to string and return a html id '''
+    id_variable = id_variable.lower()
+    generated_id = prefix + '-' + id_variable.replace('_', '-')
+    return generated_id

@@ -2,7 +2,7 @@ from django.urls import path
 from forecasting.dashboards import forecast_accuracy
 from forecasting.dashboards import forecast_accuracy_madec
 from forecasting.dashboards import forecast_accuracy_v1
-from forecasting.dashboards import forchest
+# from forecasting.dashboards import forchest
 from . import views
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
@@ -41,8 +41,8 @@ urlpatterns = [
     path('forecast/v<int:version_id>/approve-review-request',
          views.approveReviewRequest, name='approve_review_request'),
 #     path('forchest', views.ForchestView.as_view(), name='forchest'),
-    path('forchest/<int:versiondetail_id>',
-         views.ForchestView.as_view(), name='forchest'),
+#     path('forchest/<int:versiondetail_id>',
+#          views.ForchestView.as_view(), name='forchest'),
     path('version-detail', views.VersionDetailView.as_view(), name='version_detail'),
 
 #     url(r'^input_interface/(?P<pk>\d+)/$',

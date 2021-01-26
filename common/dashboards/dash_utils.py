@@ -243,11 +243,11 @@ def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, ico
                         dbc.Row([
 
                             dbc.Col([
-                                html.I(className=icon + ' fa-2x')
-                            ], sm=12, md=2, lg=2) if icon is not None else None,
+                                html.I(className=icon + ' fa-2x px-1')
+                            ], sm=12, md=3, lg=3) if icon is not None else None,
                             dbc.Col([
                                 title
-                            ], sm=12, md=10, lg=10)
+                            ], sm=12, md=9, lg=9)
                         ])
                     ], sm=12, md=10, lg=10, className='font-weight-bold text-primary mb-1'),
                     dcc.Loading(

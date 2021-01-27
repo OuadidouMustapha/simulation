@@ -318,6 +318,28 @@ class WarehouseQuerySet(models.QuerySet):
         return list of unique/distinct warehouses
         '''
         return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+    
+    def get_warehouses(self):
+        ''' NOTE deprecated function. Used to plot warehouses in dash map '''    
+        qs = self.annotate(available_products=Count(F('stock__product')))
+        # qs = self.annotate(total_product_quantity=Sum(F('stock__product')))
+        # qs = self.annotate(
+        #     avg_delivered_quantity=ExpressionWrapper(
+        #         Subquery(
+        #             DeliveryDetail.objects.filter(
+        #                 product=OuterRef('product'),
+        #                 sale__delivered_at__gte=delivered_at_start,  # _start_date,
+        #                 sale__delivered_at__lte=delivered_at_end,  # _send_date
+        #             ).values('product__reference'
+        #                     ).annotate(
+        #                 avg_delivered_quantity=ExpressionWrapper(
+        #                     Avg('delivered_quantity'), output_field=FloatField()
+        #                 )
+        #             ).values('avg_delivered_quantity')
+        #         ), output_field=DecimalField(decimal_places=2)
+        #     )
+        # )
+        return qs
 
 class ProductQuerySet(models.QuerySet):
     def get_all_products(self):

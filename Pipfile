@@ -41,6 +41,7 @@ django-notifications-hq = "*"
 pystan = "*"
 fbprophet = "*"
 hijri-converter = "*"
+factory-boy = "*"
 
 [requires]
 python_version = "3.7"

@@ -18,29 +18,6 @@ from . import managers
 # MANAGERS
 ###############################################
 
-class WarehouseQuerySet(models.QuerySet):
-    def get_warehouses(self):
-        qs = self.annotate(available_products=Count(F('stock__product')))
-        # qs = self.annotate(total_product_quantity=Sum(F('stock__product')))
-        # qs = self.annotate(
-        #     avg_delivered_quantity=ExpressionWrapper(
-        #         Subquery(
-        #             DeliveryDetail.objects.filter(
-        #                 product=OuterRef('product'),
-        #                 sale__delivered_at__gte=delivered_at_start,  # _start_date,
-        #                 sale__delivered_at__lte=delivered_at_end,  # _send_date
-        #             ).values('product__reference'
-        #                     ).annotate(
-        #                 avg_delivered_quantity=ExpressionWrapper(
-        #                     Avg('delivered_quantity'), output_field=FloatField()
-        #                 )
-        #             ).values('avg_delivered_quantity')
-        #         ), output_field=DecimalField(decimal_places=2)
-        #     )
-        # )
-        return qs
-
-
 class DeliveryDetailQuerySet(models.QuerySet):
     # stock_pareto functions
     def get_avg_delivered_quantity(self, filter_kwargs={}, group_by_field='product'):
@@ -348,13 +325,15 @@ class ProductCategory(MPTTModel):
         'Min DIO', null=True, blank=True)
     max_dio = models.IntegerField(
         'Max DIO', null=True, blank=True)
+    monthly_capacity = models.IntegerField(blank=True, null=True)
+
     status = models.CharField(
         max_length=32,
         choices=STATUS,
         default=CREATED,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     tree = TreeManager()
 
@@ -424,11 +403,14 @@ class Product(CommonMeta):
         max_digits=11, decimal_places=2, blank=True, null=True)
     unit_price = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
+    profit_margin = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
     weight_unit = models.TextField(blank=True, null=True)
     volume = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
     volume_unit = models.TextField(blank=True, null=True)
     package_size = models.IntegerField(blank=True, null=True)
+    unit_size = models.IntegerField(blank=True, null=True)
     pallet_size = models.IntegerField(blank=True, null=True)
     product_type = models.CharField(max_length=20, blank=True, null=True)
     product_ray = models.CharField(max_length=20, blank=True, null=True)
@@ -445,7 +427,6 @@ class Product(CommonMeta):
         # default=F,
         null=True, blank=True
     )
-
 
     objects = managers.ProductQuerySet.as_manager()
 
@@ -487,14 +468,26 @@ class Product(CommonMeta):
 
 
 class Warehouse(CommonMeta):
+    RDC = 'RDC'
+    CDC = 'CDC'
+    WAREHOUSE_TYPE = (
+        (RDC, 'RDC'),
+        (CDC, 'CDC'),
+    )
     id = models.BigAutoField(primary_key=True)
     reference = models.CharField(unique=True, max_length=200)
     name = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=200, blank=True, null=True)
-    available_trucks = models.IntegerField(blank=True, null=True)
     reception_capacity = models.IntegerField(blank=True, null=True)
+    shipping_capacity = models.IntegerField(blank=True, null=True)
+
     lat = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     lon = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    warehouse_type = models.CharField(
+        max_length=32,
+        choices=WAREHOUSE_TYPE,
+        default=RDC,
+    )
 
     objects = managers.WarehouseQuerySet.as_manager()
     
@@ -529,10 +522,10 @@ class Customer(CommonMeta):
     address = models.TextField(blank=True, null=True)
     circuit = models.ForeignKey(
         Circuit, on_delete=models.CASCADE, blank=True, null=True)
-
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
     
     objects = managers.CustomerQuerySet.as_manager()
-
 
     # class Meta:
     #     constraints = [

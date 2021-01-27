@@ -49,6 +49,10 @@ MINI_CARD_SUBTITLE_BIAS_PERCENT_ID = dash_utils.generate_html_id(_prefix, 'MINI_
 MINI_CARD_SUBTITLE_MAD_ID = dash_utils.generate_html_id(_prefix, 'MINI_CARD_SUBTITLE_MAD_ID')
 MINI_CARD_SUBTITLE_MAPE_ID = dash_utils.generate_html_id(_prefix, 'MINI_CARD_SUBTITLE_MAPE_ID' )
 
+SUBTITLE_ORDERS_ID = dash_utils.generate_html_id(_prefix, 'SUBTITLE_ORDERS_ID' )
+SUBTITLE_DELIVERIES_ID = dash_utils.generate_html_id(_prefix, 'SUBTITLE_DELIVERIES_ID' )
+SUBTITLE_OTIF_ID = dash_utils.generate_html_id(_prefix, 'SUBTITLE_OTIF_ID' )
+
 
 # -----------------------------------------------------------------------------------------
 

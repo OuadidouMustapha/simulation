@@ -277,6 +277,53 @@ def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, ico
     ], className='card border-left-primary shadow card-body mb-4')
     return div
 
+def get_mini_card_profil(data_value_id, title=None, data_value=None, subtitle=None, icon=None, dropdown_div=None,
+                  datatable_div=None,id_subtitle=None):
+    """
+    Build div representing mini card
+    """
+    # if datatable_id:
+    #     datatable_div = dash_table.DataTable(id=datatable_id)
+    # else:
+    #     datatable_div = ''
+    div = html.Div([
+        dbc.Row([
+            html.Div([
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Row([
+
+                            dbc.Col([
+                                html.I(className=icon + ' fa-2x px-1')
+                            ], sm=12, md=3, lg=3) if icon is not None else None,
+                            dbc.Col([
+                                title
+                            ], sm=12, md=9, lg=9)
+                        ])
+                    ], sm=12, md=10, lg=10, className='font-weight-bold text-primary mb-1'),
+                    dcc.Loading(
+                        html.Div([
+                            data_value,
+                        ], id=data_value_id, className='font-weight-bold text-primary mb-1 float-right'),
+                    ),
+                ]),
+                dcc.Loading(
+                    html.Div([
+                        html.Br(),
+                        html.P(children=subtitle,id=id_subtitle if id_subtitle!=None else 'para',className='font-weight-bold text-primary  h3  text-center',),
+                    ],
+                        # id=subtitle_id,
+                        # className='text-primary'
+                    ),
+                )
+            ], className='col mr-2'),
+            html.Div([
+                html.Div([
+                ], className='fas {icon} fa-3x text-gray-300')
+            ], className='col-auto')
+        ]),
+    ], className='card border-left-primary shadow card-body mb-4')
+    return div
 
 def get_datatable_card(div_id, style_data_conditional=None, **kwargs):
     """

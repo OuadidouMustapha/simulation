@@ -6,6 +6,7 @@ from inventory.dashs import otif
 from inventory.dashs import dash_otif_vs_sp
 from inventory.dashs import dash_order_vs_supplier
 from inventory.dashs import dash_delivery_vs_supplier
+from inventory.dashs import dash_profil
 from . import views
 
 app_name = 'inventory'
@@ -24,6 +25,8 @@ urlpatterns = [
     path('otif', views. OtifIndexView.as_view(),
          name='index'),
     path('otif_supplier', views.OtifSupplierIndexView.as_view(),
+         name='index'),
+    path('profil', views.ProfilIndexView.as_view(),
          name='index'),
 ]
 

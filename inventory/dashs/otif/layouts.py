@@ -67,24 +67,23 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',
-                                             subtitle=
-                                             
-                                                dbc.Col([
-                                                    dbc.Progress(
-                                                        id='400',
-                                                        striped=True,
-                                                    ),
-                                                ]),
-
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF
+                                            #  subtitle=
+                                            #     [html.Br(),
+                                            #     dbc.Col([
+                                            #         dbc.Progress(
+                                            #             id='400',
+                                            #             striped=True,
+                                            #         ),
+                                            #     ])],icon="fas fa-tachometer-alt"
                                             )
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_MAD_ID, title='Number of Orders ',
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAD_ID, title='Number of Orders ',id_subtitle=SUBTITLE_ORDERS_ID,
                                              subtitle='', icon='fas fa-clipboard-list'),
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                    dash_utils.get_mini_card(MINI_CARD_SUBTITLE_MAPE_ID,title='Number of Deliveries',subtitle='',icon='fas fa-dolly')
+                   dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAPE_ID,title='Number of Deliveries',subtitle='',id_subtitle=SUBTITLE_DELIVERIES_ID,icon='fas fa-dolly')
                 ], sm=12, md=4, lg=4),
             ]),
             dbc.Row([

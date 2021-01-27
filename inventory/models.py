@@ -1,6 +1,6 @@
 from django.db import models
 
-from stock.models import Product
+from stock.models import Product,Warehouse
 from . import managers
 
 
@@ -69,6 +69,8 @@ class StockCheck(CommonMeta):
     check_date = models.DateField(blank=True, null=True)
     location = models.ForeignKey(
         Location, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(blank=True, null=True)
     A = 'A'
     Q = 'Q'

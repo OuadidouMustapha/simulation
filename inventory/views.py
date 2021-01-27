@@ -25,3 +25,6 @@ class OtifIndexView(TemplateView):
 
 class OtifSupplierIndexView(TemplateView):
     template_name = "otif/supplier.html"
+    
+class ProfilIndexView(TemplateView):
+    template_name = "profil/index.html"

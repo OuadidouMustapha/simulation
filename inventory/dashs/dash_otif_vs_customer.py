@@ -583,6 +583,9 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     df_data['OTIF'] = df_data.apply(
         lambda row: otif(row),
         axis=1)
+    
+    
+    print(df_data,'deserto')
 
     figure = df_data.iplot(
         asFigure=True,
@@ -597,16 +600,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         xTitle='Ordered Date',
         yTitle='Number of Orders',
     )
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -730,7 +723,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #         yTitle='Number of Orders',
     #     )
 
-    return figure,'2222222222222222222'
+    return figure
 #
 #
 @app.callback(

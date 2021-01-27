@@ -500,7 +500,7 @@ class Warehouse(CommonMeta):
     #     ]
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.reference}'
 
 
 class Circuit(CommonMeta):

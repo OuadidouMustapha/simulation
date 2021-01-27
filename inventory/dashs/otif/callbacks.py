@@ -204,11 +204,10 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
 
     return figure
 
-#
+
+
 @app.callback(
-    [
-        Output(FIGURE_OTIF_ID, "figure"),
-    ],
+    Output(FIGURE_OTIF_ID, "figure"),
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
@@ -218,7 +217,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,end_date):
+def plot_otif_by_date_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,end_date):
 
 
 
@@ -297,6 +296,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     df_data['OTIF'] = df_data.apply(
         lambda row: otif(row),
         axis=1)
+    
+        
+    
+
 
     figure = df_data.iplot(
         asFigure=True,
@@ -310,6 +313,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         title='title',
         xTitle='Ordered Date',
         yTitle='Number of Orders',
+    )
+    
+    figure.update_xaxes(
+            tickformat = '%d %B %Y',
     )
 
 
@@ -444,7 +451,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     #         yTitle='Number of Orders',
     #     )
 
-    return figure,'2222222222222222222'
+    return figure
 #
 #
 @app.callback(
@@ -545,6 +552,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         title='title',
         xTitle='date ',
         yTitle='Number of Orders',
+    )
+    
+    figure.update_xaxes(
+            tickformat = '%d %B %Y',
     )
 
 
@@ -835,6 +846,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         xTitle='Ordered Date',
         yTitle='Number of Orders',
     )
+    
+    figure.update_xaxes(
+            tickformat = '%d %B %Y',
+    )
     # ------------------------------------------------------------------------------------------------------------------------------------------
     # results = OrderDetail.objects.filter(
     #     product__in=selected_products,
@@ -1013,8 +1028,8 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     [
         Output(FIGURE_PIE_ORDERDETAIL_ID, "figure"),
         Output(FIGURE_PIE_ORDER_ID, "figure"),
-        Output(MINI_CARD_SUBTITLE_MAPE_ID, 'children'),
-        Output(MINI_CARD_SUBTITLE_MAD_ID, 'children'),
+        Output(SUBTITLE_ORDERS_ID, 'children'),
+        Output(SUBTITLE_DELIVERIES_ID, 'children'),
         Output("400", "value"), 
         Output("400", "children"),
         Output("400", "color")   
@@ -1177,6 +1192,9 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     values = df_data.values
 
     print(labels,values,'desert')
+    
+    
+    print(df_data,'sultan')
 
     df_data = df_data.agg({
         'Not_Delivered': 'sum',
@@ -1190,7 +1208,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     if sum_all!=0:
 
-        OTIF = (df_data[0][0]/sum_all)*100
+        OTIF = (df_data[0][1]/sum_all)*100
 
     else:
         OTIF = 0
@@ -1371,7 +1389,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     
 
 
-    return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,OTIF,str(OTIF)+'%' if OTIF >= 5 else "",color
+    return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,OTIF,str(OTIF)+'%' if OTIF >= 10 else "",color
 
 
 dash_utils.select_all_callbacks(

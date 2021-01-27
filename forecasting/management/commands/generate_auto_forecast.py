@@ -75,7 +75,8 @@ class Command(BaseCommand):
 
         # Get the queryset
         qs = OrderDetail.objects.filter(
-            order__ordered_at__gte=start_date)
+            order__ordered_at__gte=start_date,
+        )
         qs = qs.values('product__id', 'customer__id', 'customer__circuit__id',
                         'order__ordered_at', 'ordered_quantity')
         
@@ -124,11 +125,33 @@ class Command(BaseCommand):
 
         print('top_customer_df\n', top_customer_list)
 
+        selected_products = [
+            263667938973738,
+            258791003609130,
+            267997250279466,
+            258786675087402,
+            250062489212970,
+            254457348053034,
+            276859897468970,
+            259201172985898,
+            245808374437930,
+            263469279959082,
+            263810798016554,
+            272053829064746,
+            254873993435178,
+            258796355541034,
+            245670935484458,
+            250266601610023,
+            245868471998506,
+            276791177992234,
+            259412751505450,
+        ]
+
         df = df[(
             # (df['circuit'] == 4686550636307245) &
             # (df['customer'].isin(top_customer_list)) &
-            (df['product'] == 258791003609130) &
-            (df['ds'] < date(2020, 10, 31))
+            (df['product'].isin(selected_products)) 
+            # (df['ds'] < date(2020, 11, 11))
         )]
         print('df length', df)
 
@@ -173,22 +196,36 @@ class Command(BaseCommand):
             _bulk_forecast = []
             _forecasted_circuit_id = []
 
-
-            customer_list_df = df.loc[(df['y'] > 0)]
+            customer_list_df = df.loc[(df['product'] = p) & (df['y'] > 0)]
+            customer_list_df['count_days'] = 0
+            customer_list_df = customer_list_df.groupby(
+                by=['customer', 'ds'],
+                as_index=False
+            ).agg({
+                'count_days': 'sum',
+                'product': 'first',
+                'circuit': 'first',
+            }).reset_index().sort_values(
+                by=['ds'],
+                ascending=False,
+            )
             customer_list_df = customer_list_df.groupby(
                 by=['customer'],
                 as_index=False
             ).agg({
-                'y': 'count',
+                'count_days': 'count',
                 'product': 'first',
                 'circuit': 'first',
             }).reset_index().sort_values(
-                by=['y'],
+                by=['customer'],
                 ascending=False,
             )
 
+            customer_list_df = customer_list_df.loc[(
+                customer_list_df['count_days'] > 2)]
+
             customer_positive_list = customer_list_df['customer'].tolist()
-            print('List of customers with data > 0: \n', customer_positive_list)
+            print('List of customers with data > 2: \n', customer_positive_list)
 
             # [:min(len(_all_customers), 200)]:
             for c in list(set(_all_customers) & set(customer_positive_list)):
@@ -274,9 +311,6 @@ class Command(BaseCommand):
                 for c in _forecasted_circuit_id
             ]
             VersionDetail.objects.bulk_create(_version_detail_objects)
-            print('Done')
-
-
         
         self.stdout.write(self.style.SUCCESS(
             '%s forecasts are saved successfully in %s sec . %s forecasts skipped cause of insufficient data' % (_added_forecasts, time.time()-start_time, _skipped_forecasts)))

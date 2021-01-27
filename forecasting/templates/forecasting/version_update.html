@@ -1,0 +1,53 @@
+    
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% comment %} {% load widget_tweaks %} {% endcomment %}
+
+{% block content %}
+
+
+    <!-- card -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Version" %} {{ object.reference }}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard1" style="">
+
+                    <div class="card-body">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        {% comment %} <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-row align-items-end">
+                                {% for field in form.visible_fields %}
+                                    <div class="col">
+                                        {{ field.label_tag }}
+                                        {% render_field field class="mb-2 form-control" %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="submit" class="btn btn-xs btn-primary">{% trans "Update" %}</button>
+                        </form> {% endcomment %}
+
+                    {% comment %} <form method="post">{% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="submit" value="Update">
+                    </form> {% endcomment %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+

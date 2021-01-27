@@ -18,30 +18,7 @@ from . import managers
 # MANAGERS
 ###############################################
 
-class WarehouseQuerySet(models.QuerySet):
-    def get_warehouses(self):
-        qs = self.annotate(available_products=Count(F('stock__product')))
-        # qs = self.annotate(total_product_quantity=Sum(F('stock__product')))
-        # qs = self.annotate(
-        #     avg_delivered_quantity=ExpressionWrapper(
-        #         Subquery(
-        #             SaleDetail.objects.filter(
-        #                 product=OuterRef('product'),
-        #                 sale__sold_at__gte=sold_at_start,  # _start_date,
-        #                 sale__sold_at__lte=sold_at_end,  # _send_date
-        #             ).values('product__reference'
-        #                     ).annotate(
-        #                 avg_delivered_quantity=ExpressionWrapper(
-        #                     Avg('delivered_quantity'), output_field=FloatField()
-        #                 )
-        #             ).values('avg_delivered_quantity')
-        #         ), output_field=DecimalField(decimal_places=2)
-        #     )
-        # )
-        return qs
-
-
-class SaleDetailQuerySet(models.QuerySet):
+class DeliveryDetailQuerySet(models.QuerySet):
     # stock_pareto functions
     def get_avg_delivered_quantity(self, filter_kwargs={}, group_by_field='product'):
         print('group_by_field; ', group_by_field)
@@ -176,9 +153,9 @@ class StockControlQuerySet(models.QuerySet):
 
     def annotate_count_avg_dio(self, dio_low_value, dio_high_value, **kwargs):
 
-        sold_at_start = datetime.datetime(
+        delivered_at_start = datetime.datetime(
             2018, 3, 4, 0, 0, tzinfo=datetime.timezone.utc)
-        sold_at_end = datetime.datetime(
+        delivered_at_end = datetime.datetime(
             2020, 3, 7, 0, 0, tzinfo=datetime.timezone.utc)
 
         # Get main queryset with available kwargs arguments
@@ -194,11 +171,11 @@ class StockControlQuerySet(models.QuerySet):
         qs = qs.annotate(
             avg_delivered_quantity=ExpressionWrapper(
                 Subquery(
-                    SaleDetail.objects.filter(
+                    DeliveryDetail.objects.filter(
                         stock__product=OuterRef(utils.convert_group_by_field_to_attribute(
                             'product', 'StockControl')),
-                        sale__sold_at__gte=sold_at_start,  # _start_date,
-                        sale__sold_at__lte=sold_at_end,  # _send_date
+                        sale__delivered_at__gte=delivered_at_start,  # _start_date,
+                        sale__delivered_at__lte=delivered_at_end,  # _send_date
                     ).values('stock__product__reference'
                              ).annotate(
                         avg_delivered_quantity=ExpressionWrapper(
@@ -318,11 +295,12 @@ class CommonMeta(models.Model):
         max_length=32,
         choices=STATUS,
         default=CREATED,
+        null=True, blank=True
     )
     # added_by = models.ForeignKey(settings.AUTH_USER_MODEL, )
     # modified_by = models.ForeignKey(settings.AUTH_USER_MODEL)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -341,19 +319,21 @@ class ProductCategory(MPTTModel):
     # Parent attribute uses MPTT model
     parent = TreeForeignKey('self', on_delete=models.CASCADE,
                             null=True, blank=True, related_name='children', db_index=True)
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     min_dio = models.IntegerField(
         'Min DIO', null=True, blank=True)
     max_dio = models.IntegerField(
         'Max DIO', null=True, blank=True)
+    monthly_capacity = models.IntegerField(blank=True, null=True)
+
     status = models.CharField(
         max_length=32,
         choices=STATUS,
         default=CREATED,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     tree = TreeManager()
 
@@ -392,24 +372,64 @@ class ProductCategory(MPTTModel):
 
 
 class Product(CommonMeta):
+    # ABC segmentation
+    A = 'A'
+    B = 'B'
+    C = 'C'
+    ABC_SEGMENTATION = (
+        (A, 'Extremely important (A)'),
+        (B, 'Moderately important (B)'),
+        (C, 'Relatively unimportant (C)'),
+    )
+
+    F = 'F'
+    M = 'M'
+    R = 'R'
+    FMR_SEGMENTATION = (
+        (F, 'Frequently consumed (F)'),
+        (M, 'Moderately consumed (M)'),
+        (R, 'Rarely consumed (R)'),
+    )
+
+    id = models.BigAutoField(primary_key=True)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, blank=True, null=True)  # Try this parameter related_name='products'
-    reference = models.CharField(unique=True, max_length=20, null=False)
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    reference = models.CharField(unique=True, max_length=20)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     cost = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
     weight = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-    weight_unit = models.TextField(blank=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    profit_margin = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    weight_unit = models.TextField(blank=True, null=True)
     volume = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-    volume_unit = models.TextField(blank=True)
-    package = models.IntegerField(blank=True, null=True)
-    pallet = models.IntegerField(blank=True, null=True)
+    volume_unit = models.TextField(blank=True, null=True)
+    package_size = models.IntegerField(blank=True, null=True)
+    unit_size = models.IntegerField(blank=True, null=True)
+    pallet_size = models.IntegerField(blank=True, null=True)
     product_type = models.CharField(max_length=20, blank=True, null=True)
     product_ray = models.CharField(max_length=20, blank=True, null=True)
     product_universe = models.CharField(max_length=20, blank=True, null=True)
+    abc_segmentation = models.CharField(
+        max_length=32,
+        choices=ABC_SEGMENTATION,
+        # default=A,
+        null=True, blank=True
+    )
+    fmr_segmentation = models.CharField(
+        max_length=32,
+        choices=FMR_SEGMENTATION,
+        # default=F,
+        null=True, blank=True
+    )
+
+    objects = managers.ProductQuerySet.as_manager()
+
     
     class Meta:  # new
         indexes = [models.Index(fields=['reference'])]
@@ -419,8 +439,8 @@ class Product(CommonMeta):
         return f'{self.reference}'
 
 
-    def get_absolute_url(self):
-        return reverse('stock:product_detail', kwargs={'pk': self.id})
+    # def get_absolute_url(self):
+    #     return reverse('forecasting:input_interface')
     
     def get_products(category_ids=None):
         '''
@@ -448,16 +468,291 @@ class Product(CommonMeta):
 
 
 class Warehouse(CommonMeta):
+    RDC = 'RDC'
+    CDC = 'CDC'
+    WAREHOUSE_TYPE = (
+        (RDC, 'RDC'),
+        (CDC, 'CDC'),
+    )
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    reception_capacity = models.IntegerField(blank=True, null=True)
+    shipping_capacity = models.IntegerField(blank=True, null=True)
 
-    name = models.CharField(unique=True, max_length=20, blank=True)
-    address = models.CharField(max_length=200, blank=True)
     lat = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     lon = DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    warehouse_type = models.CharField(
+        max_length=32,
+        choices=WAREHOUSE_TYPE,
+        default=RDC,
+    )
 
-    objects = WarehouseQuerySet.as_manager()
+    objects = managers.WarehouseQuerySet.as_manager()
+    
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['name', 'lat', 'lon'], name='stock_warehouse_uniq')
+    #     ]
 
     def __str__(self):
         return f'{self.name}'
+
+
+class Circuit(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, blank=True, null=True)
+
+    objects = managers.CircuitQuerySet.as_manager()
+    
+
+    def __str__(self):
+        return f'{self.reference}'
+
+class Customer(CommonMeta):
+    # TODO : Separate Customer as a company from the provider as a person
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    
+    objects = managers.CustomerQuerySet.as_manager()
+
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['reference', 'circuit'], name='customer_reference_circuit_uniq')
+    #     ]
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class Supplier(CommonMeta):
+    # TODO : Separate provider as a company from the provider as a person
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(max_length=200, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class Supply(CommonMeta):
+
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=True, max_length=200)
+    supplied_at = models.DateField(blank=True, null=True)
+    total_amount = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.reference}'
+
+
+class SupplyDetail(CommonMeta):
+
+    supply = models.ForeignKey(
+        Supply, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    # supply_type = local, import
+    unit_price = models.IntegerField(blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Supply: {self.supply}, product: {self.product}'
+
+class Order(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    reference = models.CharField(unique=True, max_length=200)
+    ordered_at = models.DateField(blank=True, null=True)
+    tour = models.CharField(max_length=200, blank=True, null=True)
+    # warehouse = models.ForeignKey(
+    #     Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    # product = models.ForeignKey(
+    #     Product, on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(
+    #     ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    # circuit = models.ForeignKey(
+    #     Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    # customer = models.ForeignKey(
+    #     Customer, on_delete=models.CASCADE, blank=True, null=True)
+    # total_amount = models.IntegerField(blank=True, null=True)
+    # ordered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
+    # unit_price = models.IntegerField(blank=True, null=True)
+
+    objects = managers.OrderQuerySet.as_manager()
+
+
+    def __str__(self):
+        return self.reference
+
+    def get_product_orders(product_id, start_date, end_date):
+        '''
+        TODO : add default parameters
+        Return list of order of one product between a range of date
+        '''
+        product_order = OrderDetail.objects.filter(
+            product=product_id)
+        product_order_query = Order.objects.filter(Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
+            'reference', 'ordered_at', 'orderdetail__product', 'orderdetail__ordered_quantity')
+
+        return product_order_query
+
+
+class OrderDetail(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+
+    order_line = models.IntegerField(blank=True, null=True)
+    ordered_quantity = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    discount = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    
+    desired_at = models.DateTimeField(auto_now_add=True)
+
+    objects = managers.OrderDetailQuerySet.as_manager()
+
+    def __str__(self):
+        return f'Order:{self.order}, order_line {self.order_line}'
+
+class Delivery(CommonMeta):  # TODO rename to Delivery
+    id = models.BigAutoField(primary_key=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(max_length=200, blank=True, null=True)
+    delivered_at = models.DateField(blank=True, null=True)
+    # warehouse = models.ForeignKey(
+    #     Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    # product = models.ForeignKey(
+    #     Product, on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(
+    #     ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    # circuit = models.ForeignKey(
+    #     Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    # customer = models.ForeignKey(
+    #     Customer, on_delete=models.CASCADE, blank=True, null=True)
+    # supplier = models.ForeignKey(
+    #     Supplier, on_delete=models.CASCADE, blank=True, null=True)
+    # delivered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
+    # total_amount = models.IntegerField(blank=True, null=True)
+    
+    objects = managers.DeliveryQuerySet.as_manager()
+
+
+    def __str__(self):
+        return f'order:{self.order}, reference: {self.reference}'
+
+    def get_product_sales(product_id, start_date, end_date):
+        '''
+        TODO : add default parameters
+        Return list of sales of one product between a range of date
+        '''
+        product_sales = DeliveryDetail.objects.filter(
+            product=product_id)
+        product_sales_query = Delivery.objects.filter(Q(saledetail__in=product_sales) & Q(delivered_at__gte=start_date) & Q(delivered_at__lte=end_date)).values(
+            'reference', 'delivered_at', 'saledetail__product', 'saledetail__delivered_quantity')
+
+        return product_sales_query
+
+
+class DeliveryDetail(CommonMeta):
+    id = models.BigAutoField(primary_key=True)
+    delivery = models.ForeignKey(
+        Delivery, on_delete=models.CASCADE, blank=True, null=True)
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.CASCADE, blank=True, null=True)
+    circuit = models.ForeignKey(
+        Circuit, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, blank=True, null=True)
+
+    delivered_quantity = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    unit_price = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+    tariff = models.CharField(max_length=200, blank=True, null=True)
+    discount = models.DecimalField(
+        max_digits=11, decimal_places=2, blank=True, null=True)
+        
+    # objects = DeliveryDetailQuerySet.as_manager()
+
+    def __str__(self):
+        return f'sale:{self.sale}, Stock: {self.stock}'
+
+    def get_products():
+        # TODO : delete this methode if not used Or update it (We already have a similar functtion in `product` class)
+        '''
+        Get list of products with order(s)
+        [{'label': 'P03600', 'value': 1}, {'label': 'P03601', 'value': 2}]
+        This format is compatible with Plotly data input
+        '''
+        return list(DeliveryDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label', 'value').distinct())
+
+    def get_avg_quantity_in_date_range(delivered_at_start, delivered_at_end):
+        '''
+        delivered_at_start : start date sold at 
+        delivered_at_end : end date sold at 
+        '''
+        queryset = DeliveryDetail.objects.filter(
+            sale__delivered_at__gte=delivered_at_start,
+            sale__delivered_at__lte=delivered_at_end
+        ).values(
+            'product__reference'
+        ).annotate(
+            avg_quantity=Avg('delivered_quantity')
+        )
+        return queryset
+
+
+class Invoice(CommonMeta):
+
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    sale = models.ForeignKey(
+        Delivery, on_delete=models.CASCADE, blank=True, null=True)
+    reference = models.CharField(unique=True, max_length=200)
+    invoicing_date = models.DateField(blank=True, null=True)
+    # may add other fields like billing method, coupon, credit..
+    total_amount = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'reference:{self.reference}'
+
+
+####### deprecated tables ##########
 
 
 class Stock(CommonMeta):
@@ -472,8 +767,8 @@ class Stock(CommonMeta):
 
 class StockPolicy(CommonMeta):
     stock = models.OneToOneField(
-        Stock, 
-        on_delete=models.CASCADE, 
+        Stock,
+        on_delete=models.CASCADE,
         # primary_key=True,
     )
     safety_stock = models.IntegerField(blank=True, null=True)
@@ -554,13 +849,13 @@ class StockControl(CommonMeta):
         else:  # Default value
             values_args.append('stock__product__reference')
 
-        # def avg_quantity_by_product_in_date_range(sold_at_start_date, sold_at_end_date, outref_product='product'):
+        # def avg_quantity_by_product_in_date_range(delivered_at_start_date, delivered_at_end_date, outref_product='product'):
         #     '''
         #     '''
-        #     queryset = SaleDetail.objects.filter(
+        #     queryset = DeliveryDetail.objects.filter(
         #         product=OuterRef('product'),
-        #         sale__sold_at__gte=sold_at_start_date,
-        #         sale__sold_at__lte=sold_at_end_date
+        #         sale__delivered_at__gte=delivered_at_start_date,
+        #         sale__delivered_at__lte=delivered_at_end_date
         #     ).values(
         #         'product__reference'
         #     ).annotate(
@@ -591,10 +886,10 @@ class StockControl(CommonMeta):
                 F('product_quantity')*F('stock__product__volume'), output_field=FloatField())),
             avg_dio=Avg(ExpressionWrapper(
                 F('product_quantity') / Subquery(
-                    SaleDetail.objects.filter(
+                    DeliveryDetail.objects.filter(
                         stock__product=OuterRef('stock__product'),
-                        sale__sold_at__gte=start_date,  # _start_date,
-                        sale__sold_at__lte=end_date,  # _send_date
+                        sale__delivered_at__gte=start_date,  # _start_date,
+                        sale__delivered_at__lte=end_date,  # _send_date
                     ).values('stock__product__reference'
                     ).annotate(
                         avg_quantity=Avg('delivered_quantity')
@@ -624,7 +919,7 @@ class StockControl(CommonMeta):
 
         return queryset
 
-    def avg_delivered_quantity_by_product_in_date_range(sold_at_start_date, sold_at_end_date, category_ids=None, product_ids=None):
+    def avg_delivered_quantity_by_product_in_date_range(delivered_at_start_date, delivered_at_end_date, category_ids=None, product_ids=None):
         '''
         '''
         # Check if `product_ids` argument is an array like [1, 2, 10]
@@ -645,13 +940,13 @@ class StockControl(CommonMeta):
         else:
             filter_kwargs = {'stock__product': product_ids}
 
-        queryset = SaleDetail.objects.filter(
+        queryset = DeliveryDetail.objects.filter(
             **filter_kwargs,
-            sale__sold_at__gte=sold_at_start_date,
-            sale__sold_at__lte=sold_at_end_date,
+            sale__delivered_at__gte=delivered_at_start_date,
+            sale__delivered_at__lte=delivered_at_end_date,
         ).values(
             utils.convert_group_by_field_to_attribute(
-                'product', 'SaleDetail')
+                'product', 'DeliveryDetail')
         ).annotate(
             avg_quantity=Avg('delivered_quantity')
         )
@@ -723,8 +1018,8 @@ class StockControl(CommonMeta):
         return qs
 
     def get_stock_dio(
-            sold_at_start_date,
-            sold_at_end_date,
+            delivered_at_start_date,
+            delivered_at_end_date,
             avg_quantity_period='year',
             avg_sale_period='year',
             group_by='product',
@@ -732,16 +1027,16 @@ class StockControl(CommonMeta):
         """TODO : add default parameters
         Return list of sales of one product between a range of date
         [{'inventory_date': * , 'product_quantity': *, 'total_cost': *}]
-        
+
         Parameters
         ----------
         start_date : [type]
             [description]
         end_date : [type]
             [description]
-        sold_at_start_date : [type]
+        delivered_at_start_date : [type]
             [description]
-        sold_at_end_date : [type]
+        delivered_at_end_date : [type]
             [description]
         avg_quantity_period : str, optional
             [description], by default 'year'
@@ -749,7 +1044,7 @@ class StockControl(CommonMeta):
             [description], by default 'year'
         group_by : str, optional
             [description], by default 'product'
-        
+
         Other Parameters
         ----------------
         **kwargs : xxx, optional
@@ -762,7 +1057,7 @@ class StockControl(CommonMeta):
         """
         def annotate_avg_dio_to_stock(stock_queryset, group_by='product', avg_sale_period='year'):
             """[summary]
-            
+
             Parameters
             ----------
             stock_queryset : queryset
@@ -771,7 +1066,7 @@ class StockControl(CommonMeta):
                 [description], by default 'product'
             avg_sale_period : str, optional
                 [description], by default 'year'
-            
+
             Returns
             -------
             queryset
@@ -785,7 +1080,7 @@ class StockControl(CommonMeta):
 
             # -- `group_by` --
             stockcontrol_group_by_attribute = utils.convert_group_by_field_to_attribute(group_by, 'StockControl')
-            saledetail_group_by_attribute = utils.convert_group_by_field_to_attribute(group_by, 'SaleDetail')
+            saledetail_group_by_attribute = utils.convert_group_by_field_to_attribute(group_by, 'DeliveryDetail')
 
             filter_kwargs[saledetail_group_by_attribute] = OuterRef(
                 stockcontrol_group_by_attribute)
@@ -802,71 +1097,71 @@ class StockControl(CommonMeta):
 
             # -- `avg_sale_period` --
             if avg_sale_period == 'year':
-                filter_kwargs['sale__sold_at__year'] = ExtractYear(
+                filter_kwargs['sale__delivered_at__year'] = ExtractYear(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
             elif avg_sale_period == 'month':
-                filter_kwargs['sale__sold_at__year'] = ExtractYear(
+                filter_kwargs['sale__delivered_at__year'] = ExtractYear(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__month'] = ExtractMonth(
+                filter_kwargs['sale__delivered_at__month'] = ExtractMonth(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
             elif avg_sale_period == 'week':
-                filter_kwargs['sale__sold_at__year'] = ExtractYear(
+                filter_kwargs['sale__delivered_at__year'] = ExtractYear(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__month'] = ExtractMonth(
+                filter_kwargs['sale__delivered_at__month'] = ExtractMonth(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__week'] = ExtractWeek(
+                filter_kwargs['sale__delivered_at__week'] = ExtractWeek(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
             elif avg_sale_period == 'day':
-                filter_kwargs['sale__sold_at__year'] = ExtractYear(
+                filter_kwargs['sale__delivered_at__year'] = ExtractYear(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__month'] = ExtractMonth(
+                filter_kwargs['sale__delivered_at__month'] = ExtractMonth(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__week'] = ExtractWeek(
+                filter_kwargs['sale__delivered_at__week'] = ExtractWeek(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-                filter_kwargs['sale__sold_at__day'] = ExtractDay(
+                filter_kwargs['sale__delivered_at__day'] = ExtractDay(
                     ExpressionWrapper(
                         OuterRef('inventory_date'),
                         output_field=models.DateTimeField()
                     )
                 )
-            # Create a subquery for `SaleDetail`
-            sub_qs = SaleDetail.objects.filter(**filter_kwargs)
+            # Create a subquery for `DeliveryDetail`
+            sub_qs = DeliveryDetail.objects.filter(**filter_kwargs)
             sub_qs = sub_qs.values(*values_args)
             sub_qs = sub_qs.annotate(
                 avg_delivered_quantity=Avg('delivered_quantity'))
@@ -912,186 +1207,7 @@ class StockControl(CommonMeta):
             qs, group_by=group_by, avg_sale_period=avg_sale_period)
 
         return qs
-
-
-class Circuit(CommonMeta):
-    name = models.CharField(max_length=200)
-    reference = models.CharField(unique=True, max_length=200)
-    parent = models.ForeignKey(
-        'self', on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-class Customer(CommonMeta):
-    # TODO : Separate Customer as a company from the provider as a person
-    reference = models.CharField(unique=True, max_length=200)
-    name = models.CharField(max_length=200)
-    address = models.TextField(blank=True)
-    circuit = models.ForeignKey(
-        Circuit, on_delete=models.CASCADE, blank=True, null=True)
-
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['reference', 'circuit'], name='customer_reference_circuit_uniq')
-    #     ]
-
-    def __str__(self):
-        return f'{self.reference}'
-
-class Order(CommonMeta):
-
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    ordered_at = models.DateField(blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-    def get_product_orders(product_id, start_date, end_date):
-        '''
-        TODO : add default parameters
-        Return list of order of one product between a range of date
-        '''
-        product_order = OrderDetail.objects.filter(
-            product=product_id)
-        product_order_query = Order.objects.filter(Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
-            'reference', 'ordered_at', 'orderdetail__product', 'orderdetail__ordered_quantity')
-
-        return product_order_query
-
-
-class OrderDetail(CommonMeta):
-
-    stock = models.ForeignKey(
-        Stock, on_delete=models.CASCADE)
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, blank=True, null=True)
-    unit_price = models.IntegerField(blank=True, null=True)
-    ordered_quantity = models.IntegerField(blank=True, null=True)
-
-    objects = managers.OrderDetailQuerySet.as_manager()
-
-    def __str__(self):
-        return f'Order:{self.order}, Stock: {self.stock}'
-
-
-class Sale(CommonMeta):  # TODO rename to Delivery
-
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    sold_at = models.DateField(blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'order:{self.order}, reference: {self.reference}'
-
-    def get_product_sales(product_id, start_date, end_date):
-        '''
-        TODO : add default parameters
-        Return list of sales of one product between a range of date
-        '''
-        product_sales = SaleDetail.objects.filter(
-            product=product_id)
-        product_sales_query = Sale.objects.filter(Q(saledetail__in=product_sales) & Q(sold_at__gte=start_date) & Q(sold_at__lte=end_date)).values(
-            'reference', 'sold_at', 'saledetail__product', 'saledetail__delivered_quantity')
-
-        return product_sales_query
-
-
-class SaleDetail(CommonMeta):
-    stock = models.ForeignKey(
-        Stock, on_delete=models.CASCADE)
-    sale = models.ForeignKey(
-        Sale, on_delete=models.CASCADE, blank=True, null=True)
-    unit_price = models.IntegerField(blank=True, null=True)
-    delivered_quantity = models.IntegerField(blank=True, null=True)
-
-    objects = SaleDetailQuerySet.as_manager()
-
-    def __str__(self):
-        return f'sale:{self.sale}, Stock: {self.stock}'
-
-    def get_products():
-        # TODO : delete this methode if not used Or update it (We already have a similar functtion in `product` class)
-        '''
-        Get list of products with order(s)
-        [{'label': 'P03600', 'value': 1}, {'label': 'P03601', 'value': 2}]
-        This format is compatible with Plotly data input
-        '''
-        return list(SaleDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label', 'value').distinct())
-
-    def get_avg_quantity_in_date_range(sold_at_start, sold_at_end):
-        '''
-        sold_at_start : start date sold at 
-        sold_at_end : end date sold at 
-        '''
-        queryset = SaleDetail.objects.filter(
-            sale__sold_at__gte=sold_at_start,
-            sale__sold_at__lte=sold_at_end
-        ).values(
-            'product__reference'
-        ).annotate(
-            avg_quantity=Avg('delivered_quantity')
-        )
-        return queryset
-
-
-class Invoice(CommonMeta):
-
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    sale = models.ForeignKey(
-        Sale, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    invoicing_date = models.DateField(blank=True, null=True)
-    # may add other fields like billing method, coupon, credit..
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'reference:{self.reference}'
-
-
-class Supplier(CommonMeta):
-    # TODO : Separate provider as a company from the provider as a person
-    name = models.CharField(max_length=200)
-    address = models.TextField(blank=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-
-class Supply(CommonMeta):
-
-    supplier = models.ForeignKey(
-        Supplier, on_delete=models.CASCADE, blank=True, null=True)
-    reference = models.CharField(unique=True, max_length=200)
-    supplied_at = models.DateField(blank=True, null=True)
-    total_amount = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.reference}'
-
-
-class SupplyDetail(CommonMeta):
-
-    supply = models.ForeignKey(
-        Supply, on_delete=models.CASCADE, blank=True, null=True)
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, blank=True, null=True)
-    # supply_type = local, import
-    unit_price = models.IntegerField(blank=True, null=True)
-    quantity = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f'Supply: {self.supply}, product: {self.product}'
-
+##############################################
 
 # Deleted table (table `ProductQuantity` added instead)
 # class StockOperation(models.Model):

@@ -1,0 +1,320 @@
+    
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load my_tags %}
+
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+{% comment %} {% load widget_tweaks %} {% endcomment %}
+{% load django_tables2 %}
+
+{% block content %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
+    <!-- filter -->
+
+    {% if filter %}
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                    {% include 'forecasting/partials/_filter.html' with collapse_prefix_id='forecast_list' %}
+            </div>
+        </div> 
+    {% endif %}
+
+    <!-- graph -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Historical graphs" %}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard1" style="">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                {{order_plot|safe}}
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                {{delivery_plot|safe}}
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                {{forecast_plot|safe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- editable pivot table -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapse-forecast-list" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapse-forecast-list">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Forecast List" %}</h6>
+                </a>
+                <div class="collapse show" id="collapse-forecast-list" style="">
+
+                    <div class="card-body">
+                        {% if perms.forecasting.request_review %}
+                            <!-- Add forecast -->
+                            {% with approved_status='Approved' %}     
+                                {% if version.status != approved_status %}
+                                    <button type="button" class="btn btn-xs btn-primary mb-3" data-toggle="modal" data-target="#add-forecast-modal">
+                                        {% trans 'Add'%}
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="add-forecast-modal" tabindex="-1" role="dialog" aria-labelledby="add-forecast-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="add-forecast-modal-label">{% trans 'Add forecast for a date'%}</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+
+                                                <form  action="{% url 'forecasting:ajax_add_forecast' version_id %}" method="get">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <input type="hidden" name="version_id" class="form-control" value="{{version_id}}"  placeholder="Version">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Category'%}</label>
+                                                            <select  class="form-control" id="category" name="category_id">
+                                                                {% for val in categories %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Circuit'%}</label>
+                                                            <select  class="form-control" id="circuit" name="circuit_id" >
+                                                                {% for val in circuits %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Customer'%}</label>
+                                                            <select  class="form-control" id="customer" name="customer_id" >
+                                                                {% for val in cutomers %}
+                                                                    <option value="{{val.id}}">{{val.reference}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Forecast date'%}</label>
+                                                            <input type="date" name="forecast_date" class="form-control" > 
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Forecasted Quantity'%}</label>
+                                                            <input type="number" name="forecasted_quantity" class="form-control">
+                                                        </div>
+                                                        
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-primary">{% trans 'Submit'%}</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                        </div>                    
+                                                    </div>                    
+                                                </form>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+
+                            <!-- Submit review -->
+                            <button type="button" class="btn btn-xs btn-danger mb-3" data-toggle="modal" data-target="#submit-review-modal">
+                                {% trans 'Submit for review'%}
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="submit-review-modal" tabindex="-1" role="dialog" aria-labelledby="submit-review-modal-label" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="submit-review-modal-label">{% trans 'Submit for review'%}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+
+
+                                        {% with approved_status='Approved' %}     
+                                            {% if version.status != approved_status %}
+                                                <form  action="{% url 'forecasting:send_review_request' version_id %}" method="get">
+                                                    <div class="modal-body">
+                                                        {% comment %} <div class="form-group">
+                                                            <input type="hidden" name="version_id" class="form-control" value="{{version}}">
+                                                        </div> {% endcomment %}
+
+                                                        <div class="form-group">
+                                                            <label>{% trans 'Select the user'%}</label>
+                                                            <select  class="form-control" id="user" name="user_id" >
+                                                                {% for usr in supervisor_users %}
+                                                                    <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}} ({{usr.username}})</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">{% trans 'Submit'%}</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <div class="modal-body">
+                                                    <div> This version has been reviewed and it is already approved by {{ version.approved_by.first_name }} ({{ version.approved_by.username }})</div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close'%}</button>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if perms.forecasting.validate_version %}
+                            <a href="{% url 'forecasting:approve_review_request' version_id %}" type="button" class="btn btn-xs btn-success mb-3">
+                                {% trans 'Submit'%}
+                            </a>
+                        {% endif %}
+
+                        <table id="lead_table" class="table table-hover table-responsive-xl dataTable no-footer">
+                        {% comment %} {{ body_data }} {% endcomment %}
+                            <thead>
+                                <tr>
+                                    {% for data in header_data %}
+                                        <th>{{ data }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in body_data %}
+                                    <tr>
+                                        {% for value in data %}
+                                            {% if 'quantity' in value %}
+                                                <td>
+                                                    <input type="text" value="{{ value.quantity }}" class="input-field exist-field" id="{{value.id}}">
+                                                </td>
+                                            {% elif 'none' in value %}
+                                                <td>
+                                                    <input type="text" value="{{ value.none }}" class="text-danger input-field non-exist-field" categoryId="{{value.categoryId}}" circuitId="{{value.circuitId}}" forecastDate="{{value.forecast_date}}">
+                                                    {% comment %} <div class="" categoryId="{{value.categoryId}}" circuitId="{{value.circuitId}}" forecastDate="{{value.forecast_date}}">{{ value.none }}</div> {% endcomment %}
+                                                    <div class="badge badge-danger">1</div>
+
+                                                </td>
+                                            {% else %}
+                                                <td>{{value}}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!-- Paginator -->
+                    {% if page_obj.paginator %}
+                        <div class="d-block card-footer py-3">
+                                {% include 'forecasting/partials/_pagination.html' %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+
+
+    <script>
+        
+        
+        $( ".exist-field").on("keypress", function(e){
+            console.log("press")
+            if(e.which === 13){
+                var id = $(this).attr("id");
+                var quantity = $(this).val();
+                params = { 'id': id, 'quantity': quantity } 
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'forecasting:ajax_update_forecast_qty' version_id %}",
+                    data:  params,
+                    async: false,
+                    success: function (res) {
+                        
+                        if (res.success) {
+                            alert('saved successfully.');
+                        } else {
+                            alert("failure saved.");
+                        }
+                      
+                    },
+                    error: function (request, status, error) {
+                        //alert(request.responseText);
+                        alert('An error occured during the processing');
+                    }
+                });
+            }
+        });
+
+        $( ".non-exist-field").on("keypress", function(e){
+            console.log("press")
+            if(e.which === 13){
+                var quantity = $(this).val();
+                var categoryId = $(this).attr('categoryId')
+                var circuitId = $(this).attr('circuitId')
+                var forecastDate = $(this).attr('forecastDate')
+
+                params = { 
+                    'forecasted_quantity': quantity, 
+                    'forecast_date':forecastDate, 
+                    'category_id':categoryId,
+                    'circuit_id':circuitId
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'forecasting:ajax_add_forecast_qty' version_id %}",
+                    data:  params,
+                    async: false,
+                    success: function (res) {
+                        
+                        if (res.success) {
+                            alert('saved successfully.');
+                        } else {
+                            alert("failure saved.");
+                        }
+                      
+                    },
+                    error: function (request, status, error) {
+                        //alert(request.responseText);
+                        alert('An error occured during the processing');
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+    
+

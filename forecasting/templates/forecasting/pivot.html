@@ -1,0 +1,257 @@
+    
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% comment %} {% load widget_tweaks %} {% endcomment %}
+{% load django_tables2 %}
+
+{% block content %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card border-left-primary shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "Data filter" %}</h6>
+            </a>
+            <div class="collapse show" id="collapseCard1" style="">
+                <div class="card-body">
+                    <!-- filter form -->
+                    {% if filter %}
+                    <!-- render the form using crispy -->
+                        {% comment %} <form action="" method="get" class="form form-inline justify-content-between">
+                            {{ filter.form|crispy }} {% endcomment %}
+
+                        <form action="" method="get" class="form">
+                            <div class="form-row align-items-end">
+                                {% for field in filter.form.visible_fields %}
+                                    <div class="col">
+                                        {{ field.label_tag }}
+                                        {% render_field field class="mb-2 form-control" %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="submit" class="btn btn-xs btn-primary">{% trans "Filter" %}</button>
+                        </form>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+    <!-- listview -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapse-forecast-list" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapse-forecast-list">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Forecast List" %}</h6>
+                </a>
+                <div class="collapse show" id="collapse-forecast-list" style="">
+
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary" style="margin-bottom: 5px;" data-toggle="modal" data-target="#exampleModal">
+                            Add
+                        </button>
+                              
+                        <table id="lead_table" class="table dataTable no-footer">
+                            <thead>
+                            <tr>
+                               
+                                {% for data in header_data %}
+                                    <th>{{ data}}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for data in body_data %}
+                                <tr>
+                                    {% for value in data %}
+                                        {% if 'quantity' in value %}
+                                            <td><input type="text" value="{{ value.quantity }}" class="input-field exist-field" id="{{value.id}}"></td>
+                                        {% elif 'none' in value %}
+                                            <td><input type="text" value="{{ value.none }}" class="input-field non-exist-field" productId="{{value.productId}}" circuitId="{{value.circuitId}}" forecastDate="{{value.forecast_date}}"></td>
+                                        {% else %}
+                                            <td>{{value}}</td>
+                                        {% endif %}
+                                    
+                                    
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <nav aria-label="Page navigation">   <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?page=1" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">begin</span>
+                              </a>
+                            </li>   {% endif %}
+                            
+                            {% for n in page_obj.paginator.page_range %}
+                              {% if page_obj.number == n %}
+                                <li class="page-item active">
+                                  <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+                                </li>
+                              {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                              <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Next">
+                                  <span aria-hidden="true">&raquo;</span>
+                                  <span class="sr-only">end</span>
+                                </a>
+                              </li>
+                              {% endif %}   </ul> </nav>     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Info</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form  action="/forecasting/forecast/v{{version}}/addforecast" method="get">
+                <div class="form-group">
+                    <label for="">Version</label>
+                    <input type="text" name="version_id" class="form-control" value="{{version}}"  placeholder="Version">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Proudct</label>
+                    <select  class="form-control" id="product" name="product_id">
+                        {% for val in products %}
+                            <option value="{{val.id}}">{{val.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Circuit</label>
+                    <select  class="form-control" id="circuit" name="circuit_id" >
+                        {% for val in circuits %}
+                            <option value="{{val.id}}">{{val.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+               
+
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Customer</label>
+                    <select  class="form-control" id="product" name="customer_id" >
+                        {% for val in cutomers %}
+                            <option value="{{val.id}}">{{val.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Forecast date</label>
+                    <input type="date" name="forecast_date" class="form-control" > 
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Forecasted Quantity</label>
+                    <input type="number" name="forecasted_quantity" class="form-control">
+                </div>
+                 
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </form>
+            </div>
+            
+          </div>
+        </div>
+    </div>
+    <script>
+        
+        
+        $( ".exist-field").on("keypress", function(e){
+            console.log("press")
+            if(e.which === 13){
+                var id = $(this).attr("id");
+                var quantity = $(this).val();
+                params = { 'id': id, 'quantity': quantity } 
+                $.ajax({
+                    type: 'GET',
+                    url: '/forecasting/forecast/v{{version}}/updatequantity',
+                    data:  params,
+                    async: false,
+                    success: function (res) {
+                        
+                        if (res.success) {
+                            alert('saved successfully.');
+                        } else {
+                            alert("failure saved.");
+                        }
+                      
+                    },
+                    error: function (request, status, error) {
+                        alert(request.responseText);
+                    }
+                });
+            }
+        });
+
+        $( ".non-exist-field").on("keypress", function(e){
+            console.log("press")
+            if(e.which === 13){
+                var quantity = $(this).val();
+                var productId = $(this).attr('productId')
+                var circuitId = $(this).attr('circuitId')
+                var forecastDate = $(this).attr('forecastDate')
+
+                params = { 
+                    'forecasted_quantity': quantity, 
+                    'forecast_date':forecastDate, 
+                    'product_id':productId,
+                    'circuit_id':circuitId
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/forecasting/forecast/v{{version}}/addquantity',
+                    data:  params,
+                    async: false,
+                    success: function (res) {
+                        
+                        if (res.success) {
+                            alert('saved successfully.');
+                        } else {
+                            alert("failure saved.");
+                        }
+                      
+                    },
+                    error: function (request, status, error) {
+                        alert(request.responseText);
+                    }
+                });
+            }
+        });
+    </script>
+    
+{% endblock %}
+{% block custom_js %}
+{% endblock %}

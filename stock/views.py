@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 from .models import (ProductCategory, Product, Supplier, Customer, Supply, SupplyDetail,
-                     Order, OrderDetail, Sale, SaleDetail, Warehouse, StockControl)
+                     Order, Delivery, DeliveryDetail, Warehouse, StockControl)
 
 
 class ProductIndexView(LoginRequiredMixin, ListView):
@@ -85,7 +85,7 @@ class StockParetoView(LoginRequiredMixin, TemplateView):
 
 
 
-class SaleIndexView(LoginRequiredMixin, TemplateView):
+class DeliveryIndexView(LoginRequiredMixin, TemplateView):
     template_name = "stock/sale_index.html"
 
 

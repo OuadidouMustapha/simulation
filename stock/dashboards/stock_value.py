@@ -9,7 +9,7 @@ import dash_bootstrap_components as dbc
 import datetime
 from common import utils as common_utils
 from .. import utils
-from ..models import SaleDetail, Sale, Order, StockControl, Product, ProductCategory
+from ..models import DeliveryDetail, Delivery, Order, StockControl, Product, ProductCategory
 import copy
 from common.dashboards import dash_utils, dash_constants
 from dash.exceptions import PreventUpdate

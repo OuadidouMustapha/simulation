@@ -2,8 +2,8 @@ import factory
 from faker import Faker
 
 from .models import (ProductCategory, Product, Warehouse, Stock, StockPolicy, StockControl,
-                     Customer, Order, OrderDetail, Sale, SaleDetail, Circuit)
-from forecasting.factories import StockForecastFactory
+                     Customer, Order, OrderDetail, Delivery, DeliveryDetail, Circuit)
+from forecasting.factories import ForecastFactory
 import random
 import pytz
 
@@ -140,7 +140,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
             
             # Generate forecasting 
             for fake_stock in fake_stock_list:
-                StockForecastFactory(
+                ForecastFactory(
                     stock=fake_stock,
                     customer=random.choice(customers),
                     circuit=random.choice(circuits),
@@ -148,7 +148,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
                     forecasted_quantity=1000,
                 )
 
-            SaleDetailFactory(
+            DeliveryDetailFactory(
                 stock=fake_stock_1,
                 sale__customer=random.choice(customers),
             )
@@ -302,7 +302,7 @@ class OrderDetailFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('stock', 'order')
 
 
-class SaleFactory(factory.django.DjangoModelFactory):
+class DeliveryFactory(factory.django.DjangoModelFactory):
     customer = factory.SubFactory(CustomerFactory)
     reference = factory.Sequence(lambda n: 'sale_%d' % n)
     # reference = factory.Iterator(["sale_1", "sale_2", "sale_3"])
@@ -311,7 +311,7 @@ class SaleFactory(factory.django.DjangoModelFactory):
     #         (UserFactory() for _ in range(5))
     #     )
     # )
-    sold_at = factory.Faker(
+    delivered_at = factory.Faker(
         'past_datetime',
         start_date='-2y',
         tzinfo=pytz.utc
@@ -323,13 +323,13 @@ class SaleFactory(factory.django.DjangoModelFactory):
     )
 
     class Meta:
-        model = Sale
+        model = Delivery
         django_get_or_create = ('reference',)
 
 
-class SaleDetailFactory(factory.django.DjangoModelFactory):
+class DeliveryDetailFactory(factory.django.DjangoModelFactory):
     stock = factory.SubFactory(StockFactory)
-    sale = factory.SubFactory(SaleFactory)
+    sale = factory.SubFactory(DeliveryFactory)
     unit_price = factory.Faker(
         'random_number',
         digits=4,
@@ -342,7 +342,7 @@ class SaleDetailFactory(factory.django.DjangoModelFactory):
     )
 
     class Meta:
-        model = SaleDetail
+        model = DeliveryDetail
         django_get_or_create = ('stock', 'sale')
 
 # TODO : delete these comments once all is settled up

@@ -1,0 +1,95 @@
+    
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+{% load widget_tweaks %}
+
+{% load django_tables2 %}
+
+{% block content %}
+
+    <!-- card -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Data filter" %}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard1" style="">
+                    <div class="card-body">
+                        <!-- filter form -->
+                        {% if filter %}
+                        <!-- render the form using crispy -->
+                            {% comment %} <form action="" method="get" class="form form-inline justify-content-between">
+                                {{ filter.form|crispy }} {% endcomment %}
+
+                            <form action="" method="get" class="form">
+                                <div class="form-row align-items-end">
+                                    {% for field in filter.form.visible_fields %}
+                                        <div class="col">
+                                            {{ field.label_tag }}
+                                            {% render_field field class="mb-2 form-control" %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <button type="submit" class="btn btn-xs btn-primary">{% trans "Filter" %}</button>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- listview -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapse-version-list" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapse-version-list">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Product List" %}</h6>
+                </a>
+                <div class="collapse show" id="collapse-version-list" style="">
+
+                    <div class="card-body">
+
+                    {% render_table table %}
+                    <button class="btn btn-primary" type="submit" disabled>{% trans "Submit" %}</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block custom_js %}
+
+<script>
+// Add select all option TODO not working when one row is unselected
+function selectAllElements(source) {
+    checkboxes = document.getElementsByName('selection');
+    for(var i in checkboxes)
+        checkboxes[i].checked = source.checked;
+}
+
+// Make button disabled if no row is selected
+// TODO not working when deselect rows https://medium.com/@ezequiel.grondona/row-actions-with-django-tables2-and-materializecss-3e4618544db0
+var checkboxes = $("input[type='checkbox']");
+var submitButton = $("button[type='submit']");
+
+checkboxes.click(function() {
+    submitButton.attr("disabled", !checkboxes.is(":checked"));
+});
+
+</script>
+
+{% endblock %}
+
+

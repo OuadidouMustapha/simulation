@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <!-- card -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Import forecast data from a CSV file" %}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard1" style="">
+
+                    <div class="card-body">
+                        {% csrf_token %}
+                        {% crispy form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- card -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard2" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard2">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Selectionner une version existante" %}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard2" style="">
+
+                    <div class="card-body">
+                    <div class="form-group">
+                        <label for="sel1">Choisir la version</label>
+                        <select class="form-control" id="sel1">
+                            <option>v1</option>
+                            <option>v2</option>
+                            <option>v3</option>
+                            <option>v4</option>
+                        </select>
+                    </div>
+                    <a href="{% url 'forecasting:input_interface_update' pk=82 %}"  type="button" class="btn btn-primary">Modifier</a>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,61 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: templates/partials/_topbar.html:188
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-05 21:48+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/partials/_footer.html:5
+msgid "Copyright &copy; ORCHEST Supply Chain Analytics 2020"
+msgstr ""
+
+#: templates/partials/_sidebar.html:27
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: templates/partials/_sidebar.html:60
+msgid "Forecasting"
+msgstr "Prévision"
+
+#: templates/partials/_sidebar.html:67
+msgid "Overview"
+msgstr "Aperçu"
+
+#: templates/partials/_sidebar.html:70
+msgid "Input Interface"
+msgstr "Interface de saisie"
+
+#: templates/partials/_sidebar.html:73
+msgid "Forecast Accuracy"
+msgstr "Précision de la prévision"
+
+#: templates/partials/_sidebar.html:81
+msgid "Deployment"
+msgstr "Déploiement"
+
+#: templates/partials/_topbar.html:201 templates/partials/_topbar.html:214
+#: templates/partials/_topbar.html:222
+msgid "Logout"
+msgstr "Se déconnecter"
+
+#: templates/partials/_topbar.html:219
+msgid "Select \"Logout\" below if you are ready to end your current session."
+msgstr "Sélectionnez \"Logout\" ci-dessous si vous êtes prêt à mettre fin à votre session en cours."
+
+#: templates/partials/_topbar.html:221
+msgid "Cancel"
+msgstr "Annuler"

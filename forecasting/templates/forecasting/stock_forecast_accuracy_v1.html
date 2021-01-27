@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+
+{% block header_title %} {{ page_elements.page_title }} {% endblock %}
+
+{% plotly_header %}
+
+{% block content %}
+
+<!-- stock table -->
+{% comment %} <div class="col-md-6">
+    
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{  page_elements.table_title }}</h6>
+        </div>
+    
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>{% field_name model 'stock__product' %}</th>
+                            <th>{% field_name model 'stock__warehouse' %}</th>
+                            <th>{% field_name model 'circuit' %}</th>
+                            <th>{% field_name model 'forecast_date' %}</th>
+                            <th>{% field_name model 'forecasted_quantity' %}</th>
+                            <th>{% field_name model 'total_ordered_quantity' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for column in stock_forecast_accuracy_list %}
+                        <tr>
+                            <td>{{column.stock.product}}</td>
+                            <td>{{column.stock.warehouse}}</td>
+                            <td>{{column.circuit}}</td>
+                            <td>{{column.forecast_date|date:'d M Y' }}</td>
+                            <td>{{column.forecasted_quantity}}</td>
+                            <td>{{column.total_ordered_quantity}}</td>
+                            <td>{{column.diff}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    
+        <div class="card-footer">
+            {% if is_paginated %}
+                {% include 'stock/_pagination.html' %}
+            {% endif %}
+        </div>
+    
+    </div>
+</div> {% endcomment %}
+
+<!-- stock coverage Dash -->
+{% plotly_direct name="ForecastAccuracyV1" %} 
+
+    
+{% plotly_footer %}
+{% endblock %}

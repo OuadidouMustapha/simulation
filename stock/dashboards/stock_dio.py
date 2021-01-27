@@ -6,7 +6,7 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objs as go
 from django_plotly_dash import DjangoDash
 
-from ..models import SaleDetail, Sale, Order, StockControl, Product, ProductCategory
+from ..models import DeliveryDetail, Delivery, Order, StockControl, Product, ProductCategory
 from common import utils as common_utils
 from .. import utils
 import datetime
@@ -177,16 +177,16 @@ def update_charts(
         avg_sale_period,
         inventory_date_start,
         inventory_date_end,
-        sold_at_start_date,
-        sold_at_end_date,
+        delivered_at_start_date,
+        delivered_at_end_date,
         dio_level_low,
         dio_level_high,
         chart_type,
         include_weekend,
         group_by):
     queryset_product = StockControl.get_stock_dio(
-        sold_at_start_date,
-        sold_at_end_date,
+        delivered_at_start_date,
+        delivered_at_end_date,
         avg_quantity_period,
         avg_sale_period,
         inventory_date_start=inventory_date_start,
@@ -256,8 +256,8 @@ def update_chart(
         avg_sale_period,
         inventory_date_start,
         inventory_date_end,
-        sold_at_start_date,
-        sold_at_end_date,
+        delivered_at_start_date,
+        delivered_at_end_date,
         dio_level_low,
         dio_level_high,
         chart_type,
@@ -274,8 +274,8 @@ def update_chart(
     # Build chart data for average qunatity
     ## old version (calculate average sale quantity by date range selection)
     avg_delivered_quantity_queryset = StockControl.avg_delivered_quantity_by_product_in_date_range(
-        sold_at_start_date,
-        sold_at_end_date,
+        delivered_at_start_date,
+        delivered_at_end_date,
         category_ids,
         product_ids,
     )
@@ -288,7 +288,7 @@ def update_chart(
             y=list(avg_delivered_quantity_queryset.values_list(
                 'avg_quantity', flat=True)),
             name='AVG quantity between {} & {}'.format(
-                sold_at_start_date, sold_at_end_date),
+                delivered_at_start_date, delivered_at_end_date),
         ),
     ]
 

@@ -1,3 +1,12 @@
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+from .models import Forecast, Event, EventDetail
+from .resources import ForecastResource
 
-# Register your models here.
+
+admin.site.register(Event)
+admin.site.register(EventDetail)
+
+@admin.register(Forecast)
+class ForecastAdmin(ImportExportModelAdmin):
+    resource_class = ForecastResource

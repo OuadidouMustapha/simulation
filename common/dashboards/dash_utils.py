@@ -26,6 +26,10 @@ import dash_table
 
 # Common elements
 #################
+def generate_html_id(prefix, id_variable):
+    generated_id = prefix + '-' + id_variable.replace('_', '-')
+    return generated_id
+
 def get_category_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id):
     div = html.Div([
         dbc.Label('Select categories'),
@@ -74,8 +78,7 @@ def get_product_dropdown(dropdown_id, div_checklist_id, checklist_select_all_id)
     ])
     return div
 
-
-def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder):
+def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, options, placeholder, select_all=True):
     div = html.Div([
         dbc.Label(placeholder),
         dcc.Dropdown(
@@ -91,11 +94,10 @@ def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, o
                 id=checkbox_select_all_id,
                 options=[
                     {"label": "Select All", "value": "All"}],
-                value=[],
-                # value=["All"], # NOTE FIXME for madec_forecasting and testing purpose we made the chekcbox uncheckek by default to avoid wrong initialization in Dash dropdown filter
+                value=["All" if select_all else ''],
+                labelStyle={'display': 'block', 'cursor': 'pointer', 'margin-top': '10px'},
             ),
         ),
-
     ])
     return div
 
@@ -161,7 +163,7 @@ def get_group_by_distribution_dropdown(div_id, value=''):
                 {'label': 'Warehouse', 'value': 'warehouse'},
                 {'label': 'Customer', 'value': 'customer'},
                 {'label': 'Circuit', 'value': 'circuit'},
-                {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
+                # {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
 
             ],
             value=value,
@@ -207,7 +209,9 @@ def get_date_range(div_id, label='Select date range', year_range=5):
 
 # Templates builder
 ###################
-def get_chart_card(div_id, filter_div=None):
+
+
+def get_chart_card(div_id, filter_div=None, footer_div=None):
     """
     Build div representing the chart card
     """
@@ -216,28 +220,45 @@ def get_chart_card(div_id, filter_div=None):
             filter_div,
             dcc.Loading(
                 dcc.Graph(id=div_id),
-            )
+            ),
+            footer_div,
         ], className='card-body')
     ], className='card shadow mb-4 py-3')
     return div
 
-def get_mini_card(subtitle_id, title='', subtitle='', icon=''):
+
+def get_mini_card(data_value_id, title=None, data_value=None, subtitle=None, icon=None, dropdown_div=None, datatable_div=None):
     """
     Build div representing mini card
     """
+    # if datatable_id:
+    #     datatable_div = dash_table.DataTable(id=datatable_id)
+    # else:
+    #     datatable_div = ''
     div = html.Div([
         dbc.Row([
             html.Div([
-                html.Div([
-                    title,
-                ], className='h5 font-weight-bold text-primary mb-1'),
+                dbc.Row([
+                    dbc.Col([
+                        title,
+                    ], sm=12, md=10, lg=10, className='font-weight-bold text-primary mb-1'),
+                    dcc.Loading(
+                        html.Div([
+                            data_value,
+                        ], id=data_value_id, className='font-weight-bold text-primary mb-1 float-right'),
+                    ),
+                ]),
                 dcc.Loading(
                     html.Div([
-                            subtitle
-                        ], 
-                        id=subtitle_id,
-                        className='font-weight-bold text-gray-800 mb-0'
-                    )
+                        subtitle,
+                        html.Br(),
+                        dropdown_div,
+                        html.Br(),
+                        datatable_div,
+                    ], 
+                    # id=subtitle_id,
+                        # className='text-primary'
+                    ),
                 )
             ], className='col mr-2'),
             html.Div([
@@ -249,7 +270,7 @@ def get_mini_card(subtitle_id, title='', subtitle='', icon=''):
     return div
 
 
-def get_datatable_card(div_id, style_data_conditional=None):
+def get_datatable_card(div_id, style_data_conditional=None, **kwargs):
     """
     Build div representing the datatable card
     """
@@ -263,7 +284,9 @@ def get_datatable_card(div_id, style_data_conditional=None):
                     sort_action='native',
                     sort_mode='multi',
                     page_size=20,
-                    style_data_conditional=style_data_conditional
+                    style_data_conditional=style_data_conditional,
+                    # editable=editable,
+                    **kwargs,
                     # style_data_conditional=[
                     # {
                     #     'if': {

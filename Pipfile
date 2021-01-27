@@ -4,6 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+autopep8 = "*"
+pylint = "*"
+django-extensions = "*"
+pygraphviz = "*"
 
 [packages]
 django = "==3.0.2"
@@ -25,6 +29,19 @@ daphne = "*"
 redis = "*"
 django-redis = "*"
 channels-redis = "*"
+django-import-export = "*"
+django-extra-views = "*"
+psycopg2-binary = "*"
+django-cors-headers = "*"
+django-filter = "*"
+django-widget-tweaks = "*"
+django-tables2 = "*"
+django-select2 = "*"
+django-notifications-hq = "*"
+pystan = "*"
+fbprophet = "*"
+hijri-converter = "*"
+factory-boy = "*"
 
 [requires]
 python_version = "3.7"

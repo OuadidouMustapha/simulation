@@ -1,0 +1,301 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-05 21:49+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: dashboards/stock_forecast_accuracy_test.py:116
+msgid "Products"
+msgstr "Produits"
+
+#: dashboards/stock_forecast_accuracy_test.py:128
+msgid "Warehouses"
+msgstr "Entrepôts"
+
+#: dashboards/stock_forecast_accuracy_test.py:133
+msgid "Circuits"
+msgstr "Circuits"
+
+#: dashboards/stock_forecast_accuracy_test.py:138
+msgid "Products type"
+msgstr "Type Produit"
+
+#: dashboards/stock_forecast_accuracy_test.py:143
+msgid "Customers"
+msgstr "Clients"
+
+#: dashboards/stock_forecast_accuracy_test.py:149
+msgid "Forecast version"
+msgstr "Version de prévision"
+
+#: dashboards/stock_forecast_accuracy_test.py:152
+msgid "Forecasting version (Inactive)"
+msgstr "Version de prévision (inactive)"
+
+#: dashboards/stock_forecast_accuracy_test.py:165
+msgid "Time horizon"
+msgstr "Horizon temps"
+
+#: dashboards/stock_forecast_accuracy_test.py:180
+msgid "Forecast bias %"
+msgstr "Biais de prévision en %"
+
+#: dashboards/stock_forecast_accuracy_test.py:182
+msgid "Lowest rates grouped by:"
+msgstr "Valeurs les plus bas regroupés par:"
+
+#: dashboards/stock_forecast_accuracy_test.py:186
+#: dashboards/stock_forecast_accuracy_test.py:214
+#: dashboards/stock_forecast_accuracy_test.py:242
+#: dashboards/stock_forecast_accuracy_test.py:277
+#: dashboards/stock_forecast_accuracy_test.py:396
+msgid "Warehouse"
+msgstr "Entrepôt"
+
+#: dashboards/stock_forecast_accuracy_test.py:188
+#: dashboards/stock_forecast_accuracy_test.py:216
+#: dashboards/stock_forecast_accuracy_test.py:244
+#: dashboards/stock_forecast_accuracy_test.py:278
+#: dashboards/stock_forecast_accuracy_test.py:397
+msgid "Customer"
+msgstr "Client"
+
+#: dashboards/stock_forecast_accuracy_test.py:190
+#: dashboards/stock_forecast_accuracy_test.py:218
+#: dashboards/stock_forecast_accuracy_test.py:246
+#: dashboards/stock_forecast_accuracy_test.py:279
+#: dashboards/stock_forecast_accuracy_test.py:398
+msgid "Circuit"
+msgstr "Circuit"
+
+#: dashboards/stock_forecast_accuracy_test.py:192
+#: dashboards/stock_forecast_accuracy_test.py:220
+#: dashboards/stock_forecast_accuracy_test.py:248
+#: dashboards/stock_forecast_accuracy_test.py:293
+#: dashboards/stock_forecast_accuracy_test.py:412
+msgid "Product"
+msgstr "Produits"
+
+#: dashboards/stock_forecast_accuracy_test.py:194
+#: dashboards/stock_forecast_accuracy_test.py:222
+#: dashboards/stock_forecast_accuracy_test.py:250
+#: dashboards/stock_forecast_accuracy_test.py:298
+#: dashboards/stock_forecast_accuracy_test.py:417
+#, fuzzy
+#| msgid "Products"
+msgid "Product Type"
+msgstr "Type Produit"
+
+#: dashboards/stock_forecast_accuracy_test.py:208
+msgid "Mean absolute deviation (MAD)"
+msgstr "Écart Absolu Moyen (MAD)"
+
+#: dashboards/stock_forecast_accuracy_test.py:210
+msgid "Highest values grouped by:"
+msgstr "Valeurs les plus élevées regroupées par:"
+
+#: dashboards/stock_forecast_accuracy_test.py:236
+msgid "Mean absolute percentage error % (MAPE)"
+msgstr "% d'Erreur Absolue Moyenne (MAPE)"
+
+#: dashboards/stock_forecast_accuracy_test.py:238
+msgid "Highest rates grouped by:"
+msgstr "Valeurs les plus élevées regroupées par:"
+
+#: dashboards/stock_forecast_accuracy_test.py:268
+#: dashboards/stock_forecast_accuracy_test.py:387
+msgid "Dynamic filter"
+msgstr "Filtre dynamique"
+
+#: dashboards/stock_forecast_accuracy_test.py:272
+#: dashboards/stock_forecast_accuracy_test.py:391
+msgid "Distribution field"
+msgstr "Maille distribution"
+
+#: dashboards/stock_forecast_accuracy_test.py:276
+#: dashboards/stock_forecast_accuracy_test.py:292
+#: dashboards/stock_forecast_accuracy_test.py:395
+#: dashboards/stock_forecast_accuracy_test.py:411
+msgid "-None-"
+msgstr "-Aucun-"
+
+#: dashboards/stock_forecast_accuracy_test.py:288
+#: dashboards/stock_forecast_accuracy_test.py:407
+msgid "Product field"
+msgstr "Maille Produit"
+
+#: dashboards/stock_forecast_accuracy_test.py:310
+#: dashboards/stock_forecast_accuracy_test.py:429
+msgid "Show by"
+msgstr "Afficher par"
+
+#: dashboards/stock_forecast_accuracy_test.py:314
+#: dashboards/stock_forecast_accuracy_test.py:433
+msgid "Quantity (Unit)"
+msgstr "Quantité (Unité)"
+
+#: dashboards/stock_forecast_accuracy_test.py:317
+#: dashboards/stock_forecast_accuracy_test.py:436
+msgid "Cost (DH)"
+msgstr "Coût (DH)"
+
+#: dashboards/stock_forecast_accuracy_test.py:329
+#: dashboards/stock_forecast_accuracy_test.py:448
+msgid "Grouping period"
+msgstr "Maille temps"
+
+#: dashboards/stock_forecast_accuracy_test.py:333
+#: dashboards/stock_forecast_accuracy_test.py:452
+msgid "Year"
+msgstr "Année"
+
+#: dashboards/stock_forecast_accuracy_test.py:335
+#: dashboards/stock_forecast_accuracy_test.py:454
+msgid "Month"
+msgstr "Mois"
+
+#: dashboards/stock_forecast_accuracy_test.py:336
+#: dashboards/stock_forecast_accuracy_test.py:455
+msgid "Week"
+msgstr "Semaine"
+
+#: dashboards/stock_forecast_accuracy_test.py:337
+#: dashboards/stock_forecast_accuracy_test.py:456
+msgid "Day"
+msgstr "Jour"
+
+#: dashboards/stock_forecast_accuracy_test.py:348
+#: dashboards/stock_forecast_accuracy_test.py:365
+#: dashboards/stock_forecast_accuracy_test.py:467
+#: dashboards/stock_forecast_accuracy_test.py:484
+msgid "Select values to show"
+msgstr "Sélectionnez les valeurs à afficher"
+
+#: dashboards/stock_forecast_accuracy_test.py:352
+#: dashboards/stock_forecast_accuracy_test.py:471
+msgid "Forcast Bias"
+msgstr "Biais de prévision"
+
+#: dashboards/stock_forecast_accuracy_test.py:353
+#: dashboards/stock_forecast_accuracy_test.py:472
+msgid "Forcasts"
+msgstr "Prévisions"
+
+#: dashboards/stock_forecast_accuracy_test.py:354
+#: dashboards/stock_forecast_accuracy_test.py:473
+msgid "Orders"
+msgstr "Ordres"
+
+#: dashboards/stock_forecast_accuracy_test.py:369
+#: dashboards/stock_forecast_accuracy_test.py:488
+msgid "Forecast Bias %"
+msgstr "Bias de prévision en %"
+
+#: dashboards/stock_forecast_accuracy_test.py:370
+#: dashboards/stock_forecast_accuracy_test.py:489
+msgid "MAD"
+msgstr "MAD"
+
+#: dashboards/stock_forecast_accuracy_test.py:371
+#: dashboards/stock_forecast_accuracy_test.py:490
+msgid "MAPE"
+msgstr "MAPE"
+
+#: dashboards/stock_forecast_accuracy_test.py:847
+msgid "Forecast accuracy by {}: Forecasts, orders, bias"
+msgstr "Précision des prévisions par {}: prévisions, commandes, biais"
+
+#: dashboards/stock_forecast_accuracy_test.py:850
+#: dashboards/stock_forecast_accuracy_test.py:919
+msgid "{}"
+msgstr "{}"
+
+#: dashboards/stock_forecast_accuracy_test.py:877
+msgid "{} by {}"
+msgstr "{} par {}"
+
+#: dashboards/stock_forecast_accuracy_test.py:881
+msgid "date"
+msgstr "Date"
+
+#: dashboards/stock_forecast_accuracy_test.py:882
+msgid "Quantity"
+msgstr "Quantité"
+
+#: dashboards/stock_forecast_accuracy_test.py:916
+msgid "Metric distribution by {}"
+msgstr "Distribution des métriques par {}"
+
+#: dashboards/stock_forecast_accuracy_test.py:920
+msgid "Metric"
+msgstr "Métrique"
+
+#: templates/forecasting/index.html:17
+#: templates/forecasting/input_interface.html:17
+msgid "Business Plan"
+msgstr ""
+
+#: templates/forecasting/index.html:18
+#: templates/forecasting/input_interface.html:18
+msgid "Business Plan Text Description"
+msgstr ""
+
+#: templates/forecasting/index.html:31 templates/forecasting/index.html:59
+#: templates/forecasting/index.html:89 templates/forecasting/index.html:117
+#: templates/forecasting/index.html:147
+#: templates/forecasting/input_interface.html:31
+msgid "More Info"
+msgstr "Plus d'infos"
+
+#: templates/forecasting/index.html:45
+msgid "F-Orchest"
+msgstr ""
+
+#: templates/forecasting/index.html:46
+msgid "F-Orchest Text Description"
+msgstr ""
+
+#: templates/forecasting/index.html:75
+msgid "Business Forecast"
+msgstr "Prévisions commerciales"
+
+#: templates/forecasting/index.html:76
+msgid "Business Forecast Text Description"
+msgstr ""
+
+#: templates/forecasting/index.html:103
+msgid "Logistics Forecast"
+msgstr "Prévisions logistiques"
+
+#: templates/forecasting/index.html:104
+msgid "Logistics Forecast Text Description"
+msgstr ""
+
+#: templates/forecasting/index.html:133
+msgid "Demand Review"
+msgstr ""
+
+#: templates/forecasting/index.html:134
+msgid "Demand Review Text Description"
+msgstr ""
+
+#: templates/forecasting/stock_forecast_accuracy_test.html:7
+msgid "Forecast Accuracy"
+msgstr "Précision de la prévision"
+
+#~ msgid "Translation test"
+#~ msgstr "Test de Translation "

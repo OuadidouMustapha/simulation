@@ -14,17 +14,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic.base import TemplateView
+import notifications.urls
+
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
-    path('', include('stock.urls')),
-    # path('stock/', include('stock.urls')),
+    path('account/', include('account.urls')),
+    path('account/', include('django.contrib.auth.urls')),
+    path('stock/', include('stock.urls')),
     path('forecasting/', include('forecasting.urls')),
     path('deployment/', include('deployment.urls')),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
-    path('accounts/', include("django.contrib.auth.urls")),
+    path('select2/', include('django_select2.urls')),
+    path('inventory/', include('inventory.urls')),
+    path('inbox/notifications/',
+        include(notifications.urls, namespace='notifications')),
 ]
 
 # Enable the debugger toolbar
@@ -33,3 +42,5 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

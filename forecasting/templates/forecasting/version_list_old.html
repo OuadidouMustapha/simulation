@@ -1,0 +1,91 @@
+    
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+    <!-- card -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCard1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard1">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Data filter" %}</h6>
+                </a>
+                <div class="collapse show" id="collapseCard1" style="">
+
+                    <div class="card-body">
+                        <!-- form -->
+                        <form method="get">
+                            {% for hidden_field in filter.form.hidden_fields %}
+                                {{ hidden_field }}
+                            {% endfor %}
+
+                            <div class="form-row align-items-end">
+                                {% for field in filter.form.visible_fields %}
+                                    <div class="col">
+                                        {{ field.label_tag }}
+                                        {% render_field field class="mb-2 form-control" %}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="submit" class="btn btn-xs btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- listview -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card border-left-primary shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapse-version-list" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapse-version-list">
+                    <h6 class="m-0 font-weight-bold text-primary">{% trans "Version List" %}</h6>
+                </a>
+                <div class="collapse show" id="collapse-version-list" style="">
+
+                    <div class="card-body">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>reference</th>
+                                <th>year</th>
+                                <th>month</th>
+                                <th>forecast_type</th>
+                                <th>description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in filter.qs %}
+                            <tr>
+                                <td>{{ obj.reference }}</td>
+                                <td>{{ obj.year }}</td>
+                                <td>{{ obj.month }}</td>
+                                <td>{{ obj.forecast_type }}</td>
+                                <td>{{ obj.description }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

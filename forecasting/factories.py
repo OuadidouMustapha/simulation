@@ -1,11 +1,11 @@
 import factory
 from faker import Faker
 
-from .models import StockForecast
+from .models import Forecast
 import pytz
 
 
-class StockForecastFactory(factory.django.DjangoModelFactory):
+class ForecastFactory(factory.django.DjangoModelFactory):
     stock = factory.SubFactory('stock.StockFactory')
     customer = factory.SubFactory('stock.CustomerFactory')
     circuit = factory.SubFactory('stock.CircuitFactory')
@@ -22,5 +22,5 @@ class StockForecastFactory(factory.django.DjangoModelFactory):
     )
 
     class Meta:
-        model = StockForecast
+        model = Forecast
         django_get_or_create = ('stock', 'forecast_date', 'circuit')

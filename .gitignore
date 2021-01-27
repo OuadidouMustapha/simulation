@@ -26,9 +26,14 @@ local_settings.py
 .env
 static/
 
+# Static files
+*.csv
+*.xls
+
 # Backup files # 
 *.bak 
 *.backup
+*.old
 
 # Thumbnails
 ._*

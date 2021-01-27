@@ -101,9 +101,9 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         qs = OrderDetail.objects.filter(
             product=versiondetail_obj.product,
             circuit=versiondetail_obj.circuit,
-            order__ordered_at__lte=versiondetail_obj.version.version_date,
             order__ordered_at__gte=versiondetail_obj.version.version_date -
                                     timedelta(days=365*_delta_year),
+            order__ordered_at__lte=versiondetail_obj.version.version_date,
         )
         qs = qs.values('order__ordered_at', 'ordered_quantity')
         qs = qs.order_by('order__ordered_at')

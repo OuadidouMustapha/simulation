@@ -52,7 +52,7 @@ class Version(CommonMeta):
     file_path = models.FileField(upload_to='forecast_versions/', blank=True)
     # is_budget = models.BooleanField(default=False)
     
-
+    
     objects = managers.VersionQuerySet.as_manager()
 
     def __str__(self):

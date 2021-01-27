@@ -10,11 +10,11 @@ urlpatterns = [
 
     path('', views.DashboardIndexView.as_view(),
          name='index'),
-    path('/order', views.OrderIndexView.as_view(),
+    path('order', views.OrderIndexView.as_view(),
         name='index'),
-    path('/delivery', views.DeliveryIndexView.as_view(),
+    path('delivery', views.DeliveryIndexView.as_view(),
         name='index'),
-    path('/otif', views. OtifIndexView.as_view(),
+    path('otif', views. OtifIndexView.as_view(),
          name='index'),
 ]
 

@@ -352,8 +352,18 @@ class ProductQuerySet(models.QuerySet):
         '''
         return list of unique/distinct status
         '''
-        return self.annotate(label=F('status'), value=F('status')).values('label', 'value').order_by('status').distinct('status')
-
+        return self.annotate(label=F('status'), value=F('status')).values('label', 'value').order_by('status').distinct('status') 
+    
+    def get_all_abc_segmentation_of_products(self):
+        '''
+        return list of unique/distinct abc_segmentation
+        '''
+        return self.annotate(label=F('abc_segmentation'), value=F('abc_segmentation')).values('label', 'value').order_by('abc_segmentation').distinct('abc_segmentation')
+    def get_all_fmr_segmentation_of_products(self):
+        '''
+        return list of unique/distinct fmr_segmentation
+        '''
+        return self.annotate(label=F('fmr_segmentation'), value=F('fmr_segmentation')).values('label', 'value').order_by('fmr_segmentation').distinct('fmr_segmentation')
     def get_all_products_by_attribute(self, attribute):
         '''
         return list of unique/distinct products based on selected attribute
@@ -369,6 +379,12 @@ class CircuitQuerySet(models.QuerySet):
 
 class CustomerQuerySet(models.QuerySet):
     def get_all_customers(self):
+        '''
+        return list of unique/distinct customer
+        '''
+        return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+class SupplierQuerySet(models.QuerySet):
+    def get_all_suppliers(self):
         '''
         return list of unique/distinct customer
         '''

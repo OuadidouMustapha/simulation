@@ -37,6 +37,7 @@ static/
 .Python
 .idea
 *.sql
+.vscode
 venv/
 env/
 build/*.log

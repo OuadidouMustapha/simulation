@@ -16,6 +16,8 @@ _all_products   = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
 _all_customers  = list(Customer.objects.get_all_customers())
 _all_status     = list(Product.objects.get_all_status_of_products())
+_all_fmr_segmentation = list(Product.objects.get_all_fmr_segmentation_of_products())
+_all_abc_segmentation = list(Product.objects.get_all_abc_segmentation_of_products())
 
 
 cs12 = colorlover.scales['12']['qual']['Paired']
@@ -29,17 +31,23 @@ def filter_container():
                 dash_utils.get_filter_dropdown(
                     DROPDOWN_CATEGORIE_LIST_ID, DIV_CATEGORIE_LIST_ID, CHECKBOX_CATEGORIE_LIST_ID, _all_categories,
                     'Categories')
-            ], sm=12, md=6, lg=4),
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    DROPDOWN_STATUT_LIST_ID, DIV_STATUT_LIST_ID, CHECKBOX_STATUT_LIST_ID, _all_status, 'Status')
-            ], sm=12, md=6, lg=4),
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+            ], sm=12, md=6, lg=3),
+            dbc.Col([
+                dash_utils.get_filter_dropdown(
+                    dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
+                    'FMR Segmentation'),
+                html.Div(id="number-out"),
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID, _all_customers,
                     'Customers',select_all=False,multi=False),
                 html.Div(id="number-out"),
-            ], sm=12, md=6, lg=4),
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_date_range(
                     INPUT_DATE_RANGE_ID,
@@ -67,7 +75,7 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF_ID,icon="fas fa-tachometer-alt"
                                             #  subtitle=
                                             #     [html.Br(),
                                             #     dbc.Col([
@@ -76,7 +84,7 @@ def body_container():
                                             #             striped=True,
                                             #         ),
                                             #     ])],icon="fas fa-tachometer-alt"
-                                            )
+                                            ,subtitle='')
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
                     dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAD_ID, title='Number of Orders ',id_subtitle=SUBTITLE_ORDERS_ID,
@@ -193,10 +201,12 @@ def body_container():
                             [
                                 dbc.Row([
                                     dbc.Col([
-                                        dcc.Graph(id=FIGURE_PIE_ORDERDETAIL_ID)
+                                        dcc.Graph(id=FIGURE_PIE_ORDERDETAIL_ID),
+                                        html.P(_('State Of Order Details'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
-                                        dcc.Graph(id=FIGURE_PIE_ORDER_ID)
+                                        dcc.Graph(id=FIGURE_PIE_ORDER_ID),
+                                        html.P(_('State Of Order'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],

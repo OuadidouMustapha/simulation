@@ -28,27 +28,29 @@ from .ids import *
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
         Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
-        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_categories, selected_customers,
-                                              selected_status, start_date,
+def plot_OrderDetail_count_by_custmoer_figure(selected_products, 
+                                              selected_categories,
+                                              selected_customers,
+                                              selected_abc,selected_fmr,
+                                              start_date,
                                               end_date):
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        #product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
     )
     #
-    # df = read_frame(results)
-
-    # train = parallelize_dataframe(results, read_frame)
 
     results  = results.annotate(
         Not_Delivered =
@@ -102,105 +104,26 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
     df = pd.DataFrame.from_records(results)
 
     print(df)
-    # x = list(orderDetails.values_list('order_id', flat=True))
-    # y = list(orderDetails.values_list('Partially_Delivered_In_Time', flat=True))
-    #
-    # figure = go.Figure(data=[
-    #     dict(x=x, y=y, type='bar')
-    # ])
-
-
-
-    #
-    #
-    # new = df.groupby(
-    #     by=['product_id', 'customer_id', 'order__id'],
-    #     as_index=False
-    # ).agg({
-    #     'order__delivery__deliverydetail__delivered_quantity': 'sum',
-    #     'order__delivery__delivered_at': 'max',
-    #     'desired_at': 'first',
-    #     'ordered_quantity': 'first',
-    # })
-    #
-    # # TODO Rename Data Frames
-    #
-    # new['order__delivery__delivered_at'] = new['order__delivery__delivered_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new['desired_at'] = new['desired_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new_df = new.rename(
-    #     columns={
-    #         "order__delivery__deliverydetail__delivered_quantity": "delivered_quantity",
-    #         "order__delivery__delivered_at": "delivered_at",
-    #     },
-    #     errors="raise"
-    # )
-    #
-    # if new_df.size != 0:
-    #
-    #     new_df['Not Delivered'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
-    #         axis=1)
-    #     new_df['Partially Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #
-    #     new_df['Partially Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     df_data = new_df.groupby(['customer_id']).agg({
-    #         'Not Delivered': 'sum',
-    #         'Partially Delivered In Time': 'sum',
-    #         'Partially Delivered Not In Time': 'sum',
-    #         'Delivered In Time': 'sum',
-    #         'Delivered Not In Time': 'sum',
-    #     }).reset_index()
-    #
 
     figure = df.iplot(
         asFigure=True,
         kind='bar',
         barmode='group',
-        colors=[
-            'rgb(255,0,0)',
-            'rgb(255,165,0)',
-            'rgb(0, 204, 0)',
-            'rgb(0, 48, 240)',
-            'rgb(0,255, 0)',
-        ],
         x=['customer'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
+        colors= [
+            'rgb(255, 0, 0)',
+            'rgb(0, 255, 0)',
+            'rgb(255, 230, 0)',
+            'rgb(0,200,0)',
+            'rgb(255, 132, 0)',
+        ],
         theme='white',
         title='title',
         xTitle='customer',
         yTitle='Number of Orders',
     )
-    # else:
-    # figure = df.iplot(
-    #     asFigure=True,
-    #     kind='bar',
-    #     barmode='group',
-    #     x=['customer_id'],
-    #     y=None,
-    #     theme='white',
-    #     title='title',
-    #     xTitle='customer',
-    #     yTitle='Number of Orders',
-    # )
+
 
     return figure
 
@@ -212,19 +135,22 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products, selected_catego
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
         Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
-        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_otif_by_date_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,end_date):
+def plot_otif_by_date_figure(selected_products, selected_categories, selected_customers,selected_abc,
+                                              selected_fmr, start_date,end_date):
 
 
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        #product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -297,7 +223,6 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         lambda row: otif(row),
         axis=1)
     
-        
     
 
 
@@ -320,137 +245,6 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
     )
 
 
-
-
-
-
-
-
-
-
-
-
-
-    # ----------------------------------------------------{}-----------------------------------------------------------------------
-
-    # results = OrderDetail.objects.filter(
-    #     product__in=selected_products,
-    #     # product__category__in=selected_categories,
-    #     # product__status__in=selected_status,
-    #     order__ordered_at__gte=start_date,
-    #     customer__in=[selected_customers],
-    #     order__ordered_at__lte=end_date
-    # )
-    #
-    # orderDetails = results.values(
-    #     'id',
-    #     'order__id',
-    #     'product_id',
-    #     'customer_id',
-    #     'order__delivery__id',
-    #     'order__ordered_at',
-    #     'ordered_quantity',
-    #     'desired_at',
-    #     'order__delivery__delivered_at',
-    #     'order__delivery__deliverydetail__delivered_quantity'
-    # )
-    #
-    # df = read_frame(orderDetails)
-    #
-    # new = df.groupby(
-    #     by=['product_id', 'customer_id', 'order__id'],
-    #     as_index=False
-    # ).agg({
-    #     'order__delivery__deliverydetail__delivered_quantity': 'sum',
-    #     'order__delivery__delivered_at': 'max',
-    #     'desired_at': 'first',
-    #     'ordered_quantity': 'first',
-    # })
-    #
-    # # TODO Rename Data Frames
-    #
-    # new['order__delivery__delivered_at'] = new['order__delivery__delivered_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new['desired_at'] = new['desired_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new_df = new.rename(
-    #     columns={
-    #         "order__delivery__deliverydetail__delivered_quantity": "delivered_quantity",
-    #         "order__delivery__delivered_at": "delivered_at",
-    #     },
-    #     errors="raise"
-    # )
-    #
-    # if new_df.size != 0:
-    #
-    #     new_df['Not Delivered'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
-    #         axis=1)
-    #     new_df['Partially Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #
-    #     new_df['Partially Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     df_data = new_df.groupby(['customer_id']).agg({
-    #         'Not Delivered': 'sum',
-    #         'Partially Delivered In Time': 'sum',
-    #         'Partially Delivered Not In Time': 'sum',
-    #         'Delivered In Time': 'sum',
-    #         'Delivered Not In Time': 'sum',
-    #     }).reset_index()
-    #
-    #     def otif(row):
-    #         sum = row['Not Delivered'] + row['Partially Delivered In Time']+ row['Partially Delivered Not In Time'] + row['Delivered In Time'] + row['Delivered Not In Time']
-    #         if sum != 0:
-    #             return (row['Delivered In Time'] / sum) * 100
-    #         else:
-    #             return 0
-    #
-    #     df_data['OTIF'] = df_data.apply(
-    #         lambda row: otif(row),
-    #         axis=1)
-    #
-    #     frame = df_data.sort_values(by=['OTIF'], ascending=False)
-    #
-    #     figure = frame.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['customer_id'],
-    #         y=['OTIF'],
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='OTIF',
-    #     )
-    # else:
-    #     figure = new_df.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['customer_id'],
-    #         y=None,
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
-
     return figure
 #
 #
@@ -461,27 +255,25 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
         Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
-        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr, start_date,
                             end_date):
 
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        #product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
     )
-    #
-    # df = read_frame(results)
-
-    # train = parallelize_dataframe(results, read_frame)
 
     results  = results.annotate(
         Not_Delivered =
@@ -539,15 +331,15 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         asFigure=True,
         kind='bar',
         barmode='group',
-        colors=[
-            'rgb(255,0,0)',
-            'rgb(255,165,0)',
-            'rgb(0, 204, 0)',
-            'rgb(0, 48, 240)',
-            'rgb(0,255, 0)',
-        ],
         x=['order__ordered_at'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
+        colors= [
+            'rgb(255, 0, 0)',
+            'rgb(0, 255, 0)',
+            'rgb(255, 230, 0)',
+            'rgb(0,200,0)',
+            'rgb(255, 132, 0)',
+        ],
         theme='white',
         title='title',
         xTitle='date ',
@@ -557,123 +349,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     figure.update_xaxes(
             tickformat = '%d %B %Y',
     )
-
-
-    # ///////////////////////////////////////////////////////////////////////////////////////{ With Data Frames }////////////////////////////////////////////////////////////////////////////////
-    # results = OrderDetail.objects.filter(
-    #     product__in=selected_products,
-    #     # product__category__in=selected_categories,
-    #     # product__status__in=selected_status,
-    #     order__ordered_at__gte=start_date,
-    #     customer__in=[selected_customers],
-    #     order__ordered_at__lte=end_date
-    # )
-    #
-    # orderDetails = results.values(
-    #     'id',
-    #     'order__id',
-    #     'product_id',
-    #     'customer_id',
-    #     'order__delivery__id',
-    #     'order__ordered_at',
-    #     'ordered_quantity',
-    #     'desired_at',
-    #     'order__delivery__delivered_at',
-    #     'order__delivery__deliverydetail__delivered_quantity'
-    # )
-    #
-    # new = read_frame(orderDetails)
-    #
-    # # new = df.groupby(
-    # #     by=['product_id', 'customer_id', 'order__id'],
-    # #     as_index=False
-    # # ).agg({
-    # #     'order__delivery__deliverydetail__delivered_quantity': 'sum',
-    # #     'order__delivery__delivered_at': 'max',
-    # #     'desired_at': 'first',
-    # #     'order__ordered_at': 'first',
-    # #     'ordered_quantity': 'first',
-    # # })
-    #
-    # # TODO Rename Data Frames
-    #
-    # new['order__delivery__delivered_at'] = new['order__delivery__delivered_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new['desired_at'] = new['desired_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new_df = new.rename(
-    #     columns={
-    #         "order__delivery__deliverydetail__delivered_quantity": "delivered_quantity",
-    #         "order__delivery__delivered_at": "delivered_at",
-    #         'order__ordered_at': 'ordered_at',
-    #     },
-    #     errors="raise"
-    # )
-    #
-    # if new_df.size != 0:
-    #
-    #     new_df['Not Delivered'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
-    #         axis=1)
-    #     new_df['Partially Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #
-    #     new_df['Partially Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     df_data = new_df.groupby(['ordered_at']).agg({
-    #         'Not Delivered': 'sum',
-    #         'Partially Delivered In Time': 'sum',
-    #         'Partially Delivered Not In Time':'sum',
-    #         'Delivered In Time': 'sum',
-    #         'Delivered Not In Time': 'sum',
-    #     }).reset_index()
-    #
-    #     figure = df_data.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='stack',
-    #         colors=[
-    #             'rgb(255,0,0)',
-    #             'rgb(255,165,0)',
-    #             'rgb(0, 204, 0)',
-    #             'rgb(0, 48, 240)',
-    #             'rgb(0,255, 0)',
-    #         ],
-    #         x='ordered_at',
-    #         y=['Not Delivered', 'Partially Delivered In Time','Partially Delivered Not In Time', 'Delivered In Time', 'Delivered Not In Time'],
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
-    # else:
-    #
-    #     figure = new_df.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['customer_id'],
-    #         y=None,
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
 
     return figure
 #
@@ -685,19 +360,21 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
         Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
-        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_status, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr, start_date,
                             end_date):
 
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        #product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -816,19 +493,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         'Order Not_Delivered':'sum',
     })
 
-    # def otif(row):
-    #     sum = row['Not Delivered'] + row['Partially Delivered Not In Time'] + row['Partially Delivered In Time'] + \
-    #           row['Delivered In Time'] + row['Delivered Not In Time']
-    #     if sum != 0:
-    #         return (row['Delivered In Time'] / sum) * 100
-    #     else:
-    #         return 0
-    #
-    # df_data['OTIF'] = df_data.apply(
-    #     lambda row: otif(row),
-    #     axis=1)
-
-
     figure = df_data.iplot(
         asFigure=True,
         kind='bar',
@@ -841,6 +505,13 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             'Order Partially_Delivered_In_Time',
             'Order Not_Delivered'
         ],
+        colors= [
+            'rgb(255, 230, 0)',
+            'rgb(0, 200, 0)',
+            'rgb(255, 132, 0)',
+            'rgb(0,255,0)',
+            'red',
+        ],
         theme='white',
         title='title',
         xTitle='Ordered Date',
@@ -850,175 +521,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     figure.update_xaxes(
             tickformat = '%d %B %Y',
     )
-    # ------------------------------------------------------------------------------------------------------------------------------------------
-    # results = OrderDetail.objects.filter(
-    #     product__in=selected_products,
-    #     # product__category__in=selected_categories,
-    #     # product__status__in=selected_status,
-    #     order__ordered_at__gte=start_date,
-    #     customer__in=[selected_customers],
-    #     order__ordered_at__lte=end_date
-    # )
-    #
-    # orderDetails = results.values(
-    #     'id',
-    #     'order',
-    #     'order__reference',
-    #     'order__ordered_at',
-    #     'ordered_quantity',
-    #     'desired_at',
-    #     'order__delivery__delivered_at',
-    #     'order__delivery__deliverydetail__delivered_quantity'
-    # )
-    #
-    # new = read_frame(orderDetails)
-    #
-    # # new = df.groupby(
-    # #     by=['product_id', 'customer_id', 'order__id','order__reference'],
-    # #     as_index=False
-    # # ).agg({
-    # #     'order__delivery__deliverydetail__delivered_quantity': 'sum',
-    # #     'order__delivery__delivered_at': 'max',
-    # #     'desired_at': 'first',
-    # #     'order__ordered_at': 'first',
-    # #     'ordered_quantity': 'first',
-    # # })
-    #
-    # # TODO Rename Data Frames
-    #
-    # new['order__delivery__delivered_at'] = new['order__delivery__delivered_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new['desired_at'] = new['desired_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new_df = new.rename(
-    #     columns={
-    #         "order__delivery__deliverydetail__delivered_quantity": "delivered_quantity",
-    #         "order__delivery__delivered_at": "delivered_at",
-    #         'order__ordered_at': 'ordered_at',
-    #     },
-    #     errors="raise"
-    # )
-    #
-    # if new_df.size != 0:
-    #
-    #     new_df['Not Delivered'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
-    #         axis=1)
-    #     new_df['Partially Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #
-    #     new_df['Partially Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     df_data = new_df.groupby(['order__id','order__reference']).agg({
-    #         'Not Delivered': 'sum',
-    #         'Partially Delivered In Time': 'sum',
-    #         'Partially Delivered Not In Time': 'sum',
-    #         'Delivered In Time': 'sum',
-    #         'ordered_at': 'first',
-    #         'Delivered Not In Time': 'sum',
-    #     }).reset_index()
-    #
-    #     df_data['sum_all'] = df_data.apply(
-    #         lambda
-    #             row: row['Not Delivered'] + row['Partially Delivered In Time'] + row[
-    #             'Partially Delivered Not In Time'] + row['Delivered In Time'] + row['Delivered Not In Time'],
-    #         axis=1)
-    #
-    #     df_data['Order Not Delivered'] = df_data.apply(
-    #         lambda
-    #             row: 1 if row['Not Delivered'] == row['sum_all'] and row['Not Delivered'] != 0 else None,
-    #         axis=1
-    #     )
-    #
-    #     df_data['Order Partially Delivered In Time'] = df_data.apply(
-    #         lambda row: 1 if (
-    #                 row['Partially Delivered Not In Time'] == 0
-    #                 and row['Delivered Not In Time'] == 0
-    #                 and row['Not Delivered'] < row['sum_all']
-    #                 and (
-    #                         row['Delivered In Time'] < row['sum_all']
-    #                         or row['Partially Delivered In Time'] != 0
-    #                 )
-    #                 and row['Delivered In Time'] <= row['sum_all']
-    #                 and row['sum_all'] != 0
-    #         ) else None, axis=1)
-    #
-    #     df_data['Order Partially Delivered Not In Time'] = df_data.apply(
-    #         lambda row: 1 if (row['Partially Delivered Not In Time'] != 0 or (
-    #                     row['Delivered Not In Time'] < row['sum_all'] and row['Delivered Not In Time'] != 0)) and row[
-    #                              'sum_all'] != 0 else None, axis=1)
-    #
-    #     df_data['Order Delivered In Time'] = df_data.apply(
-    #         lambda
-    #             row: 1 if row['Delivered In Time'] == row['sum_all'] and row['Delivered In Time'] != 0 else None,
-    #         axis=1
-    #     )
-    #
-    #     df_data['Order Delivered Not In Time'] = df_data.apply(
-    #         lambda
-    #             row: 1 if row['Delivered Not In Time'] != 0 and row['Delivered Not In Time'] + row[
-    #             'Delivered In Time'] == row['sum_all'] else None,
-    #         axis=1
-    #     )
-    #
-    #     # def otif(row):
-    #     #     sum = row['Not Delivered'] + row['Partially Delivered Not In Time'] + row['Partially Delivered In Time'] + \
-    #     #           row['Delivered In Time'] + row['Delivered Not In Time']
-    #     #     if sum != 0:
-    #     #         return (row['Delivered In Time'] / sum) * 100
-    #     #     else:
-    #     #         return 0
-    #     #
-    #     # df_data['OTIF'] = df_data.apply(
-    #     #     lambda row: otif(row),
-    #     #     axis=1)
-    #
-    #
-    #     figure = df_data.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['ordered_at','order__reference'],
-    #         y=[
-    #             'Order Partially Delivered Not In Time',
-    #             'Order Delivered In Time',
-    #             'Order Delivered Not In Time',
-    #             'Order Partially Delivered In Time',
-    #             'Order Not Delivered'
-    #         ],
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
-    # else:
-    #
-    #     figure = new_df.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['customer_id'],
-    #         y=None,
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
 
     return figure
 #
@@ -1028,27 +530,30 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     [
         Output(FIGURE_PIE_ORDERDETAIL_ID, "figure"),
         Output(FIGURE_PIE_ORDER_ID, "figure"),
-        Output(SUBTITLE_ORDERS_ID, 'children'),
         Output(SUBTITLE_DELIVERIES_ID, 'children'),
-        Output("400", "value"), 
-        Output("400", "children"),
-        Output("400", "color")   
+        Output(SUBTITLE_ORDERS_ID, 'children'),
+        Output(SUBTITLE_OTIF_ID, 'children'),
+        # Output("400", "value"), 
+        # Output("400", "children"),
+        # Output("400", "color")   
     ],
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
         Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
-        Input(DROPDOWN_STATUT_LIST_ID, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_customers, selected_status,
+def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr,
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
@@ -1120,7 +625,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     df_data_order = read_frame(results_order)
 
-    print(df_data_order,len(df_data_order.index),'ouadidou')
+    print(df_data_order,len(df_data_order.index),'foof')
 
     Number_of_orders = len(df_data_order.index)
 
@@ -1258,124 +763,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     figure_pie_orderDetail.update_traces(hole=.4, hoverinfo="label+percent+name")
     figure_pie_order.update_traces(hole=.4, hoverinfo="label+percent+name")
-    # results = OrderDetail.objects.filter(
-    #     product__in=selected_products,
-    #     # product__category__in=selected_categories,
-    #     # product__status__in=selected_status,
-    #     order__ordered_at__gte=start_date,
-    #     customer__in=[selected_customers],
-    #     order__ordered_at__lte=end_date
-    # )
-    #
-    # orderDetails = results.values(
-    #     'id',
-    #     'order__id',
-    #     'product_id',
-    #     'customer_id',
-    #     'order__delivery__id',
-    #     'order__ordered_at',
-    #     'ordered_quantity',
-    #     'desired_at',
-    #     'order__delivery__delivered_at',
-    #     'order__delivery__deliverydetail__delivered_quantity'
-    # )
-    #
-    # df = read_frame(orderDetails)
-    #
-    # new = df.groupby(
-    #     by=['product_id', 'customer_id', 'order__id'],
-    #     as_index=False
-    # ).agg({
-    #     'order__delivery__deliverydetail__delivered_quantity': 'sum',
-    #     'order__delivery__delivered_at': 'max',
-    #     'desired_at': 'first',
-    #     'ordered_quantity': 'first',
-    # })
-    #
-    # # TODO Rename Data Frames
-    #
-    # new['order__delivery__delivered_at'] = new['order__delivery__delivered_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new['desired_at'] = new['desired_at'].astype(
-    #     'datetime64[ns]')
-    #
-    # new_df = new.rename(
-    #     columns={
-    #         "order__delivery__deliverydetail__delivered_quantity": "delivered_quantity",
-    #         "order__delivery__delivered_at": "delivered_at",
-    #     },
-    #     errors="raise"
-    # )
-    #
-    #
-    #
-    # if new_df.size != 0:
-    #
-    #     new_df['Not Delivered'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity == 0 or row.delivered_quantity is None or row.delivered_at is None else None,
-    #         axis=1)
-    #     new_df['Partially Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #
-    #     new_df['Partially Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if 0 < row.delivered_quantity < row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at >= row.delivered_at else None,
-    #         axis=1)
-    #     new_df['Delivered Not In Time'] = new_df.apply(
-    #         lambda
-    #             row: 1 if row.delivered_quantity >= row.ordered_quantity and row.desired_at < row.delivered_at else None,
-    #         axis=1)
-    #
-    #
-    #     df_data = new_df.agg({
-    #         'Not Delivered': 'sum',
-    #         'Delivered In Time': 'sum',
-    #         'Partially Delivered In Time': 'sum',
-    #         'Partially Delivered Not In Time': 'sum',
-    #         'Delivered Not In Time': 'sum',
-    #     }).reset_index()
-    #
-    #
-    #     figure = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
-    #
-    #
-    #     figure.add_trace(
-    #         go.Pie(
-    #             labels=df_data['index'],
-    #             values=df_data[0],
-    #             name="",
-    #             marker={
-    #                 'colors': [
-    #                     'red',
-    #                     'rgb(255,165,0)',
-    #                     'rgb(0, 204, 0)',
-    #                     'rgb(0, 48, 240)',
-    #                 ]
-    #             },
-    #         )
-    #         , 1, 1)
-    #
-    #     figure.update_traces(hole=.4, hoverinfo="label+percent+name")
-    # else:
-    #     figure = new_df.iplot(
-    #         asFigure=True,
-    #         kind='bar',
-    #         barmode='group',
-    #         x=['customer_id'],
-    #         y=None,
-    #         theme='white',
-    #         title='title',
-    #         xTitle='customer',
-    #         yTitle='Number of Orders',
-    #     )
     
     if OTIF>=80 : 
         color  = 'success' 
@@ -1389,7 +776,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     
 
 
-    return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,OTIF,str(OTIF)+'%' if OTIF >= 10 else "",color
+    return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,str(OTIF)+'%'
 
 
 dash_utils.select_all_callbacks(
@@ -1397,6 +784,12 @@ dash_utils.select_all_callbacks(
 
 dash_utils.select_all_callbacks(
     app, DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID)
+
+dash_utils.select_all_callbacks(
+    app, dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id)
+
+dash_utils.select_all_callbacks(
+    app, dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id)
 
 dash_utils.select_all_callbacks(
     app, DROPDOWN_CATEGORIE_LIST_ID, DIV_CATEGORIE_LIST_ID, CHECKBOX_CATEGORIE_LIST_ID)

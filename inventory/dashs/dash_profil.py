@@ -1299,9 +1299,11 @@ dash_utils.select_all_callbacks(
     app, dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id)
 
 dash_utils.select_all_callbacks(
-    app, dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id)
+    app, dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id)
 
 dash_utils.select_all_callbacks(
-    app, dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id)
+    app, dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id)
+
+
 dash_utils.select_all_callbacks(
     app, dropdown_warehouse_list_id, div_warehouse_list_id, checkbox_warehouse_list_id)

@@ -28,3 +28,7 @@ class OtifSupplierIndexView(TemplateView):
     
 class ProfilIndexView(TemplateView):
     template_name = "profil/index.html"
+
+    
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'

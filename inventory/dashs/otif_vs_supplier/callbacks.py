@@ -6,7 +6,7 @@ from common.dashboards import dash_utils
 from dash.dependencies import Input, Output
 from django.utils.translation import gettext as _
 from django_plotly_dash import DjangoDash
-from stock.models import Product, ProductCategory, Customer, OrderDetail
+from stock.models import Product, ProductCategory, Supplier, OrderDetail,Delivery
 from django_pandas.io import read_frame
 import cufflinks as cf
 import numpy as np
@@ -23,11 +23,11 @@ from .ids import *
 
 @app.callback(
 
-    Output(FIGURE_CUSTOMER_ID, "figure"),
+    Output(FIGURE_SUPPLIER_ID, "figure"),
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
-        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_SUPPLIER_LIST_ID, "value"),
         Input(dropdown_abc_list_id, "value"),
         Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
@@ -36,7 +36,7 @@ from .ids import *
 )
 def plot_OrderDetail_count_by_custmoer_figure(selected_products, 
                                               selected_categories,
-                                              selected_customers,
+                                              selected_suppliers,
                                               selected_abc,selected_fmr,
                                               start_date,
                                               end_date):
@@ -47,7 +47,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
     #
@@ -92,24 +92,27 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
                 output_field=IntegerField()
             )
     )
-    results  = results.values('customer_id','customer__reference').annotate(
+    print(results)
+    # dff = pd.DataFrame.from_records(res)
+    # print(dff,'oppi')
+    results  = results.values('supplier_id','supplier__reference').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
         Partially_Delivered_Not_In_Time=Sum('Partially_Delivered_Not_In_Time'),
         Delivered_In_Time =Sum('Delivered_In_Time'),
         Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
-    ).values('customer','customer__reference', 'Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
+    ).values('supplier','supplier__reference', 'Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
 
     df = pd.DataFrame.from_records(results)
 
-    print(df)
+
 
     figure = df.iplot(
         asFigure=True,
         kind='bar',
         barmode='group',
-        x=['customer'],
+        x=['supplier__reference'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         colors= [
             'rgb(255, 0, 0)',
@@ -120,7 +123,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
         ],
         theme='white',
         title='title',
-        xTitle='customer',
+        xTitle='supplier',
         yTitle='Number of Orders',
     )
 
@@ -134,14 +137,14 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
-        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_SUPPLIER_LIST_ID, "value"),
         Input(dropdown_abc_list_id, "value"),
         Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_otif_by_date_figure(selected_products, selected_categories, selected_customers,selected_abc,
+def plot_otif_by_date_figure(selected_products, selected_categories, selected_suppliers,selected_abc,
                                               selected_fmr, start_date,end_date):
 
 
@@ -152,7 +155,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
     #
@@ -200,6 +203,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
                 output_field=IntegerField()
             )
     )
+    
 
     results  = results.values('order__ordered_at',).annotate(
         Not_Delivered=Sum('Not_Delivered'),
@@ -208,8 +212,12 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         Delivered_In_Time =Sum('Delivered_In_Time'),
         Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
     ).values('order__ordered_at','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
+    
+    print(len(results),'olaa')
 
     df_data = read_frame(results)
+    
+    print(len(df_data),'olaa')
 
 
     def otif(row):
@@ -254,14 +262,14 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
-        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_SUPPLIER_LIST_ID, "value"),
         Input(dropdown_abc_list_id, "value"),
         Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr, start_date,
                             end_date):
 
 
@@ -271,7 +279,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
 
@@ -331,6 +339,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         asFigure=True,
         kind='bar',
         barmode='group',
+
         x=['order__ordered_at'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         colors= [
@@ -359,14 +368,14 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
-        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_SUPPLIER_LIST_ID, "value"),
         Input(dropdown_abc_list_id, "value"),
         Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr, start_date,
                             end_date):
 
 
@@ -376,7 +385,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
     #
@@ -434,9 +443,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     ).values('order__ordered_at','order','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
     df_data = read_frame(results)
-
-    print(results,"hello mustapha")
-
 
 
     df_data['sum_all'] = df_data.apply(
@@ -506,11 +512,11 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             'Order Not_Delivered'
         ],
         colors= [
-            'rgb(255, 230, 0)',
-            'rgb(0, 200, 0)',
-            'rgb(255, 132, 0)',
-            'rgb(0,255,0)',
-            'red',
+                'rgb(255, 230, 0)',
+                'rgb(0, 200, 0)',
+                'rgb(255, 132, 0)',
+                'rgb(0,255,0)',
+                'red',
         ],
         theme='white',
         title='title',
@@ -540,14 +546,14 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
         Input(DROPDOWN_CATEGORIE_LIST_ID, "value"),
-        Input(DROPDOWN_CUSTOMER_LIST_ID, "value"),
+        Input(DROPDOWN_SUPPLIER_LIST_ID, "value"),
         Input(dropdown_abc_list_id, "value"),
         Input(dropdown_fmr_list_id, "value"),
         Input(INPUT_DATE_RANGE_ID, 'start_date'),
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr,
+def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr,
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
@@ -555,20 +561,14 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
 
     Number_of_deliveries  = results.values('order__delivery').distinct()
-    train = read_frame(Number_of_deliveries)
+
     
     Number_of_deliveries  = Number_of_deliveries.count()
-    
-    
-    print(Number_of_deliveries,'googlearth')
-
-
-    print(train ,'FC BB')
 
     results = results.annotate(
         Not_Delivered=
@@ -625,7 +625,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     df_data_order = read_frame(results_order)
 
-    print(df_data_order,len(df_data_order.index),'foof')
 
     Number_of_orders = len(df_data_order.index)
 
@@ -695,11 +694,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     labels = df_data.index
     values = df_data.values
-
-    print(labels,values,'desert')
-    
-    
-    print(df_data,'sultan')
 
     df_data = df_data.agg({
         'Not_Delivered': 'sum',
@@ -783,7 +777,7 @@ dash_utils.select_all_callbacks(
     app, DROPDOWN_PRODUCT_LIST_ID, DIV_PRODUCT_LIST_ID, CHECKBOX_PRODUCT_LIST_ID)
 
 dash_utils.select_all_callbacks(
-    app, DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID)
+    app, DROPDOWN_SUPPLIER_LIST_ID, DIV_SUPPLIER_LIST_ID, CHECKBOX_SUPPLIER_LIST_ID)
 
 dash_utils.select_all_callbacks(
     app, dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id)

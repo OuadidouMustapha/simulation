@@ -45,6 +45,9 @@ figure_most_ordred_product_id = dash_utils.generate_html_id(_prefix, 'figure_mos
 figure_most_ordred_supplier_id = dash_utils.generate_html_id(_prefix, 'figure_most_ordred_supplier_id')
 figure_pie_statuts_product_id = dash_utils.generate_html_id(_prefix, 'figure_pie_statuts_product_id')
 figure_most_ordred_categories_id = dash_utils.generate_html_id(_prefix, 'figure_pie_ordred_categories_id')
+figure_pie_cat_id = dash_utils.generate_html_id(_prefix, 'figure_pie_cat_id')
+figure_pie_abc_id = dash_utils.generate_html_id(_prefix, 'figure_pie_abc_id')
+figure_pie_fmr_id = dash_utils.generate_html_id(_prefix, 'figure_pie_fmr_id')
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -57,6 +60,9 @@ dropdown_categorie_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_cate
 dropdown_order_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_order_list_id')
 dropdown_supplier_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_supplier_list_id')
 dropdown_statut_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_statut_list_id')
+dropdown_fmr_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_fmr_list_id')
+dropdown_warehouse_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_warehouse_list_id')
+dropdown_abc_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_abc_list_id')
 
 # --------------------------------------------Div list -------------------------------------------
 div_product_list_id = dash_utils.generate_html_id(_prefix, 'div_product_list_id')
@@ -64,6 +70,9 @@ div_order_list_id = dash_utils.generate_html_id(_prefix, 'div_order_list_id')
 div_categorie_list_id = dash_utils.generate_html_id(_prefix, 'div_categorie_list_id')
 div_supplier_list_id = dash_utils.generate_html_id(_prefix, 'div_supplier_list_id')
 div_statut_list_id = dash_utils.generate_html_id(_prefix, 'div_statut_list_id')
+div_fmr_list_id = dash_utils.generate_html_id(_prefix, 'div_fmr_list_id')
+div_warehouse_list_id = dash_utils.generate_html_id(_prefix, 'div_warehouse_list_id')
+div_abc_list_id = dash_utils.generate_html_id(_prefix, 'div_abc_list_id')
 
 # --------------------------------------------Checkbox list --------------------------------------
 checkbox_product_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_product_list_id')
@@ -71,6 +80,9 @@ checkbox_categorie_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_cate
 checkbox_order_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_order_list_id')
 checkbox_supplier_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_supplier_list_id')
 checkbox_statut_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_statut_list_id')
+checkbox_fmr_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_fmr_list_id')
+checkbox_warehouse_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_fmr_list_id')
+checkbox_abc_list_id = dash_utils.generate_html_id(_prefix, 'dcheckbox_abc_list_id')
 
 input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id')
 
@@ -78,6 +90,8 @@ _all_products = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
 _all_suppliers = list(Supplier.objects.get_all_suppliers())[0:10]
 _all_status = list(Product.objects.get_all_status_of_products())
+_all_fmr_segmentation = list(Product.objects.get_all_fmr_segmentation_of_products())
+_all_abc_segmentation = list(Product.objects.get_all_abc_segmentation_of_products())
 
 layout = dict(
     autosize=True,
@@ -99,16 +113,22 @@ def filter_container():
                 dash_utils.get_filter_dropdown(
                     dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id, _all_categories,
                     'Categories')
-            ], sm=12, md=6, lg=4),
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id, _all_status, 'Status')
-            ], sm=12, md=6, lg=4),
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+            ], sm=12, md=6, lg=3),
+            dbc.Col([
+                dash_utils.get_filter_dropdown(
+                    dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
+                    'FMR Segmentation'),
+                html.Div(id="number-out"),
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_supplier_list_id, div_supplier_list_id, checkbox_supplier_list_id, _all_suppliers,
-                    'suppliers')
-            ], sm=12, md=6, lg=4),
+                    'suppliers',select_all=False,multi=False)
+            ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_date_range(
                     input_date_range_id,
@@ -253,12 +273,23 @@ def body_container():
                 [
                     dcc.Loading(
                         html.Div(
-                            className='app-controls-block',
-                            children=
-                            html.Div(
-                                [dcc.Graph(id=figure_pie_statuts_product_id)],
-                                className="pretty_container",
-                            ),
+                            [
+                                dbc.Row([
+                                    dbc.Col([
+                                        dcc.Graph(id=figure_pie_cat_id),
+                                        html.P(_('Categories'),className='font-weight-bold text-primary  h6  text-center'),
+                                    ], sm=12, md=6, lg=4),
+                                    dbc.Col([
+                                        dcc.Graph(id=figure_pie_abc_id),
+                                        html.P(_('ABC Segmentation '),className='font-weight-bold text-primary  h6  text-center'),
+                                    ], sm=12, md=6, lg=4),
+                                    dbc.Col([
+                                        dcc.Graph(id=figure_pie_fmr_id),
+                                        html.P(_('FMR Segmentation'),className='font-weight-bold text-primary  h6  text-center'),
+                                    ], sm=12, md=6, lg=4)
+                                ])
+                            ],
+                            className="pretty_container",
                         ),
                     ),
                 ],
@@ -282,20 +313,22 @@ app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_status, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr, start_date,
                             end_date):
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date)
     results = results.values('order__ordered_at','order').distinct()
     results = results.values('order__ordered_at').annotate(count=Count('order'))
@@ -308,7 +341,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
     #     dict(x=x, y=y, type='bar')
     # ])
 
-    start_time_2 = time.time()
+    # start_time_2 = time.time()
 
 
     order_df = read_frame(results)
@@ -316,7 +349,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
     # order_df = order_df.groupby(
     #     by=['order__ordered_at'],
     # ).size().reset_index(name='counts')
-    print("--- %s seconds ------- rrad data frame  ---" % (time.time() - start_time_2))
+    # print("--- %s seconds ------- rrad data frame  ---" % (time.time() - start_time_2))
 
     start_time_3 = time.time()
     figure = order_df.iplot(
@@ -331,20 +364,20 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         yTitle='Numbre of Orders',
     )
 
-    print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_3))
+    # print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_3))
 
-    start_time_4 = time.time()
+    # start_time_4 = time.time()
 
-    x = list(results.values_list('order__ordered_at', flat=True))
-    y = list(results.values_list('count', flat=True))
+    # x = list(results.values_list('order__ordered_at', flat=True))
+    # y = list(results.values_list('count', flat=True))
 
-    print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_4))
+    # print("--- %s seconds ------- fig data frame  ---" % (time.time() - start_time_4))
 
-    figure = go.Figure(data=[
-        dict(x=x, y=y, type='bar')
-    ])
+    # figure = go.Figure(data=[
+    #     dict(x=x, y=y, type='bar')
+    # ])
 
-    print("--- %s seconds ------- go figure  ---" % (time.time() - start_time_4))
+    # print("--- %s seconds ------- go figure  ---" % (time.time() - start_time_4))
 
 
 
@@ -358,19 +391,21 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_status, start_date,
+def plot_order_count_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr, start_date,
                             end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date
     )
 
@@ -425,19 +460,21 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_most_order_product_figure(selected_products, selected_categories, selected_suppliers, selected_status,
+def plot_most_order_product_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr,
                                    start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date)
     # results = results.values('product', 'ordered_quantity')
     results = results.values('product')
@@ -469,19 +506,21 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_suppliers, selected_status,
+def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_suppliers,selected_abc,selected_fmr,
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date)
 
     results = results.values('supplier')
@@ -513,19 +552,21 @@ def plot_most_order_custmoer_figure(selected_products, selected_categories, sele
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_most_order_categories_figure(selected_products, selected_categories, selected_suppliers, selected_status,
+def plot_most_order_categories_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr,
                                       start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__category__in=selected_categories,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date)
 
     results = results.values('product__category__reference')
@@ -551,60 +592,110 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
 
 @app.callback(
 
-    Output(figure_pie_statuts_product_id, "figure"),
+    [
+        Output(figure_pie_abc_id, "figure"),
+        Output(figure_pie_fmr_id, "figure"),
+        Output(figure_pie_cat_id, "figure"),
+    ],
     [
         Input(dropdown_product_list_id, "value"),
         Input(dropdown_categorie_list_id, "value"),
         Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_statut_list_id, "value"),
+        Input(dropdown_abc_list_id, "value"),
+        Input(dropdown_fmr_list_id, "value"),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
 )
-def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_suppliers, selected_status,
+def plot_pie_statuts_product_figure(selected_products, selected_categories, selected_suppliers, selected_abc,selected_fmr,
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
         # product__category__in=selected_categories,
-        # product__status__in=selected_status,
+        product__fmr_segmentation__in=selected_fmr,
+        product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
-        # supplier__in=selected_suppliers,
+        supplier__in=[selected_suppliers],
         order__ordered_at__lte=end_date)
-    results = results.values('product__status', 'ordered_quantity', 'product__category__reference')
+    results = results.values('ordered_quantity', 'product__category__reference','product__abc_segmentation','product__fmr_segmentation')
 
     results_category = results.values('product__category__reference')
     results_category = results_category.annotate(ordered_quantity=Sum('ordered_quantity'))
     results_category = results_category.order_by('ordered_quantity')
 
 
-    results_status = results.values('product__status')
-    results_status = results_status.annotate(ordered_quantity=Sum('ordered_quantity'))
-    results_status = results_status.order_by('ordered_quantity')
+    results_abc = results.values('product__abc_segmentation')
+    results_abc = results_abc.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results_abc = results_abc.order_by('ordered_quantity')
+    
+    results_fmr = results.values('product__fmr_segmentation')
+    results_fmr = results_fmr.annotate(ordered_quantity=Sum('ordered_quantity'))
+    results_fmr = results_fmr.order_by('ordered_quantity')
 
 
 
-    order_df = read_frame(results_status)
+    ordered_category_df = read_frame(results_category)
+    ordered_abc_df = read_frame(results_abc)
+    ordered_fmr_df = read_frame(results_fmr)
+    
 
-    orderd_category_df = read_frame(results_category)
+    figure_cat = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+    figure_abc = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+    figure_fmr = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+    
+    figure_cat.add_trace(
+        go.Pie(
+            labels=ordered_category_df['product__category__reference'],
+            values=ordered_category_df['ordered_quantity'],
+            pull=[0.1, 0.2, 0.2, 0.2],
+            name="",
+            marker={
+                'colors': [
+                    'red',
+                    'rgb(0,255,0)',
+                    'rgb(255, 255, 0)'
+                ]
+            },
+        )
+    , 1, 1)
+    
+    figure_abc.add_trace(
+        go.Pie(
+            labels=ordered_abc_df['product__abc_segmentation'],
+            values=ordered_abc_df['ordered_quantity'],
+            pull=[0.1, 0.2, 0.2, 0.2],
+            name="",
+            marker={
+                'colors': [
+                    'red',
+                    'rgb(0,255,0)',
+                    'rgb(255, 255, 0)'
+                ]
+            },
+        )
+    , 1, 1)
+        
+    figure_fmr.add_trace(
+        go.Pie(
+            labels=ordered_fmr_df['product__fmr_segmentation'],
+            values=ordered_fmr_df['ordered_quantity'],
+            pull=[0.1, 0.2, 0.2, 0.2],
+            name="",
+            marker={
+                'colors': [
+                    'red',
+                    'rgb(0,255,0)',
+                    'rgb(255, 255, 0)'
+                ]
+            },
+        )
+    , 1, 1)
+    
+    figure_cat.update_traces(hole=.4, hoverinfo="label+percent+name")
+    figure_abc.update_traces(hole=.4, hoverinfo="label+percent+name")
+    figure_fmr.update_traces(hole=.4, hoverinfo="label+percent+name")
 
-    figure = make_subplots(rows=1, cols=2, specs=[[{'type': 'domain'}, {'type': 'domain'}]])
-
-    figure.add_trace(go.Pie(labels=order_df['product__status'], values=order_df['ordered_quantity'], name=""), 1, 1)
-
-    figure.add_trace(
-        go.Pie(labels=orderd_category_df['product__category__reference'], values=orderd_category_df['ordered_quantity'],
-               name=""), 1, 2)
-
-    figure.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-    figure.update_layout(
-        title_text="Pie Chart",
-        annotations=[
-            dict(text='Status', x=0.21, y=0.5, font_size=20, showarrow=False),
-            dict(text='Categories', x=0.805, y=0.5, font_size=20, showarrow=False)
-        ]
-    )
-    return figure
+    return figure_abc,figure_fmr,figure_cat
 
 
 dash_utils.select_all_callbacks(
@@ -618,3 +709,9 @@ dash_utils.select_all_callbacks(
 
 dash_utils.select_all_callbacks(
     app, dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id)
+
+dash_utils.select_all_callbacks(
+    app, dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id)
+
+dash_utils.select_all_callbacks(
+    app, dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id)

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_title %} {{ page_elements.page_title }} {% endblock %}
+
+{% block content %}
+
+
+<div class="row">
+    <!-- card -->
+    <div class="col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 bg-gradient-light">
+            <div class="card-body">
+            
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="font-weight-bold text-primary text-uppercase mb-1">{% trans 'Warehouse Profiling' %}</div>
+                        <div class="mb-0 text-gray-800">{% trans 'Warehouse Profiling Text Description' %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-warehouse fa-6x text-gray-400"></i>
+                    </div>
+                </div>
+                <br>
+
+                <div class="py-2">
+                    <a href="{% url 'inventory:profil' %}" class="btn btn-sm btn-block btn-primary btn-icon-split">
+                        <span class="icon text-white-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+
+                        <span class="font-weight-bold text">{% trans 'More Info' %}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 bg-gradient-light">
+            <div class="card-body">
+            
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="font-weight-bold text-primary text-uppercase mb-1">{% trans 'Stock' %}</div>
+                        <div class="mb-0 text-gray-800">{% trans 'Stock Text Description' %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-cubes fa-6x text-gray-400"></i>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="py-2">
+                    <a href="{% url 'inventory:stock' %}" class="btn btn-sm btn-block btn-primary btn-icon-split">
+                        <span class="icon text-white-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+
+                        <span class="font-weight-bold text">{% trans 'More Info' %}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+    <!-- card -->
+    <div class="col-md-4 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+            
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="font-weight-bold text-primary text-uppercase mb-1">{% trans 'Orders' %}</div>
+                        <div class="mb-0 text-gray-800">{% trans 'Oreder Text Description' %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-6x text-gray-200"></i>
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="row" >
+                    <div class="col-md-6 mb-4">
+                        <a href="{% url 'inventory:order_customer' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Customer' %}</span>   
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-4 ">
+                        <a href="{% url 'inventory:order_supplier' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Supplier' %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- card -->
+    <div class="col-md-4 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+            
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="font-weight-bold text-primary text-uppercase mb-1">{% trans 'Deliveries' %}</div>
+                        <div class="mb-0 text-gray-800">{% trans 'Deliveries Text Description' %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shipping-fast fa-6x text-gray-200"></i>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row" >
+                    <div class="col-md-6 mb-4">
+                        <a href="{% url 'inventory:delivery_customer' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Customer' %}</span>   
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-4 ">
+                        <a href="{% url 'inventory:delivery_supplier' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Supplier' %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- card -->
+    <div class="col-md-4 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+            
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="font-weight-bold text-primary text-uppercase mb-1">{% trans 'Otif' %}</div>
+                        <div class="mb-0 text-gray-800">{% trans 'Otif Text Description' %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tachometer-alt fa-6x text-gray-200"></i>
+                    </div>
+                </div>
+                <br>
+
+                <div class="row" >
+                    <div class="col-md-6 mb-4">
+                        <a href="{% url 'inventory:otif_customer' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Customer' %}</span>   
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-4 ">
+                        <a href="{% url 'inventory:otif_supplier' %}"  class="btn btn-primary btn-sm btn-block btn-icon-split nav-link" >
+
+        
+                            <span class="font-weight-bold text">{% trans 'Show By Supplier' %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    
+{% endblock %}

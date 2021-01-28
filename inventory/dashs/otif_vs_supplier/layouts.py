@@ -1,19 +1,20 @@
 
 from .app import app
 from common.dashboards import  dash_utils
-from stock.models import Product, ProductCategory, Customer
+from stock.models import Product, ProductCategory, Supplier
 
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from django.utils.translation import gettext as _
 import colorlover
+import dash_daq as daq
 
 from .ids import *
 
 _all_products   = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
-_all_customers  = list(Customer.objects.get_all_customers())
+_all_suppliers  = list(Supplier.objects.get_all_suppliers())
 _all_status     = list(Product.objects.get_all_status_of_products())
 _all_fmr_segmentation = list(Product.objects.get_all_fmr_segmentation_of_products())
 _all_abc_segmentation = list(Product.objects.get_all_abc_segmentation_of_products())
@@ -43,8 +44,8 @@ def filter_container():
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID, _all_customers,
-                    'Customers',select_all=False,multi=False),
+                    DROPDOWN_SUPPLIER_LIST_ID, DIV_SUPPLIER_LIST_ID, CHECKBOX_SUPPLIER_LIST_ID, _all_suppliers,
+                    'Suppliers',select_all=False,multi=False),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
@@ -109,11 +110,11 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label='Customers',
+                                                label='Suppliers',
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
-                                                        [dcc.Graph(id=FIGURE_CUSTOMER_ID)],
+                                                        [dcc.Graph(id=FIGURE_SUPPLIER_ID)],
                                                         className="",
                                                     )
                                                 ),

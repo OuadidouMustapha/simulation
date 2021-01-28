@@ -8,7 +8,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from django.utils.translation import gettext as _
 import colorlover
-import dash_daq as daq
 
 from .ids import *
 
@@ -67,7 +66,7 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF_ID
                                             #  subtitle=
                                             #     [html.Br(),
                                             #     dbc.Col([

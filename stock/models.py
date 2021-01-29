@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
-from . import utils # TODO : Manage classes and functions
+from . import utils  # TODO : Manage classes and functions
 from . import managers
 
 
@@ -57,7 +57,7 @@ class DeliveryDetailQuerySet(models.QuerySet):
         )
         qs = qs.annotate(
             delivered_product_total_cost=ExpressionWrapper(
-                F('avg_delivered_quantity')*F('stock__product__cost'), output_field=FloatField()
+                F('avg_delivered_quantity') * F('stock__product__cost'), output_field=FloatField()
             )
         )
         qs = qs.values(
@@ -82,7 +82,7 @@ class DeliveryDetailQuerySet(models.QuerySet):
         )
         qs = qs.annotate(
             cumul_delivered_product_total_cost_corrected=ExpressionWrapper(
-                F('cumul_delivered_product_total_cost')/100, output_field=FloatField()
+                F('cumul_delivered_product_total_cost') / 100, output_field=FloatField()
             )
         )
         return qs
@@ -137,17 +137,17 @@ class StockControlQuerySet(models.QuerySet):
 
         qs = qs.annotate(
             avg_cost=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__cost'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__cost'), output_field=FloatField())),
             avg_quantity=Avg(ExpressionWrapper(
                 F('product_quantity'), output_field=FloatField())),
             avg_package=Avg(ExpressionWrapper(
-                F('product_quantity')/F('stock__product__package'), output_field=IntegerField())),
+                F('product_quantity') / F('stock__product__package'), output_field=IntegerField())),
             avg_pallet=Avg(ExpressionWrapper(
-                F('product_quantity')/F('stock__product__pallet'), output_field=IntegerField())),
+                F('product_quantity') / F('stock__product__pallet'), output_field=IntegerField())),
             avg_weight=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__weight'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__weight'), output_field=FloatField())),
             avg_volume=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__volume'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__volume'), output_field=FloatField())),
         )
         return qs
 
@@ -248,7 +248,7 @@ class StockControlQuerySet(models.QuerySet):
         )
         qs = qs.annotate(
             product_total_cost=ExpressionWrapper(
-                F('avg_product_quantity')*F('stock__product__cost'), output_field=FloatField()
+                F('avg_product_quantity') * F('stock__product__cost'), output_field=FloatField()
             )
         )
         qs = qs.values(
@@ -272,7 +272,7 @@ class StockControlQuerySet(models.QuerySet):
         )
         qs = qs.annotate(
             cumul_product_total_cost_corrected=ExpressionWrapper(
-                F('cumul_product_total_cost')/100, output_field=FloatField()
+                F('cumul_product_total_cost') / 100, output_field=FloatField()
             )
         )
         return qs
@@ -337,9 +337,7 @@ class ProductCategory(MPTTModel):
 
     tree = TreeManager()
 
-
     objects = managers.ProductCategoryQuerySet.as_manager()
-
 
     class MPTTMeta:
         order_insertion_by = ['reference']
@@ -430,7 +428,6 @@ class Product(CommonMeta):
 
     objects = managers.ProductQuerySet.as_manager()
 
-    
     class Meta:  # new
         indexes = [models.Index(fields=['reference'])]
         ordering = ['reference']
@@ -438,10 +435,9 @@ class Product(CommonMeta):
     def __str__(self):
         return f'{self.reference}'
 
-
     # def get_absolute_url(self):
     #     return reverse('forecasting:input_interface')
-    
+
     def get_products(category_ids=None):
         '''
         return list of unique/distinct products
@@ -456,7 +452,7 @@ class Product(CommonMeta):
             label=F('reference'),
             value=F('id')
         ).values('label', 'value').distinct()
-        
+
         return queryset
 
     def get_total_products(status=None):
@@ -490,7 +486,7 @@ class Warehouse(CommonMeta):
     )
 
     objects = managers.WarehouseQuerySet.as_manager()
-    
+
     # class Meta:
     #     constraints = [
     #         models.UniqueConstraint(
@@ -498,7 +494,7 @@ class Warehouse(CommonMeta):
     #     ]
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.reference}'
 
 
 class Circuit(CommonMeta):
@@ -509,10 +505,10 @@ class Circuit(CommonMeta):
         'self', on_delete=models.CASCADE, blank=True, null=True)
 
     objects = managers.CircuitQuerySet.as_manager()
-    
 
     def __str__(self):
         return f'{self.reference}'
+
 
 class Customer(CommonMeta):
     # TODO : Separate Customer as a company from the provider as a person
@@ -543,12 +539,13 @@ class Supplier(CommonMeta):
     reference = models.CharField(max_length=200, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
+    objects = managers.SupplierQuerySet.as_manager()
+
     def __str__(self):
         return f'{self.reference}'
 
 
 class Supply(CommonMeta):
-
     supplier = models.ForeignKey(
         Supplier, on_delete=models.CASCADE, blank=True, null=True)
     reference = models.CharField(unique=True, max_length=200)
@@ -560,7 +557,6 @@ class Supply(CommonMeta):
 
 
 class SupplyDetail(CommonMeta):
-
     supply = models.ForeignKey(
         Supply, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(
@@ -571,6 +567,7 @@ class SupplyDetail(CommonMeta):
 
     def __str__(self):
         return f'Supply: {self.supply}, product: {self.product}'
+
 
 class Order(CommonMeta):
     id = models.BigAutoField(primary_key=True)
@@ -593,7 +590,6 @@ class Order(CommonMeta):
 
     objects = managers.OrderQuerySet.as_manager()
 
-
     def __str__(self):
         return self.reference
 
@@ -604,7 +600,8 @@ class Order(CommonMeta):
         '''
         product_order = OrderDetail.objects.filter(
             product=product_id)
-        product_order_query = Order.objects.filter(Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
+        product_order_query = Order.objects.filter(
+            Q(orderdetail__in=product_order) & Q(ordered_at__gte=start_date) & Q(ordered_at__lte=end_date)).values(
             'reference', 'ordered_at', 'orderdetail__product', 'orderdetail__ordered_quantity')
 
         return product_order_query
@@ -634,13 +631,14 @@ class OrderDetail(CommonMeta):
         max_digits=11, decimal_places=2, blank=True, null=True)
     discount = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-    
+
     desired_at = models.DateTimeField(auto_now_add=True)
 
     objects = managers.OrderDetailQuerySet.as_manager()
 
     def __str__(self):
         return f'Order:{self.order}, order_line {self.order_line}'
+
 
 class Delivery(CommonMeta):  # TODO rename to Delivery
     id = models.BigAutoField(primary_key=True)
@@ -662,9 +660,8 @@ class Delivery(CommonMeta):  # TODO rename to Delivery
     #     Supplier, on_delete=models.CASCADE, blank=True, null=True)
     # delivered_quantity = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
     # total_amount = models.IntegerField(blank=True, null=True)
-    
-    objects = managers.DeliveryQuerySet.as_manager()
 
+    objects = managers.DeliveryQuerySet.as_manager()
 
     def __str__(self):
         return f'order:{self.order}, reference: {self.reference}'
@@ -676,7 +673,8 @@ class Delivery(CommonMeta):  # TODO rename to Delivery
         '''
         product_sales = DeliveryDetail.objects.filter(
             product=product_id)
-        product_sales_query = Delivery.objects.filter(Q(saledetail__in=product_sales) & Q(delivered_at__gte=start_date) & Q(delivered_at__lte=end_date)).values(
+        product_sales_query = Delivery.objects.filter(
+            Q(saledetail__in=product_sales) & Q(delivered_at__gte=start_date) & Q(delivered_at__lte=end_date)).values(
             'reference', 'delivered_at', 'saledetail__product', 'saledetail__delivered_quantity')
 
         return product_sales_query
@@ -706,7 +704,7 @@ class DeliveryDetail(CommonMeta):
     tariff = models.CharField(max_length=200, blank=True, null=True)
     discount = models.DecimalField(
         max_digits=11, decimal_places=2, blank=True, null=True)
-        
+
     # objects = DeliveryDetailQuerySet.as_manager()
 
     def __str__(self):
@@ -719,7 +717,8 @@ class DeliveryDetail(CommonMeta):
         [{'label': 'P03600', 'value': 1}, {'label': 'P03601', 'value': 2}]
         This format is compatible with Plotly data input
         '''
-        return list(DeliveryDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label', 'value').distinct())
+        return list(DeliveryDetail.objects.annotate(label=F('product__reference'), value=F('product')).values('label',
+                                                                                                              'value').distinct())
 
     def get_avg_quantity_in_date_range(delivered_at_start, delivered_at_end):
         '''
@@ -738,7 +737,6 @@ class DeliveryDetail(CommonMeta):
 
 
 class Invoice(CommonMeta):
-
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, blank=True, null=True)
     sale = models.ForeignKey(
@@ -781,7 +779,6 @@ class StockPolicy(CommonMeta):
 
 
 class StockControl(CommonMeta):
-
     stock = models.ForeignKey(
         Stock, on_delete=models.CASCADE, blank=True, null=True)
     inventory_date = models.DateField(
@@ -797,7 +794,6 @@ class StockControl(CommonMeta):
 
     def __str__(self):
         return f'stock: {self.stock}, inventory_date: {self.inventory_date}'
-
 
     def get_stock_value(category_ids, product_ids, start_date, end_date, period='year', group_by='product'):
         '''
@@ -870,20 +866,20 @@ class StockControl(CommonMeta):
             stock__product__category__in=category_ids,
             stock__product__in=product_ids,
         ).annotate(**annotate_kwargs
-        ).values(*values_args
-        ).annotate(
+                   ).values(*values_args
+                            ).annotate(
             avg_cost=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__cost'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__cost'), output_field=FloatField())),
             avg_quantity=Avg(ExpressionWrapper(
                 F('product_quantity'), output_field=FloatField())),
             avg_package=Avg(ExpressionWrapper(
-                F('product_quantity')/F('stock__product__package'), output_field=IntegerField())),
+                F('product_quantity') / F('stock__product__package'), output_field=IntegerField())),
             avg_pallet=Avg(ExpressionWrapper(
-                F('product_quantity')/F('stock__product__pallet'), output_field=IntegerField())),
+                F('product_quantity') / F('stock__product__pallet'), output_field=IntegerField())),
             avg_weight=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__weight'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__weight'), output_field=FloatField())),
             avg_volume=Avg(ExpressionWrapper(
-                F('product_quantity')*F('stock__product__volume'), output_field=FloatField())),
+                F('product_quantity') * F('stock__product__volume'), output_field=FloatField())),
             avg_dio=Avg(ExpressionWrapper(
                 F('product_quantity') / Subquery(
                     DeliveryDetail.objects.filter(
@@ -891,7 +887,7 @@ class StockControl(CommonMeta):
                         sale__delivered_at__gte=start_date,  # _start_date,
                         sale__delivered_at__lte=end_date,  # _send_date
                     ).values('stock__product__reference'
-                    ).annotate(
+                             ).annotate(
                         avg_quantity=Avg('delivered_quantity')
                     ).values('avg_quantity')
                 ), output_field=DecimalField(decimal_places=2)
@@ -919,7 +915,8 @@ class StockControl(CommonMeta):
 
         return queryset
 
-    def avg_delivered_quantity_by_product_in_date_range(delivered_at_start_date, delivered_at_end_date, category_ids=None, product_ids=None):
+    def avg_delivered_quantity_by_product_in_date_range(delivered_at_start_date, delivered_at_end_date,
+                                                        category_ids=None, product_ids=None):
         '''
         '''
         # Check if `product_ids` argument is an array like [1, 2, 10]
@@ -1055,6 +1052,7 @@ class StockControl(CommonMeta):
         [type]
             [description]
         """
+
         def annotate_avg_dio_to_stock(stock_queryset, group_by='product', avg_sale_period='year'):
             """[summary]
 
@@ -1178,7 +1176,8 @@ class StockControl(CommonMeta):
                 )
             )
             qs = qs.values('stock__product__category__reference' if group_by ==
-                           'category' else 'stock__product__reference', 'avg_dio')
+                                                                    'category' else 'stock__product__reference',
+                           'avg_dio')
 
             return qs
 

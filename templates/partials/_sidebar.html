@@ -85,6 +85,36 @@
             <i class="fas fa-fw fa-truck-loading"></i>
             <span>{% trans 'Deployment' %}</span></a>
     </li> 
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-stethoscope"></i>
+            <span>Diagnostic</span>
+        </a>
+        <div id="collapsePages" class="collapse hide" aria-labelledby="headingPages" data-parent="#accordionSidebar" style="">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item"  href="{% url 'inventory:index' %}">
+                    <span>{% trans 'Overview' %}</span></a>
+                </a>
+                <a class="collapse-item"  href="{% url 'inventory:profil' %}">
+                    <span>{% trans 'Warehouse Profiling' %}</span></a>
+                </a>
+                <a class="collapse-item"  href="{% url 'inventory:stock' %}">
+                    <span>{% trans 'Stock' %}</span></a>
+                </a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">{% trans 'Customers' %}</h6>
+                <a class="collapse-item" href="{% url 'inventory:order_customer' %}">{% trans 'Orders' %}</a>
+                <a class="collapse-item" href="{% url 'inventory:delivery_customer' %}">{% trans 'Deliveries' %}</a>
+                <a class="collapse-item" href="{% url 'inventory:otif_customer' %}">{% trans 'OTIF' %}</a>
+                <div class="collapse-divider"></div>
+                <hr class="sidebar-divider black">
+                <h6 class="collapse-header">{% trans 'Suppliers' %}</h6>
+                <a class="collapse-item" href="{% url 'inventory:order_supplier' %}">{% trans 'Orders' %}</a>
+                <a class="collapse-item" href="{% url 'inventory:delivery_supplier' %}">{% trans 'Deliveries' %}</a>
+                <a class="collapse-item" href="{% url 'inventory:otif_supplier' %}">{% trans 'OTIF' %}</a>
+            </div>
+        </div>
+    </li>
 
     {% comment %} <li class="nav-item">
         <a class="nav-link" href="{% url 'deployment:deployment_index' %}">

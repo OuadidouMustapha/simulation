@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load model_name %}
+{% load plotly_dash %}
+{% load i18n %}
+
+{% block header_title %} {% trans 'otif Image ' %} {% endblock %}
+
+{% plotly_header %}
+
+{% block content %}
+
+<!-- stock coverage Dash -->
+{% plotly_direct name="otif-vs-supplier" %}
+
+    
+{% plotly_footer %}
+{% endblock %}

@@ -88,7 +88,7 @@ input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id'
 
 _all_products = list(Product.objects.get_all_products())
 _all_categories = list(ProductCategory.objects.get_all_productcategory())
-_all_suppliers = list(Supplier.objects.get_all_suppliers())[0:10]
+_all_suppliers = list(Supplier.objects.get_all_suppliers())
 _all_status = list(Product.objects.get_all_status_of_products())
 _all_fmr_segmentation = list(Product.objects.get_all_fmr_segmentation_of_products())
 _all_abc_segmentation = list(Product.objects.get_all_abc_segmentation_of_products())

@@ -8,7 +8,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from django.utils.translation import gettext as _
 import colorlover
-import dash_daq as daq
+# import dash_daq as daq
 
 from .ids import *
 

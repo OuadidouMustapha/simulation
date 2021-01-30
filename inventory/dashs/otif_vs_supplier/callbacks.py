@@ -43,7 +43,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -105,9 +105,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
 
 
     df = pd.DataFrame.from_records(results)
-
-
-
+        
     figure = df.iplot(
         asFigure=True,
         kind='bar',
@@ -122,11 +120,18 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
             'rgb(255, 132, 0)',
         ],
         theme='white',
-        title='title',
-        xTitle='supplier',
-        yTitle='Number of Orders',
+        title=_('Number of Order Details by Supplier'),
+        xTitle=_('Supplier'),
+        yTitle=_('Number of Order Details'),
     )
-
+    
+    
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickmode="array",
+        )
+    )
 
     return figure
 
@@ -151,7 +156,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_su
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -243,13 +248,20 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_su
             'OTIF'
         ],
         theme='white',
-        title='title',
-        xTitle='Ordered Date',
-        yTitle='Number of Orders',
+        title=_('OTIF By Date'),
+        xTitle=_('Ordered Date'),
+        yTitle=_('OTIF in %'),
     )
     
     figure.update_xaxes(
             tickformat = '%d %B %Y',
+    )
+    
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickmode="array",
+        )
     )
 
 
@@ -275,7 +287,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -339,7 +351,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         asFigure=True,
         kind='bar',
         barmode='group',
-
         x=['order__ordered_at'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         colors= [
@@ -350,13 +361,20 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
             'rgb(255, 132, 0)',
         ],
         theme='white',
-        title='title',
-        xTitle='date ',
-        yTitle='Number of Orders',
+        title=_('Order Details by Date'),
+        xTitle=_('date'),
+        yTitle=_('Number of Order Details'),
     )
     
     figure.update_xaxes(
             tickformat = '%d %B %Y',
+    )
+    
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickmode="array",
+        )
     )
 
     return figure
@@ -381,7 +399,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -516,16 +534,23 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
                 'rgb(0, 200, 0)',
                 'rgb(255, 132, 0)',
                 'rgb(0,255,0)',
-                'red',
+                'rgb(255, 0, 0)',
         ],
         theme='white',
-        title='title',
-        xTitle='Ordered Date',
-        yTitle='Number of Orders',
+        title=_('Number of Order by date'),
+        xTitle=_('Ordered Date'),
+        yTitle=_('Number of Orders'),
     )
     
     figure.update_xaxes(
             tickformat = '%d %B %Y',
+    )
+    
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickmode="array",
+        )
     )
 
     return figure
@@ -539,9 +564,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         Output(SUBTITLE_DELIVERIES_ID, 'children'),
         Output(SUBTITLE_ORDERS_ID, 'children'),
         Output(SUBTITLE_OTIF_ID, 'children'),
-        # Output("400", "value"), 
-        # Output("400", "children"),
-        # Output("400", "color")   
     ],
     [
         Input(DROPDOWN_PRODUCT_LIST_ID, "value"),
@@ -557,7 +579,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -768,8 +790,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         color  = "danger"
     
     
-
-
     return figure_pie_orderDetail,figure_pie_order,Number_of_deliveries,Number_of_orders,str(OTIF)+'%'
 
 

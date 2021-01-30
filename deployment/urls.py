@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from deployment.dashboards import deployment_dashboard
+from deployment.dashboards import deployment
 
 app_name = 'deployment'
 urlpatterns = [

@@ -68,9 +68,9 @@
                 <a class="collapse-item" href="{% url 'forecasting:index' %}">
                     <span>{% trans 'Overview' %}</span></a>
                 </a>
-                <a class="collapse-item" href="{% url 'forecasting:version_list' %}">
+                {% comment %} <a class="collapse-item" href="{% url 'forecasting:version_list' %}">
                     <span>{% trans 'Input Interface' %}</span></a>
-                </a>
+                </a> {% endcomment %}
                 <a class="collapse-item" href="{% url 'forecasting:forecast_accuracy' %}">
                     <span>{% trans 'Forecast Accuracy' %}</span></a>
                 </a>

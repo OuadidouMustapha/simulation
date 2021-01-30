@@ -39,7 +39,7 @@ class Command(BaseCommand):
         product_df['pallet_size'] = np.random.randint(10, 50, df_length)
         product_df['unit_size'] = (product_df['pallet_size'] // 10) + 1
         product_df['product_type'] = np.random.choice(
-            ['Food', 'Non Food', None], df_length, p=[0.5, 0.4, 0.1])
+            ['Food', 'Non Food'], df_length, p=[0.6, 0.4])
         product_df['category_id'] = np.random.choice(category_objects, df_length)
 
 

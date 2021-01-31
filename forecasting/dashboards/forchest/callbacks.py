@@ -261,37 +261,34 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     merged_df = merged_df.sort_values('date')
     
     # Plot the figure
+    # Add targeted_quantity to graph
     figure = merged_df.iplot(
         asFigure=True,
-        kind='scatter',
-        mode='lines+markers',
-        size=4,
+        kind='bar',
         x='date',
-        y=['edited_forecasted_quantity'],
+        y=['targeted_quantity'],
         theme='white',
         title=_('Targets, orders & forecasts'),
         xTitle=_('date (monthly)'),
         yTitle=_('Quantity'),
-    )
-    # Add targeted_quantity to graph
-    figure.add_trace(
-        go.Bar(
-            x=merged_df['date'].tolist(),
-            y=merged_df['targeted_quantity'].tolist(),
-            width=2,
-            # line=dict(color='red', width=2, dash='dash'),
-            showlegend=True,
-            name='targeted_quantity',
-        )
     )
     # Add dashed forecasts to graph
     figure.add_trace(
         go.Scatter(
             x=merged_df['date'],
             y=merged_df['forecasted_quantity'],
-            line=dict(color='red', width=2, dash='dash'),
+            line=dict(color='grey', width=2, dash='dash'),
             showlegend=True,
             name='forecasted_quantity',
+        )
+    )
+    figure.add_trace(
+        go.Scatter(
+            x=merged_df['date'],
+            y=merged_df['edited_forecasted_quantity'],
+            mode='lines+markers',
+            showlegend=True,
+            name='edited_forecasted_quantity',
         )
     )
     # Add ordered_quantity to graph
@@ -304,6 +301,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             name='ordered_quantity',
         )
     )
+
 
     # Output datatable
     forecast_columns = [
@@ -414,6 +412,8 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             ], sm=12, md=12, lg=12),
         ]),
     ])
+
+    print(figure)
 
     return div, hide_btn_approve, hide_btn_reject, hide_btn_review, hide_btn_save
 

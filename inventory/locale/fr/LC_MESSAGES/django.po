@@ -1,0 +1,192 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-29 12:40+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: dashs/dash_delivery_vs_customer.py:135
+#: dashs/dash_delivery_vs_supplier.py:136 dashs/dash_order.py:134
+#: dashs/dash_order_vs_supplier.py:135 dashs/dash_otif_vs_customer.py:123
+#: dashs/dash_otif_vs_sp.py:115 dashs/otif.py:96 dashs/otif/layouts.py:53
+#: dashs/otif_test/layouts.py:54 dashs/otif_vs_supplier/layouts.py:54
+#: dashs/stock_image.py:158
+msgid "Time horizon"
+msgstr ""
+
+#: dashs/dash_delivery_vs_customer.py:142
+#: dashs/dash_delivery_vs_supplier.py:143 dashs/dash_order.py:141
+#: dashs/dash_order_vs_supplier.py:142 dashs/dash_otif_vs_customer.py:130
+#: dashs/dash_otif_vs_sp.py:122 dashs/dash_profil.py:176 dashs/otif.py:103
+#: dashs/otif/layouts.py:60 dashs/otif_test/layouts.py:61
+#: dashs/otif_vs_supplier/layouts.py:61 dashs/stock_image.py:107
+msgid "Products"
+msgstr "Produits"
+
+#: dashs/dash_delivery_vs_customer.py:281
+#: dashs/dash_delivery_vs_supplier.py:282 dashs/dash_order.py:279
+#: dashs/dash_order_vs_supplier.py:280
+msgid "Categories"
+msgstr "Catégories"
+
+#: dashs/dash_delivery_vs_customer.py:285
+#: dashs/dash_delivery_vs_supplier.py:286 dashs/dash_order.py:283
+#: dashs/dash_order_vs_supplier.py:284
+msgid "ABC Segmentation "
+msgstr "Segmentation ABC"
+
+#: dashs/dash_delivery_vs_customer.py:289
+#: dashs/dash_delivery_vs_supplier.py:290 dashs/dash_order.py:287
+#: dashs/dash_order_vs_supplier.py:288
+msgid "FMR Segmentation"
+msgstr "Segmentation FMR"
+
+#: dashs/dash_profil.py:217
+msgid "Distribution of Products in Warehouses"
+msgstr "Distribution des produits dans les entrepôts"
+
+#: dashs/dash_profil.py:221
+msgid "Distribution of Products By Categories"
+msgstr "Répartition des produits par catégories"
+
+#: dashs/dash_profil.py:240
+msgid "Distribution of Products By ABC classification"
+msgstr "Répartition des produits par classification ABC"
+
+#: dashs/dash_profil.py:244
+msgid "Répartition des produits par classification FMR"
+msgstr "Répartition des produits par classification FMR"
+
+#: dashs/dash_profil.py:273
+msgid "Evolution of Categories"
+msgstr "Évolution des catégories"
+
+#: dashs/dash_profil.py:283
+msgid "Evolution of Products By ABC Classification"
+msgstr "Évolution des produits par classification ABC"
+
+#: dashs/dash_profil.py:301
+msgid "Evolution of Products By FMR Classification"
+msgstr "Évolution des produits par classification FMR"
+
+#: dashs/dash_profil.py:341
+msgid "Top 10 of products"
+msgstr "Top 10 des produits"
+
+#: dashs/dash_profil.py:368
+msgid "Distribution of Categories by Warehouses"
+msgstr "Répartition des catégories par entrepôts"
+
+#: dashs/dash_profil.py:378
+msgid "Distribution of ABC Classification in Warehouses"
+msgstr "Répartition de la classification ABC dans les entrepôts"
+
+#: dashs/dash_profil.py:396
+msgid "Distribution of FMR Classification in Warehouses"
+msgstr "Répartition de la classification FMR dans les entrepôts"
+
+#: dashs/otif/layouts.py:204 dashs/otif_test/layouts.py:205
+#: dashs/otif_vs_supplier/layouts.py:205
+msgid "State Of Order Details"
+msgstr "Etat des lignes de commande"
+
+#: dashs/otif/layouts.py:208 dashs/otif_test/layouts.py:209
+#: dashs/otif_vs_supplier/layouts.py:209
+msgid "Order Status"
+msgstr "État des commande"
+
+#: dashs/stock_image.py:92
+msgid "Groupe By"
+msgstr "Grouper par"
+
+#: dashs/stock_image.py:115
+msgid "Locations"
+msgstr "Emplacements"
+
+#: dashs/stock_image.py:152
+msgid "Stock simulation"
+msgstr "Simulation de Stock"
+
+#: templates/delivery/customer.html:7 templates/delivery/index.html:7
+#: templates/delivery/supplier.html:7
+msgid "State of Deliveries "
+msgstr "État des livraisons"
+
+#: templates/index.html:18
+msgid "Profil of Warehouses"
+msgstr "Profil des entrepôts "
+
+#: templates/index.html:19
+msgid "Warehouse Profiling Text Description"
+msgstr "Profil des entrepôts Texte de description "
+
+#: templates/index.html:33 templates/index.html:61
+msgid "More Info"
+msgstr "Plus d'informations"
+
+#: templates/index.html:45
+msgid "Stock"
+msgstr "Stock"
+
+#: templates/index.html:46
+msgid "Stock Text Description"
+msgstr "Stock Texte de description "
+
+#: templates/index.html:77
+msgid "Orders"
+msgstr "Commandes"
+
+#: templates/index.html:78
+msgid "Oreders Text Description"
+msgstr "Commandes Texte de description"
+
+#: templates/index.html:92 templates/index.html:127 templates/index.html:161
+msgid "Show By Customer"
+msgstr "Afficher par le client"
+
+#: templates/index.html:99 templates/index.html:134 templates/index.html:168
+msgid "Show By Supplier"
+msgstr "Afficher par fournisseur"
+
+#: templates/index.html:113
+msgid "Deliveries"
+msgstr "Les livraisons"
+
+#: templates/index.html:114
+msgid "Deliveries Text Description"
+msgstr "Les livraisons Texte de description"
+
+#: templates/index.html:148
+msgid "Otif"
+msgstr "Otif"
+
+#: templates/index.html:149
+msgid "Otif Text Description"
+msgstr "Otif Texte de description"
+
+#: templates/inventory/index.html:7
+msgid "Stock Image "
+msgstr "mage de stock"
+
+#: templates/order/customer.html:7 templates/order/index.html:7
+#: templates/order/supplier.html:7 templates/profil/index.html:7
+msgid "Orders"
+msgstr "Commandes"
+
+#: templates/otif/customer.html:7 templates/otif/index.html:7
+#: templates/otif/supplier.html:7
+msgid "Otif"
+msgstr "Otif"

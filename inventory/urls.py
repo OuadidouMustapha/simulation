@@ -4,6 +4,7 @@ from inventory.dashs import dash_order
 from inventory.dashs import dash_delivery_vs_customer
 from inventory.dashs import otif
 from inventory.dashs import otif_vs_supplier
+from inventory.dashs import otif_test
 from inventory.dashs import dash_otif_vs_sp
 from inventory.dashs import dash_order_vs_supplier
 from inventory.dashs import dash_delivery_vs_supplier

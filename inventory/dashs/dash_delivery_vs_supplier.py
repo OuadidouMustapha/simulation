@@ -117,18 +117,18 @@ def filter_container():
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, _('ABC Segmentation'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
-                    'FMR Segmentation'),
+                    _('FMR Segmentation')),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_supplier_list_id, div_supplier_list_id, checkbox_supplier_list_id, _all_suppliers,
-                    'suppliers',select_all=False,multi=False)
+                    _('suppliers'),select_all=False,multi=False)
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_date_range(
@@ -168,7 +168,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label='Graph Numbre Of deliverys',
+                                                label=_('Graph Number Of deliveries'),
                                                 value='what-is',
                                                 children=
                                                 dcc.Loading(
@@ -179,7 +179,7 @@ def body_container():
                                                 ),
                                             ),
                                             dcc.Tab(
-                                                label='Number Of Products',
+                                                label=_('Number Of Products'),
                                                 value='Product',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -218,7 +218,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label='Top 10 Products',
+                                                label=_('Top 10 Products'),
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
@@ -227,26 +227,26 @@ def body_container():
                                                     )
                                                 ),
                                             ),
+                                            # dcc.Tab(
+                                            #     label=_('Top 10 suppliers '),
+                                            #     value='show-sequences',
+                                            #     children=html.Div(
+                                            #         className='control-tab',
+                                            #         children=[
+                                            #             dcc.Loading(
+                                            #                 html.Div(
+                                            #                     className='app-controls-block',
+                                            #                     children=html.Div(
+                                            #                         [dcc.Graph(id=figure_most_delivred_supplier_id)],
+                                            #                         className="",
+                                            #                     ),
+                                            #                 ),
+                                            #             ),
+                                            #         ]
+                                            #     )
+                                            # ),
                                             dcc.Tab(
-                                                label='Top 10 suppliers ',
-                                                value='show-sequences',
-                                                children=html.Div(
-                                                    className='control-tab',
-                                                    children=[
-                                                        dcc.Loading(
-                                                            html.Div(
-                                                                className='app-controls-block',
-                                                                children=html.Div(
-                                                                    [dcc.Graph(id=figure_most_delivred_supplier_id)],
-                                                                    className="",
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ]
-                                                )
-                                            ),
-                                            dcc.Tab(
-                                                label='Top 10 Categories',
+                                                label=_('Top 10 Categories'),
                                                 value='show-sequences-',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -326,7 +326,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
                             end_date):
     results = DeliveryDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         delivery__delivered_at__gte=start_date,
@@ -345,9 +345,9 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         x=['delivery__delivered_at'],
         y=['count'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Numbre of Orders',
+        title=_('Number of Deliveries by date '),
+        xTitle=_('date'),
+        yTitle=_('Number of Deliveries'),
     )
 
     return figure
@@ -371,7 +371,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
                             end_date):
     results = DeliveryDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         delivery__delivered_at__gte=start_date,
@@ -391,9 +391,9 @@ def plot_order_count_figure(selected_products, selected_categories, selected_sup
         x=['delivery__delivered_at'],
         y=['delivered_quantity_sum'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Numbre of Products',
+        title=_('Quantity of Products by Date'),
+        xTitle=_('date'),
+        yTitle=_('Quantity'),
     )
 
     return figure
@@ -417,14 +417,14 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
                                    start_date, end_date):
     results = DeliveryDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         delivery__delivered_at__gte=start_date,
         supplier__in=[selected_suppliers],
         delivery__delivered_at__lte=end_date)
     # results = results.values('product', 'ordered_quantity')
-    qs = results.values('product').annotate(delivered_quantity=Sum('delivered_quantity')).order_by('delivered_quantity')[:10]
+    qs = results.values('product').annotate(delivered_quantity=Sum('delivered_quantity')).order_by('-delivered_quantity')[:10]
 
     # TODO fix the order by product
 
@@ -437,57 +437,57 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         x=['product'],
         y=['delivered_quantity'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most Ordered  Products',
+        title=_('Most Ordered  Products'),
+        xTitle=_('quantity'),
+        yTitle=_('Most Ordered  Products by Quantity'),
     )
     return figure
 
 
-@app.callback(
+# @app.callback(
 
-    Output(figure_most_delivred_supplier_id, "figure"),
+#     Output(figure_most_delivred_supplier_id, "figure"),
 
-    [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_supplier_list_id, "value"),
-        Input(dropdown_abc_list_id, "value"),
-        Input(dropdown_fmr_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
-    ]
-)
-def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_suppliers, selected_abc,
-                                    selected_fmr,
-                                    start_date, end_date):
-    results = DeliveryDetail.objects.filter(
-        product__in=selected_products,
-        # product__category__in=selected_categories,
-        product__fmr_segmentation__in=selected_fmr,
-        product__abc_segmentation__in=selected_abc,
-        delivery__delivered_at__gte=start_date,
-        supplier__in=[selected_suppliers],
-        delivery__delivered_at__lte=end_date)
+#     [
+#         Input(dropdown_product_list_id, "value"),
+#         Input(dropdown_categorie_list_id, "value"),
+#         Input(dropdown_supplier_list_id, "value"),
+#         Input(dropdown_abc_list_id, "value"),
+#         Input(dropdown_fmr_list_id, "value"),
+#         Input(input_date_range_id, 'start_date'),
+#         Input(input_date_range_id, 'end_date'),
+#     ]
+# )
+# def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_suppliers, selected_abc,
+#                                     selected_fmr,
+#                                     start_date, end_date):
+#     results = DeliveryDetail.objects.filter(
+#         product__in=selected_products,
+#         product__category__in=selected_categories,
+#         product__fmr_segmentation__in=selected_fmr,
+#         product__abc_segmentation__in=selected_abc,
+#         delivery__delivered_at__gte=start_date,
+#         supplier__in=[selected_suppliers],
+#         delivery__delivered_at__lte=end_date)
 
-    results = results.values('supplier')
-    results = results.annotate(delivered_quantity=Sum('delivered_quantity'))
-    results = results.order_by('delivered_quantity')[0:10]
+#     results = results.values('supplier')
+#     results = results.annotate(delivered_quantity=Sum('delivered_quantity'))
+#     results = results.order_by('delivered_quantity')[0:10]
 
-    order_df = read_frame(results)
+#     order_df = read_frame(results)
 
-    figure = order_df.iplot(
-        asFigure=True,
-        kind='barh',
-        barmode='stack',
-        x=['supplier'],
-        y=['delivered_quantity'],
-        theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most Order Custmoers',
-    )
-    return figure
+#     figure = order_df.iplot(
+#         asFigure=True,
+#         kind='barh',
+#         barmode='stack',
+#         x=['supplier'],
+#         y=['delivered_quantity'],
+#         theme='white',
+#         title='title',
+#         xTitle='date',
+#         yTitle='Most Order Custmoers',
+#     )
+#     return figure
 
 
 @app.callback(
@@ -509,7 +509,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
                                       start_date, end_date):
     results = DeliveryDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         delivery__delivered_at__gte=start_date,
@@ -518,7 +518,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
 
     results = results.values('product__category__reference')
     results = results.annotate(delivered_quantity=Sum('delivered_quantity'))
-    results = results.order_by('delivered_quantity')[0:10]
+    results = results.order_by('-delivered_quantity')[0:10]
 
     order_df = read_frame(results)
 
@@ -529,9 +529,9 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         x=['product__category__reference'],
         y=['delivered_quantity'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most 10 Order categories',
+        title=_('Most 10 Order Categories'),
+        xTitle=_('Quantity'),
+        yTitle=_('Categories'),
     )
     return figure
 
@@ -558,7 +558,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
                                     start_date, end_date):
     results = DeliveryDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         delivery__delivered_at__gte=start_date,
@@ -656,7 +656,6 @@ dash_utils.select_all_callbacks(
 
 dash_utils.select_all_callbacks(
     app, dropdown_statut_list_id, div_statut_list_id, checkbox_statut_list_id)
-
 
 dash_utils.select_all_callbacks(
     app, dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id)

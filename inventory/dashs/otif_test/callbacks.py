@@ -6,7 +6,7 @@ from common.dashboards import dash_utils
 from dash.dependencies import Input, Output
 from django.utils.translation import gettext as _
 from django_plotly_dash import DjangoDash
-from stock.models import Product, ProductCategory, Customer, OrderDetail
+from stock.models import Product, ProductCategory, Customer, OrderDetail,Delivery
 from django_pandas.io import read_frame
 import cufflinks as cf
 import numpy as np
@@ -34,7 +34,7 @@ from .ids import *
         Input(INPUT_DATE_RANGE_ID, 'end_date'),
     ]
 )
-def plot_OrderDetail_count_by_custmoer_figure(selected_products, 
+def plot_OrderDetail_count_by_custmoer_figuresss(selected_products, 
                                               selected_categories,
                                               selected_customers,
                                               selected_abc,selected_fmr,
@@ -43,7 +43,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -92,6 +92,9 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
                 output_field=IntegerField()
             )
     )
+    print(results)
+    # dff = pd.DataFrame.from_records(res)
+    # print(dff,'oppi')
     results  = results.values('customer_id','customer__reference').annotate(
         Not_Delivered=Sum('Not_Delivered'),
         Partially_Delivered_In_Time=Sum('Partially_Delivered_In_Time'),
@@ -102,8 +105,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
 
 
     df = pd.DataFrame.from_records(results)
-
-    print(df)
+    
 
     figure = df.iplot(
         asFigure=True,
@@ -119,9 +121,17 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
             'rgb(255, 132, 0)',
         ],
         theme='white',
-        title='title',
-        xTitle='supplier',
-        yTitle='Number of Orders',
+        title=_('Statut of order Details'),
+        xTitle='customer',
+        yTitle=_('Number of Order Details'),
+    )
+    
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickvals=[1, 2, 3, 4],
+            tickmode="array",
+        )
     )
 
 
@@ -148,7 +158,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -200,6 +210,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
                 output_field=IntegerField()
             )
     )
+    
 
     results  = results.values('order__ordered_at',).annotate(
         Not_Delivered=Sum('Not_Delivered'),
@@ -208,9 +219,10 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         Delivered_In_Time =Sum('Delivered_In_Time'),
         Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
     ).values('order__ordered_at','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
+    
 
     df_data = read_frame(results)
-
+    
 
     def otif(row):
         sum = row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row['Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time']
@@ -223,8 +235,6 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         lambda row: otif(row),
         axis=1)
     
-    
-
 
     figure = df_data.iplot(
         asFigure=True,
@@ -235,13 +245,20 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
             'OTIF'
         ],
         theme='white',
-        title='title',
-        xTitle='Ordered Date',
-        yTitle='Number of Orders',
+        title=_('OTIF by Ordered Date'),
+        xTitle=_('Ordered Date'),
+        yTitle=_('OTIF in %'),
     )
     
     figure.update_xaxes(
             tickformat = '%d %B %Y',
+    )
+    figure.update_layout(
+        autosize=True,
+        yaxis=dict(
+            tickvals=[1, 2, 3, 4],
+            tickmode="array",
+        )
     )
 
 
@@ -274,6 +291,8 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         customer__in=[selected_customers],
         order__ordered_at__lte=end_date
     )
+    
+
 
     results  = results.annotate(
         Not_Delivered =
@@ -325,30 +344,64 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
 
     df = pd.DataFrame.from_records(results)
-
-
-    figure = df.iplot(
-        asFigure=True,
-        kind='bar',
-        barmode='group',
-        x=['order__ordered_at'],
-        y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
-        colors= [
-            'rgb(255, 0, 0)',
-            'rgb(0, 255, 0)',
-            'rgb(255, 230, 0)',
-            'rgb(0,200,0)',
-            'rgb(255, 132, 0)',
-        ],
-        theme='white',
-        title='title',
-        xTitle='date ',
-        yTitle='Number of Orders',
-    )
     
-    figure.update_xaxes(
+    
+    try:
+
+
+        figure = df.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='group',
+
+            x=['order__ordered_at'],
+            y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
+            colors= [
+                'rgb(255, 0, 0)',
+                'rgb(0, 255, 0)',
+                'rgb(255, 230, 0)',
+                'rgb(0,200,0)',
+                'rgb(255, 132, 0)',
+            ],
+            theme='white',
+            title=_('Order Details by date'),
+            xTitle=_('date'),
+            yTitle=_('Quantity'),
+        )
+    
+        figure.update_xaxes(
             tickformat = '%d %B %Y',
-    )
+        )
+        
+        figure.update_layout(
+            autosize=True,
+            yaxis=dict(
+                tickvals=[1, 2, 3, 4],
+                tickmode="array",
+            )
+        )
+        
+    except:
+        
+        figure = df.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='group',
+            x=None,
+            y=None,
+            colors= [
+                'rgb(255, 0, 0)',
+                'rgb(0, 255, 0)',
+                'rgb(255, 230, 0)',
+                'rgb(0,200,0)',
+                'rgb(255, 132, 0)',
+            ],
+            theme='white',
+            title=_('Order Details by date'),
+            xTitle=_('date '),
+            yTitle=_('Quantity'),
+        )
+        
 
     return figure
 #
@@ -433,94 +486,116 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         Delivered_Not_In_Time =Sum('Delivered_Not_In_Time'),
     ).values('order__ordered_at','order','Not_Delivered','Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time','Delivered_In_Time','Delivered_Not_In_Time')
 
+        
     df_data = read_frame(results)
-
-    print(results,"hello mustapha")
-
-
-
-    df_data['sum_all'] = df_data.apply(
-        lambda
-            row: row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row[
-            'Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time'],
-        axis=1)
-
-    df_data['Order Not_Delivered'] = df_data.apply(
-        lambda
-            row: 1 if row['Not_Delivered'] == row['sum_all'] and row['Not_Delivered'] != 0 else None,
-        axis=1
-    )
-
-    df_data['Order Partially_Delivered_In_Time'] = df_data.apply(
-        lambda row: 1 if (
-                row['Partially_Delivered_Not_In_Time'] == 0
-                and row['Delivered_Not_In_Time'] == 0
-                and row['Not_Delivered'] < row['sum_all']
-                and (
-                        row['Delivered_In_Time'] < row['sum_all']
-                        or row['Partially_Delivered_In_Time'] != 0
-                )
-                and row['Delivered_In_Time'] <= row['sum_all']
-                and row['sum_all'] != 0
-        ) else 0, axis=1)
-
-    df_data['Order Partially_Delivered_Not_In_Time'] = df_data.apply(
-        lambda row: 1 if (row['Partially_Delivered_Not_In_Time'] != 0 or (
-                row['Delivered_Not_In_Time'] < row['sum_all'] and row['Delivered_Not_In_Time'] != 0)) and row[
-                             'sum_all'] != 0 else 0, axis=1)
-
-    df_data['Order Delivered_In_Time'] = df_data.apply(
-        lambda
-            row: 1 if row['Delivered_In_Time'] == row['sum_all'] and row['Delivered_In_Time'] != 0 else 0,
-        axis=1
-    )
-
-    df_data['Order Delivered_Not_In_Time'] = df_data.apply(
-        lambda
-            row: 1 if row['Delivered_Not_In_Time'] != 0 and row['Delivered_Not_In_Time'] + row[
-            'Delivered_In_Time'] == row['sum_all'] else 0,
-        axis=1
-    )
-
-    df_data = df_data.groupby(
-        by=['order__ordered_at'],
-        as_index=False
-    ).agg({
-        'Order Partially_Delivered_Not_In_Time':'sum',
-        'Order Delivered_In_Time':'sum',
-        'Order Delivered_Not_In_Time':'sum',
-        'Order Partially_Delivered_In_Time':'sum',
-        'Order Not_Delivered':'sum',
-    })
-
-    figure = df_data.iplot(
-        asFigure=True,
-        kind='bar',
-        barmode='stack',
-        x=['order__ordered_at'],
-        y=[
-            'Order Partially_Delivered_Not_In_Time',
-            'Order Delivered_In_Time',
-            'Order Delivered_Not_In_Time',
-            'Order Partially_Delivered_In_Time',
-            'Order Not_Delivered'
-        ],
-        colors= [
-            'rgb(255, 230, 0)',
-            'rgb(0, 200, 0)',
-            'rgb(255, 132, 0)',
-            'rgb(0,255,0)',
-            'red',
-        ],
-        theme='white',
-        title='title',
-        xTitle='Ordered Date',
-        yTitle='Number of Orders',
-    )
     
-    figure.update_xaxes(
-            tickformat = '%d %B %Y',
-    )
+    
+    try:
+
+
+        df_data['sum_all'] = df_data.apply(
+            lambda
+                row: row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row[
+                'Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time'],
+            axis=1)
+
+        df_data['Order Not_Delivered'] = df_data.apply(
+            lambda
+                row: 1 if row['Not_Delivered'] == row['sum_all'] and row['Not_Delivered'] != 0 else None,
+            axis=1
+        )
+
+        df_data['Order Partially_Delivered_In_Time'] = df_data.apply(
+            lambda row: 1 if (
+                    row['Partially_Delivered_Not_In_Time'] == 0
+                    and row['Delivered_Not_In_Time'] == 0
+                    and row['Not_Delivered'] < row['sum_all']
+                    and (
+                            row['Delivered_In_Time'] < row['sum_all']
+                            or row['Partially_Delivered_In_Time'] != 0
+                    )
+                    and row['Delivered_In_Time'] <= row['sum_all']
+                    and row['sum_all'] != 0
+            ) else 0, axis=1)
+
+        df_data['Order Partially_Delivered_Not_In_Time'] = df_data.apply(
+            lambda row: 1 if (row['Partially_Delivered_Not_In_Time'] != 0 or (
+                    row['Delivered_Not_In_Time'] < row['sum_all'] and row['Delivered_Not_In_Time'] != 0)) and row[
+                                'sum_all'] != 0 else 0, axis=1)
+
+        df_data['Order Delivered_In_Time'] = df_data.apply(
+            lambda
+                row: 1 if row['Delivered_In_Time'] == row['sum_all'] and row['Delivered_In_Time'] != 0 else 0,
+            axis=1
+        )
+
+        df_data['Order Delivered_Not_In_Time'] = df_data.apply(
+            lambda
+                row: 1 if row['Delivered_Not_In_Time'] != 0 and row['Delivered_Not_In_Time'] + row[
+                'Delivered_In_Time'] == row['sum_all'] else 0,
+            axis=1
+        )
+
+        df_data = df_data.groupby(
+            by=['order__ordered_at'],
+            as_index=False
+        ).agg({
+            'Order Partially_Delivered_Not_In_Time':'sum',
+            'Order Delivered_In_Time':'sum',
+            'Order Delivered_Not_In_Time':'sum',
+            'Order Partially_Delivered_In_Time':'sum',
+            'Order Not_Delivered':'sum',
+        })
+
+        figure = df_data.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='stack',
+            x=['order__ordered_at'],
+            y=[
+                'Order Partially_Delivered_Not_In_Time',
+                'Order Delivered_In_Time',
+                'Order Delivered_Not_In_Time',
+                'Order Partially_Delivered_In_Time',
+                'Order Not_Delivered'
+            ],
+            colors= [
+                    'rgb(255, 230, 0)',
+                    'rgb(0, 200, 0)',
+                    'rgb(255, 132, 0)',
+                    'rgb(0,255,0)',
+                    'rgb(255, 0, 0)',
+            ],
+            theme='white',
+            title=_('Number of Orders by Date'),
+            xTitle=_('Ordered Date'),
+            yTitle=_('Number of Orders'),
+        )
+        
+        figure.update_xaxes(
+                tickformat = '%d %B %Y',
+        )
+        
+    except :
+        figure = df_data.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='stack',
+            x=None,
+            y=None,
+            colors= [
+                    'rgb(255, 230, 0)',
+                    'rgb(0, 200, 0)',
+                    'rgb(255, 132, 0)',
+                    'rgb(0,255,0)',
+                    'rgb(255, 0, 0)',
+            ],
+            theme='white',
+            title=_('Number of Orders by Date'),
+            xTitle=_('Ordered Date'),
+            yTitle=_('Number of Orders'),
+        )
+        
 
     return figure
 #
@@ -560,15 +635,11 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
     )
 
     Number_of_deliveries  = results.values('order__delivery').distinct()
-    train = read_frame(Number_of_deliveries)
+    
     
     Number_of_deliveries  = Number_of_deliveries.count()
     
     
-    print(Number_of_deliveries,'googlearth')
-
-
-    print(train ,'FC BB')
 
     results = results.annotate(
         Not_Delivered=
@@ -625,7 +696,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     df_data_order = read_frame(results_order)
 
-    print(df_data_order,len(df_data_order.index),'foof')
 
     Number_of_orders = len(df_data_order.index)
 
@@ -695,11 +765,6 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     labels = df_data.index
     values = df_data.values
-
-    print(labels,values,'desert')
-    
-    
-    print(df_data,'sultan')
 
     df_data = df_data.agg({
         'Not_Delivered': 'sum',

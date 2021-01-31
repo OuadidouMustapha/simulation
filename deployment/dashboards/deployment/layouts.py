@@ -99,6 +99,100 @@ _input = html.Div([
 ])
 
 _output = html.Div([
+        dbc.Row([
+            dbc.Col([
+                html.Div(
+                    [
+                        html.Div(
+                            className='control-tabs',
+                            children=[
+                                dcc.Tabs(
+                                    value='what-is',
+                                    children=[
+                                        dcc.Tab(
+                                            label=_('Warehouses'),
+                                            value='what-is',
+                                            children=dcc.Loading(
+                                                html.Div(
+                                                    [dcc.Graph(id=ids.FIGURE_WAREHOUSES_ID)],
+                                                    className="",
+                                                )
+                                            ),
+                                        ),
+                                        dcc.Tab(
+                                            label=_('Wharhouses Pie Graph'),
+                                            value='Product-at',
+                                            children=html.Div(
+                                                className='control-tab',
+                                                children=[
+                                                    dbc.Col([
+                                                        dbc.Label(_('Maximize')),
+                                                        dcc.Dropdown(
+                                                            id=ids.DROPDOWN_W_PIE_BY,
+                                                            multi=True,
+                                                        ),
+                                                    ], sm=12, md=12, lg=12),
+                                                    html.Div(
+                                                        className='app-controls-block',
+                                                        children=dcc.Loading(
+                                                            html.Div(
+                                                                [dcc.Graph(id=ids.FIGURE_PIE_ID)],
+                                                                className="",
+                                                            )
+                                                        ),
+                                                    ),
+                                                ]
+                                            )
+                                        ),
+                                    ])
+                            ],
+                        ),
+                    ],
+                    className="shadow-lg p-12 mb-5 bg-white rounded",
+                ),
+            ], sm=12, md=6, lg=6),
+            dbc.Col([
+                html.Div(
+                    [
+                        html.Div(
+                            className='control-tabs',
+                            children=[
+                                dcc.Tabs(
+                                    value='what-is',
+                                    children=[
+                                        dcc.Tab(
+                                            label=_('Product'),
+                                            value='what-is',
+                                            children=html.Div(
+                                                className='control-tab',
+                                                children=[
+                                                    dbc.Col([
+                                                        dbc.Label(_('Maximize')),
+                                                        dcc.Dropdown(
+                                                            id=ids.DROPDOWN_W_T_BY,
+                                                            multi=True,
+                                                        ),
+                                                    ], sm=12, md=12, lg=12),
+                                                    html.Div(
+                                                        className='app-controls-block',
+                                                        children=dcc.Loading(
+                                                            html.Div(
+                                                                [dcc.Graph(id=ids.FIGURE_TOP_ID)],
+                                                                className="",
+                                                            )
+                                                        ),
+                                                    ),
+                                                ]
+                                            )
+                                        ),
+                                    ])
+                            ],
+                        ),
+                    ],
+                    className="shadow-lg p-12 mb-5 bg-white rounded",
+                ),
+            ], sm=12, md=6, lg=6),
+        ]),
     dbc.Row([
         dbc.Col([
             dbc.Alert(

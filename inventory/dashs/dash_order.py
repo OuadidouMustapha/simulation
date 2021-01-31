@@ -328,10 +328,14 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
         customer__in=[selected_customers],
-        order__ordered_at__lte=end_date)
+        order__ordered_at__lte=end_date
+    )
     results = results.values('order__ordered_at','order').distinct()
     results = results.values('order__ordered_at').annotate(count=Count('order'))
     results = results.values('order__ordered_at', 'count')
+    
+    
+    print(len(results),'tadart')
     #
     # x = list(results.values_list('order__ordered_at', flat=True))
     # y = list(results.values_list('count', flat=True))
@@ -344,6 +348,8 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
 
     order_df = read_frame(results)
+    
+    print(order_df,'tadart')
 
     # order_df = order_df.groupby(
     #     by=['order__ordered_at'],

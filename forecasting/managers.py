@@ -50,29 +50,31 @@ class ForecastQuerySet(models.QuerySet):
         qs = qs.values('version__reference', 'forecast_date', 'forecasted_quantity')
         return qs
 
-    def get_forecasting(self, product_filter, warehouse_filter, circuit_filter, customer_filter, start_date=None, end_date=None):
+    def get_forecasting(self, product_filter, warehouse_filter, circuit_filter, customer_filter, version_filter, start_date=None, end_date=None):
         '''get forecast and order query'''
         filter_kwargs = {}
-        if product_filter is not None:
-            filter_kwargs['product__in'] = product_filter
-        if warehouse_filter is not None:
-            filter_kwargs['warehouse__in'] = warehouse_filter
-        if circuit_filter is not None:
-            filter_kwargs['circuit__in'] = circuit_filter
-        if customer_filter is not None:
-            filter_kwargs['customer__in'] = customer_filter
+        if product_filter:
+            filter_kwargs['product__id__in'] = product_filter
+        # if warehouse_filter:
+        #     filter_kwargs['warehouse__id__in'] = warehouse_filter
+        if circuit_filter:
+            filter_kwargs['circuit__id__in'] = circuit_filter
+        if customer_filter:
+            filter_kwargs['customer__id'] = customer_filter
+        if version_filter:
+            filter_kwargs['version__id'] = version_filter
 
-        if start_date is not None:
+        if start_date:
             filter_kwargs['forecast_date__gte'] = start_date
-        if end_date is not None:
+        if end_date:
             filter_kwargs['forecast_date__lte'] = end_date
 
+
         qs = self.filter(**filter_kwargs)
-        qs = qs.select_related('product', 'warehouse', 'circuit', 'customer')
+        # qs = qs.select_related('product', 'warehouse', 'circuit', 'customer')
         qs = qs.values('product', 'warehouse', 'circuit', 'customer',
                        'forecast_date', 'forecasted_quantity', 
                        'version', 'product__product_ray', 'product__product_type')
-        print('qs ', qs)
         return qs
 
 

@@ -33,7 +33,7 @@ class Command(BaseCommand):
                             product_id=p,
                             circuit_id=c,
                             targeted_date=datetime(year, month, 1),
-                            targeted_quantity=random.randint(10000,100000),
+                            targeted_quantity=random.randint(500,1000),
                         )
                     )
                     self.stdout.write(

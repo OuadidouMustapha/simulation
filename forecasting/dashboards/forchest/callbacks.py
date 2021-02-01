@@ -273,26 +273,22 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         yTitle=_('Quantity'),
     )
     # Add dashed forecasts to graph
-    figure.add_trace(
+    figure.add_traces([
         go.Scatter(
             x=merged_df['date'],
             y=merged_df['forecasted_quantity'],
             line=dict(color='grey', width=2, dash='dash'),
             showlegend=True,
             name='forecasted_quantity',
-        )
-    )
-    figure.add_trace(
+        ),
         go.Scatter(
             x=merged_df['date'],
             y=merged_df['edited_forecasted_quantity'],
             mode='lines+markers',
             showlegend=True,
             name='edited_forecasted_quantity',
-        )
-    )
-    # Add ordered_quantity to graph
-    figure.add_trace(
+        ),
+        # Add ordered_quantity to graph
         go.Scatter(
             x=merged_df['date'],
             y=merged_df['ordered_quantity'],
@@ -300,7 +296,8 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             showlegend=True,
             name='ordered_quantity',
         )
-    )
+    ])
+    print('figure  c', figure)
 
 
     # Output datatable
@@ -376,13 +373,15 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
                     [html.I(className="fas fa-plus mr-2"), _('Add event')],
                     id=ids.BUTTON_EVENT_ADD,
                     className="btn btn-xs btn-success my-3",
-                    hidden=hide_btn_event_save
+                    hidden=hide_btn_event_save,
+                    disabled=True
                 ),
                 html.Button(
                     [html.I(className="fas fa-sync mr-2"), _('Save & update')],
                     id=ids.BUTTON_EVENT_UPDATE,
                     className="btn btn-xs btn-primary my-3 mx-3",
-                    hidden=hide_btn_event_update
+                    hidden=hide_btn_event_update,
+                    disabled=True
                 ),
             ], sm=12, md=12, lg=12),
 
@@ -412,8 +411,6 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             ], sm=12, md=12, lg=12),
         ]),
     ])
-
-    print(figure)
 
     return div, hide_btn_approve, hide_btn_reject, hide_btn_review, hide_btn_save
 

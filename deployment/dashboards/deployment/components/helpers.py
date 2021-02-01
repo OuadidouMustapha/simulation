@@ -126,21 +126,19 @@ def get_dash_layout(filter_div, body_div):
                         ], className='card-body')
                     ], className='card bg-light shadow mb-4 py-3'
                 ),
-                html.Div(
-                    [
-                        html.Div([
-                             body_div,
-                        ], className='card-body')
-                    ], className='card bg-light shadow mb-4 py-3'
-                ),
+
+                html.Div([
+                    body_div,
+                ]),
             ], style={'background-color': '#f8f9fc'}
         )
+        
     else:
         div = html.Div(
-                    [
-                        html.Div([
-                             body_div,
-                        ], className='card-body')
-                    ], className='card bg-light shadow mb-4 py-3'
-            ),
+            [
+                html.Div([
+                    body_div,
+                ]),
+            ], style={'background-color': '#f8f9fc'}
+        )
     return div

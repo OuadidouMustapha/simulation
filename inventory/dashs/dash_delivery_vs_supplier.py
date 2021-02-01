@@ -425,10 +425,14 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         delivery__delivered_at__lte=end_date)
     # results = results.values('product', 'ordered_quantity')
     qs = results.values('product').annotate(delivered_quantity=Sum('delivered_quantity')).order_by('-delivered_quantity')[:10]
+    
+
 
     # TODO fix the order by product
 
     order_df = read_frame(qs)
+    
+    order_df =  order_df.sort_values('delivered_quantity',ascending = True)
 
     figure = order_df.iplot(
         asFigure=True,
@@ -437,9 +441,9 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         x=['product'],
         y=['delivered_quantity'],
         theme='white',
-        title=_('Most Ordered  Products'),
+        title=_('Most Products'),
         xTitle=_('quantity'),
-        yTitle=_('Most Ordered  Products by Quantity'),
+        yTitle=_('Most Products by Quantity'),
     )
     return figure
 
@@ -521,6 +525,8 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
     results = results.order_by('-delivered_quantity')[:10]
 
     order_df = read_frame(results)
+    
+    order_df =  order_df.sort_values('delivered_quantity',ascending = True)
 
     figure = order_df.iplot(
         asFigure=True,
@@ -529,7 +535,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         x=['product__category__reference'],
         y=['delivered_quantity'],
         theme='white',
-        title=_('Most 10 Order Categories'),
+        title=_('Most 10 Categories by Quantity'),
         xTitle=_('Quantity'),
         yTitle=_('Categories'),
     )

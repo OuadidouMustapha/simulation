@@ -672,8 +672,8 @@ def plot_pie_statutsd_product_figure(selected_products, selected_categories, sel
         y=[row_cat for row_cat in cats],
         theme='white',
         title=_('Distribution Of Categories in Warhouses'),
-        xTitle=_('Totale'),
-        yTitle=_('Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure
@@ -746,8 +746,8 @@ def plot_pie_statutsd_product_figure(selected_products, selected_categories, sel
         y=[row_cat for row_cat in cats],
         theme='white',
         title=_('Distribution Of ABC Segmentation in Warhouses'),
-        xTitle=_('Totale'),
-        yTitle=_('Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure
@@ -826,8 +826,8 @@ def plot_pie_statutsd_product_ffigure(selected_products, selected_categories, se
         y=[row_cat for row_cat in cats],
         theme='white',
         title=_('Distribution Of FMR Segmentation in Warhouses'),
-        xTitle=_('Totale'),
-        yTitle=_('Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure

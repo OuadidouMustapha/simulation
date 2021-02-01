@@ -431,6 +431,8 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
     results = results.order_by('-ordered_quantity')[0:10]
 
     order_df = read_frame(results)
+    
+    order_df =  order_df.sort_values('ordered_quantity',ascending = True)
 
 
     figure = order_df.iplot(
@@ -478,6 +480,8 @@ def plot_most_order_custmoer_figure(selected_products, selected_categories, sele
 
 
     order_df = read_frame(results)
+    
+    order_df =  order_df.sort_values('ordered_quantity',ascending = True)
 
     figure = order_df.iplot(
         asFigure=True,

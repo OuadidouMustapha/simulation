@@ -19,7 +19,7 @@ def get_truck_type_by_product_type(product_type):
     return int(table[product_type])
 
 
-def run_deployment(show_by, start_date, end_date):
+def run_deployment(version_id, show_by, start_date, end_date):
     model_start = timeit.default_timer()
 
 
@@ -34,13 +34,13 @@ def run_deployment(show_by, start_date, end_date):
 
     forecast_qs = Forecast.objects.filter(version__id=version_id)
     forecast_qs = forecast_qs.values(
-        'id', 'forecast_date', 'forecasted_quantity', 'edited_forecasted_quantity', 'product__id', 'circuit__id', 'customer__id', 'customer__warehouse__id', 'version__id')
+        'id', 'forecast_date', 'forecasted_quantity', 'edited_forecasted_quantity', 'product', 'circuit', 'customer', 'customer__warehouse', 'version')
         
     stockcheck_qs = StockCheck.objects.filter(check_date=check_date).values(
-        'id', 'product__id', 'check_date', 'warehouse__id', 'warehouse__warehouse_type', 'quantity')
+        'id', 'product', 'check_date', 'warehouse', 'warehouse__warehouse_type', 'quantity')
 
     truckavailability_qs = TruckAvailability.objects.values(
-        'id', 'warehouse__id', 'available_truck', 'category__capacity', 'category__cost', 'category__truck_type')
+        'id', 'warehouse', 'available_truck', 'category__capacity', 'category__cost', 'category__truck_type')
     # Get dataframes
     product_df = read_frame(product_qs)
     forecast_df = read_frame(forecast_qs)
@@ -59,18 +59,18 @@ def run_deployment(show_by, start_date, end_date):
     })
     forecast_df = forecast_df.rename(columns={
         'forecast_date': 'date',
-        'customer__warehouse__id': 'warehouse',
-        'product__id': 'product',
+        'customer__warehouse': 'warehouse',
+        # 'product': 'product',
     })
     stockcheck_df = stockcheck_df.rename(columns={
-        'product__id': 'product',
-        'warehouse__id': 'warehouse',
+        # 'product': 'product',
+        # 'warehouse': 'warehouse',
         'warehouse__warehouse_type': 'warehouse_type',
         'check_date': 'date',
     })
     truckavailability_df = truckavailability_df.rename(columns={
         'id': 'truckavailability_id',
-        'warehouse__id': 'warehouse',
+        # 'warehouse': 'warehouse',
     })
     # Column type
     forecast_df['date'] = pd.to_datetime(forecast_df['date']).dt.date

@@ -65,9 +65,9 @@
         </a>
         <div id="forecasting-pages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{% url 'forecasting:index' %}">
+                {% comment %} <a class="collapse-item" href="{% url 'forecasting:index' %}">
                     <span>{% trans 'Overview' %}</span></a>
-                </a>
+                </a> {% endcomment %}
                 {% comment %} <a class="collapse-item" href="{% url 'forecasting:version_list' %}">
                     <span>{% trans 'Input Interface' %}</span></a>
                 </a> {% endcomment %}

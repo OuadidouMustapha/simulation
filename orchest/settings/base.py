@@ -128,7 +128,7 @@ LANGUAGE_CODE = 'fr'  # 'en-us' 'fr'
 TIME_ZONE = 'Africa/Casablanca'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+# USE_TZ = True
 
 LOCALE_PATHS = (
   os.path.abspath(os.path.join(BASE_DIR, 'conf', 'locale')),

@@ -51,7 +51,7 @@ class Command(BaseCommand):
                         product=p,
                         warehouse=w,
                         check_date=check_date,
-                        quantity=random.randint(0, 500),
+                        quantity=random.randint(0, 1000),
                     )
                 ]
                 _stockcheck_objects.extend(stockcheck_rdc_objects)
@@ -63,7 +63,7 @@ class Command(BaseCommand):
                         product=p,
                         warehouse=w,
                         check_date=check_date,
-                        quantity=random.randint(1000000, 1000000),
+                        quantity=random.randint(100000, 100000),
                     )
                 ]
                 _stockcheck_objects.extend(stockcheck_cdc_objects)

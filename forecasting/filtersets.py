@@ -26,13 +26,14 @@ class VersionDetailFilter(django_filters.FilterSet):
     #     queryset=Circuit.objects.all(),
     #     widget=Select2Widget
     # )
-    # FIXME version__version_date filter does not work (maybe add 'contains' field?)
-    version__version_date = django_filters.ModelChoiceFilter(
+
+    version__version_date = django_filters.ChoiceFilter(
         label='Version date',
-        queryset=Version.objects.values_list('version_date', flat=True).distinct(),
+        choices=[[obj['version_date'], obj['version_date']]
+                 for obj in Version.objects.values('version_date').distinct()],
     )
 
     class Meta:
         model = VersionDetail
         fields = ['product', 'circuit', 'product__abc_segmentation',
-                  'product__fmr_segmentation', 'version', 'version__version_date', 'status']
+                  'product__fmr_segmentation', 'version__version_date', 'status']

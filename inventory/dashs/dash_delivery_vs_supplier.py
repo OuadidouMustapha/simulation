@@ -441,9 +441,9 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         x=['product'],
         y=['delivered_quantity'],
         theme='white',
-        title=_('Most Products'),
+        title=_('Most Products by Quantity'),
         xTitle=_('quantity'),
-        yTitle=_('Most Products by Quantity'),
+        yTitle=_('Most Products'),
     )
     return figure
 

@@ -122,7 +122,7 @@ def plot_OrderDetail_count_by_custmoer_figuresss(selected_products,
         ],
         theme='white',
         title=_('Statut of order Details'),
-        xTitle='customer',
+        xTitle=_('customer'),
         yTitle=_('Number of Order Details'),
     )
     
@@ -366,7 +366,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             theme='white',
             title=_('Order Details by date'),
             xTitle=_('date'),
-            yTitle=_('Quantity'),
+            yTitle=_('Number of Order Details'),
         )
     
         figure.update_xaxes(
@@ -399,7 +399,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             theme='white',
             title=_('Order Details by date'),
             xTitle=_('date '),
-            yTitle=_('Quantity'),
+            yTitle=_('Number of Order Details'),
         )
         
 

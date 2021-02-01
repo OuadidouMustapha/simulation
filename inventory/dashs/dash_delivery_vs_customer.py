@@ -167,7 +167,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label=_('Graph Number Of deliveries'),
+                                                label=_('Deliveries'),
                                                 value='what-is',
                                                 children=
                                                 dcc.Loading(
@@ -178,7 +178,7 @@ def body_container():
                                                 ),
                                             ),
                                             dcc.Tab(
-                                                label=_('Number Of Products'),
+                                                label=_('Products'),
                                                 value='Product',
                                                 children=html.Div(
                                                     className='control-tab',

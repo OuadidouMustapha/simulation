@@ -206,7 +206,7 @@ def body_container():
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
                                         dcc.Graph(id=FIGURE_PIE_ORDER_ID),
-                                        html.P(_('State Of Order'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Order Status'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],

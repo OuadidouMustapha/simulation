@@ -120,7 +120,7 @@ _output = html.Div([
                                             ),
                                         ),
                                         dcc.Tab(
-                                            label=_('Wharhouses Pie Graph'),
+                                            label=_('Warhouses Pie Graph'),
                                             value='Product-at',
                                             children=html.Div(
                                                 className='control-tab',

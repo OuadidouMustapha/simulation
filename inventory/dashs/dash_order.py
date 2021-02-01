@@ -111,22 +111,22 @@ def filter_container():
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id, _all_categories,
-                    'Categories')
+                    _('Categories'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, _('ABC Segmentation'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
-                    'FMR Segmentation'),
+                    _('FMR Segmentation')),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers,
-                    'Customers',select_all=False,multi=False)
+                    _('Customers'),select_all=False,multi=False)
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_date_range(
@@ -165,7 +165,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label='Graph Number Of Orders          ',
+                                                label=_('Graph Number Of Orders'),
                                                 value='what-is',
                                                 children=
                                                     dcc.Loading(
@@ -176,7 +176,7 @@ def body_container():
                                                     ),
                                             ),
                                             dcc.Tab(
-                                                label='Number Of Ordered Products',
+                                                label=_('Number Of Ordered Products'),
                                                 value='Product',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -215,7 +215,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label='Top 10 Ordred Products',
+                                                label=_('Top 10 Ordred Products'),
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
@@ -224,26 +224,26 @@ def body_container():
                                                     )
                                                 ),
                                             ),
+                                            # dcc.Tab(
+                                            #     label=_('Top 10 Customers Making Orders'),
+                                            #     value='show-sequences',
+                                            #     children=html.Div(
+                                            #         className='control-tab',
+                                            #         children=[
+                                            #             dcc.Loading(
+                                            #                 html.Div(
+                                            #                     className='app-controls-block',
+                                            #                     children=html.Div(
+                                            #                         [dcc.Graph(id=figure_most_ordred_customer_id)],
+                                            #                         className="",
+                                            #                     ),
+                                            #                 ),
+                                            #             ),
+                                            #         ]
+                                            #     )
+                                            # ),
                                             dcc.Tab(
-                                                label='Top 10 Customers Making Orders',
-                                                value='show-sequences',
-                                                children=html.Div(
-                                                    className='control-tab',
-                                                    children=[
-                                                        dcc.Loading(
-                                                            html.Div(
-                                                                className='app-controls-block',
-                                                                children=html.Div(
-                                                                    [dcc.Graph(id=figure_most_ordred_customer_id)],
-                                                                    className="",
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ]
-                                                )
-                                            ),
-                                            dcc.Tab(
-                                                label='Top 10 Ordred  Categories',
+                                                label=_('Top 10 Ordred Categories'),
                                                 value='show-sequences-',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -334,29 +334,8 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
     results = results.values('order__ordered_at').annotate(count=Count('order'))
     results = results.values('order__ordered_at', 'count')
     
-    
-    print(len(results),'tadart')
-    #
-    # x = list(results.values_list('order__ordered_at', flat=True))
-    # y = list(results.values_list('count', flat=True))
-    #
-    # figure = go.Figure(data=[
-    #     dict(x=x, y=y, type='bar')
-    # ])
-
-    start_time_2 = time.time()
-
-
     order_df = read_frame(results)
     
-    print(order_df,'tadart')
-
-    # order_df = order_df.groupby(
-    #     by=['order__ordered_at'],
-    # ).size().reset_index(name='counts')
-    print("--- %s seconds ------- rrad data frame  ---" % (time.time() - start_time_2))
-
-    start_time_3 = time.time()
     figure = order_df.iplot(
         asFigure=True,
         kind='bar',
@@ -364,20 +343,10 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         x=['order__ordered_at'],
         y=['count'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Numbre of Orders',
+        title=_('Number Of Orders By Date'),
+        xTitle=_('date'),
+        yTitle=_('Number of Orders'),
     )
-
-
-    # x = list(results.values_list('order__ordered_at', flat=True))
-    # y = list(results.values_list('count', flat=True))
-    #
-    #
-    # figure = go.Figure(data=[
-    #     dict(x=x, y=y, type='bar')
-    # ])
-
 
 
     return figure
@@ -408,26 +377,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         order__ordered_at__lte=end_date
     )
 
-    # order_df = read_frame(results)
-    #
-    # order_df = order_df.groupby(
-    #     by=['order__ordered_at'],
-    # ).agg({
-    #     'ordered_quantity': 'sum',
-    # }).reset_index()
-    #
-    # figure = order_df.iplot(
-    #     asFigure=True,
-    #     kind='bar',
-    #     barmode='stack',
-    #     x=['order__ordered_at'],
-    #     y=['ordered_quantity'],
-    #     theme='white',
-    #     title='title',
-    #     xTitle='date',
-    #     yTitle='Numbre of Products',
-    # )
-    # return figure
 
     qs = results.values('order__ordered_at')
     qs = qs.annotate(ordered_quantity_sum=Sum(F('ordered_quantity')))
@@ -444,9 +393,9 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         x=['order__ordered_at'],
         y=['ordered_quantity_sum'],
         theme='white',
-        title='title',
-        xTitle='date',
-        # yTitle='Numbre of Products',
+        title=_('Ordered Products By Date'),
+        xTitle=_('date'),
+        yTitle=_('Quantity'),
     )
 
     return figure
@@ -478,7 +427,7 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
     # results = results.values('product', 'ordered_quantity')
     results = results.values('product')
     results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
-    results = results.order_by('ordered_quantity')[0:10]
+    results = results.order_by('-ordered_quantity')[0:10]
 
     order_df = read_frame(results)
 
@@ -490,57 +439,57 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         x=['product'],
         y=['ordered_quantity'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most Ordered  Products',
+        title=_('TOP 10 Ordred Product'),
+        xTitle=_('date'),
+        yTitle=_('Quantity'),
     )
     return figure
 
 
-@app.callback(
+# @app.callback(
 
-    Output(figure_most_ordred_customer_id, "figure"),
+#     Output(figure_most_ordred_customer_id, "figure"),
 
-    [
-        Input(dropdown_product_list_id, "value"),
-        Input(dropdown_categorie_list_id, "value"),
-        Input(dropdown_customer_list_id, "value"),
-        Input(dropdown_abc_list_id, "value"),
-        Input(dropdown_fmr_list_id, "value"),
-        Input(input_date_range_id, 'start_date'),
-        Input(input_date_range_id, 'end_date'),
-    ]
-)
-def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr,
-                                    start_date, end_date):
-    results = OrderDetail.objects.filter(
-        product__in=selected_products,
-        product__category__in=selected_categories,
-        product__fmr_segmentation__in=selected_fmr,
-        product__abc_segmentation__in=selected_abc,
-        order__ordered_at__gte=start_date,
-        customer__in=[selected_customers],
-        order__ordered_at__lte=end_date)
+#     [
+#         Input(dropdown_product_list_id, "value"),
+#         Input(dropdown_categorie_list_id, "value"),
+#         Input(dropdown_customer_list_id, "value"),
+#         Input(dropdown_abc_list_id, "value"),
+#         Input(dropdown_fmr_list_id, "value"),
+#         Input(input_date_range_id, 'start_date'),
+#         Input(input_date_range_id, 'end_date'),
+#     ]
+# )
+# def plot_most_order_custmoer_figure(selected_products, selected_categories, selected_customers, selected_abc,selected_fmr,
+#                                     start_date, end_date):
+#     results = OrderDetail.objects.filter(
+#         product__in=selected_products,
+#         product__category__in=selected_categories,
+#         product__fmr_segmentation__in=selected_fmr,
+#         product__abc_segmentation__in=selected_abc,
+#         order__ordered_at__gte=start_date,
+#         customer__in=[selected_customers],
+#         order__ordered_at__lte=end_date)
 
-    results = results.values('customer')
-    results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
-    results = results.order_by('ordered_quantity')[0:10]
+#     results = results.values('customer')
+#     results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
+#     results = results.order_by('-ordered_quantity')[0:10]
 
 
-    order_df = read_frame(results)
+#     order_df = read_frame(results)
 
-    figure = order_df.iplot(
-        asFigure=True,
-        kind='barh',
-        barmode='stack',
-        x=['customer'],
-        y=['ordered_quantity'],
-        theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most Order Custmoers',
-    )
-    return figure
+#     figure = order_df.iplot(
+#         asFigure=True,
+#         kind='barh',
+#         barmode='stack',
+#         x=['customer'],
+#         y=['ordered_quantity'],
+#         theme='white',
+#         title=_('TOP 10 Customers Making Orders'),
+#         xTitle=_('date'),
+#         yTitle=_('Quantity'),
+#     )
+#     return figure
 
 
 @app.callback(
@@ -570,7 +519,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
 
     results = results.values('product__category__reference')
     results = results.annotate(ordered_quantity=Sum('ordered_quantity'))
-    results = results.order_by('ordered_quantity')[0:10]
+    results = results.order_by('-ordered_quantity')[0:10]
 
     order_df = read_frame(results)
 
@@ -582,9 +531,9 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         x=['product__category__reference'],
         y=['ordered_quantity'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most 10 Order categories',
+        title=_('TOP 10 Ordred Categories'),
+        xTitle=_('date'),
+        yTitle=_('Quantity'),
     )
     return figure
 

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-29 12:40+0100\n"
+"POT-Creation-Date: 2021-02-01 15:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +17,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: dashs/dash_delivery_vs_customer.py:115
+#: dashs/dash_delivery_vs_customer.py:263
+#: dashs/dash_delivery_vs_supplier.py:116
+#: dashs/dash_delivery_vs_supplier.py:282
+#: dashs/dash_delivery_vs_supplier.py:534 dashs/dash_order.py:114
+#: dashs/dash_order.py:279 dashs/dash_order_vs_supplier.py:115
+#: dashs/dash_order_vs_supplier.py:280 dashs/dash_order_vs_supplier.py:537
+#: dashs/dash_profil.py:155 dashs/otif_vs_supplier/layouts.py:33
+msgid "Categories"
+msgstr "Catégories"
+
+#: dashs/dash_delivery_vs_customer.py:119
+#: dashs/dash_delivery_vs_supplier.py:120 dashs/dash_order.py:118
+#: dashs/dash_order_vs_supplier.py:119 dashs/dash_profil.py:159
+#: dashs/otif_vs_supplier/layouts.py:37
+msgid "ABC Segmentation"
+msgstr "Segmentation ABC"
+
+#: dashs/dash_delivery_vs_customer.py:124
+#: dashs/dash_delivery_vs_customer.py:271
+#: dashs/dash_delivery_vs_supplier.py:125
+#: dashs/dash_delivery_vs_supplier.py:290 dashs/dash_order.py:123
+#: dashs/dash_order.py:287 dashs/dash_order_vs_supplier.py:124
+#: dashs/dash_order_vs_supplier.py:288 dashs/dash_profil.py:164
+msgid "FMR Segmentation"
+msgstr "Segmentation FMR"
+
+#: dashs/dash_delivery_vs_customer.py:130 dashs/dash_order.py:129
+#: dashs/otif_test/layouts.py:113
+msgid "Customers"
+msgstr "Afficher par Client"
+
 #: dashs/dash_delivery_vs_customer.py:135
 #: dashs/dash_delivery_vs_supplier.py:136 dashs/dash_order.py:134
 #: dashs/dash_order_vs_supplier.py:135 dashs/dash_otif_vs_customer.py:123
@@ -25,34 +56,210 @@ msgstr ""
 #: dashs/otif_test/layouts.py:54 dashs/otif_vs_supplier/layouts.py:54
 #: dashs/stock_image.py:158
 msgid "Time horizon"
-msgstr ""
+msgstr "Horizon temporel"
 
 #: dashs/dash_delivery_vs_customer.py:142
+#: dashs/dash_delivery_vs_customer.py:181
 #: dashs/dash_delivery_vs_supplier.py:143 dashs/dash_order.py:141
-#: dashs/dash_order_vs_supplier.py:142 dashs/dash_otif_vs_customer.py:130
-#: dashs/dash_otif_vs_sp.py:122 dashs/dash_profil.py:176 dashs/otif.py:103
+#: dashs/dash_order_vs_supplier.py:142 dashs/dash_order_vs_supplier.py:445
+#: dashs/dash_otif_vs_customer.py:130 dashs/dash_otif_vs_sp.py:122
+#: dashs/dash_profil.py:176 dashs/dash_profil.py:886 dashs/otif.py:103
 #: dashs/otif/layouts.py:60 dashs/otif_test/layouts.py:61
 #: dashs/otif_vs_supplier/layouts.py:61 dashs/stock_image.py:107
 msgid "Products"
 msgstr "Produits"
 
-#: dashs/dash_delivery_vs_customer.py:281
-#: dashs/dash_delivery_vs_supplier.py:282 dashs/dash_order.py:279
-#: dashs/dash_order_vs_supplier.py:280
-msgid "Categories"
-msgstr "Catégories"
+#: dashs/dash_delivery_vs_customer.py:170 templates/index.html:113
+msgid "Deliveries"
+msgstr "Livraisons"
 
-#: dashs/dash_delivery_vs_customer.py:285
+#: dashs/dash_delivery_vs_customer.py:220
+#: dashs/dash_delivery_vs_supplier.py:221
+msgid "Top 10 Products"
+msgstr "Top 10 des Produits"
+
+#: dashs/dash_delivery_vs_customer.py:230
+#: dashs/dash_delivery_vs_supplier.py:249
+msgid "Top 10 Categories"
+msgstr "Top 10 Catégories"
+
+#: dashs/dash_delivery_vs_customer.py:267
 #: dashs/dash_delivery_vs_supplier.py:286 dashs/dash_order.py:283
 #: dashs/dash_order_vs_supplier.py:284
 msgid "ABC Segmentation "
 msgstr "Segmentation ABC"
 
-#: dashs/dash_delivery_vs_customer.py:289
-#: dashs/dash_delivery_vs_supplier.py:290 dashs/dash_order.py:287
-#: dashs/dash_order_vs_supplier.py:288
-msgid "FMR Segmentation"
-msgstr "Segmentation FMR"
+#: dashs/dash_delivery_vs_customer.py:329
+msgid "Number of Deliveries By date"
+msgstr "Nombre des livraisons des livraisons par date"
+
+#: dashs/dash_delivery_vs_customer.py:330
+#: dashs/dash_delivery_vs_customer.py:377
+#: dashs/dash_delivery_vs_supplier.py:349
+#: dashs/dash_delivery_vs_supplier.py:395 dashs/dash_order.py:347
+#: dashs/dash_order.py:397 dashs/dash_order.py:443 dashs/dash_order.py:535
+#: dashs/dash_order_vs_supplier.py:349 dashs/dash_order_vs_supplier.py:398
+#: dashs/otif_test/callbacks.py:368 dashs/otif_vs_supplier/callbacks.py:365
+msgid "date"
+msgstr "Date"
+
+#: dashs/dash_delivery_vs_customer.py:331
+#: dashs/dash_delivery_vs_supplier.py:350 dashs/otif_vs_supplier/layouts.py:94
+msgid "Number of Deliveries"
+msgstr "Nombre des livraisons"
+
+#: dashs/dash_delivery_vs_customer.py:376
+msgid "Quantity of Delivered Products by date"
+msgstr "Quantité des produits livrés par date"
+
+#: dashs/dash_delivery_vs_customer.py:378
+#: dashs/dash_delivery_vs_customer.py:424
+#: dashs/dash_delivery_vs_customer.py:516
+#: dashs/dash_delivery_vs_supplier.py:396
+#: dashs/dash_delivery_vs_supplier.py:533 dashs/dash_order.py:398
+#: dashs/dash_order.py:444 dashs/dash_order.py:536
+#: dashs/dash_order_vs_supplier.py:399 dashs/dash_order_vs_supplier.py:444
+#: dashs/dash_order_vs_supplier.py:490 dashs/dash_order_vs_supplier.py:536
+#: dashs/dash_profil.py:885 dashs/dash_profil.py:970 dashs/dash_profil.py:1063
+#: dashs/dash_profil.py:1157 dashs/otif_test/callbacks.py:369
+#: dashs/otif_test/callbacks.py:402
+msgid "Quantity"
+msgstr "Quantité"
+
+#: dashs/dash_delivery_vs_customer.py:423
+msgid "TOP 10 Delivered Product "
+msgstr "TOP 10 des produits livrés"
+
+#: dashs/dash_delivery_vs_customer.py:425
+msgid "Reference Of Product"
+msgstr "Référence du produit"
+
+#: dashs/dash_delivery_vs_customer.py:515
+msgid "TOP 10 Delivered Categories by date"
+msgstr "TOP 10 des catégories livrées par date"
+
+#: dashs/dash_delivery_vs_customer.py:517
+msgid "Reference of Category"
+msgstr "Référence de catégorie"
+
+#: dashs/dash_delivery_vs_supplier.py:131
+msgid "suppliers"
+msgstr "Fournisseurs"
+
+#: dashs/dash_delivery_vs_supplier.py:171
+msgid "Graph Number Of deliveries"
+msgstr "Graph Nombre des livraisons"
+
+#: dashs/dash_delivery_vs_supplier.py:182
+msgid "Number Of Products"
+msgstr "Nombre des Produits"
+
+#: dashs/dash_delivery_vs_supplier.py:348
+msgid "Number of Deliveries by date "
+msgstr "Nombre des livraisons par date"
+
+#: dashs/dash_delivery_vs_supplier.py:394 dashs/dash_order_vs_supplier.py:397
+msgid "Quantity of Products by Date"
+msgstr "Quantité de produits par date"
+
+#: dashs/dash_delivery_vs_supplier.py:440
+msgid "Most Ordered  Products"
+msgstr "les produits les plus commandés"
+
+#: dashs/dash_delivery_vs_supplier.py:441
+msgid "quantity"
+msgstr "quantité"
+
+#: dashs/dash_delivery_vs_supplier.py:442
+msgid "Most Ordered  Products by Quantity"
+msgstr "Produits les plus commandés par quantité"
+
+#: dashs/dash_delivery_vs_supplier.py:532
+msgid "Most 10 Order Categories"
+msgstr "Top 10 des catégories commandés"
+
+#: dashs/dash_order.py:168
+msgid "Graph Number Of Orders"
+msgstr "Graph Nombre des livraisons"
+
+#: dashs/dash_order.py:179
+msgid "Number Of Ordered Products"
+msgstr "Nombre des Produits"
+
+#: dashs/dash_order.py:218 dashs/dash_order_vs_supplier.py:219
+msgid "Top 10 Ordred Products"
+msgstr "Top 10 des produits"
+
+#: dashs/dash_order.py:246
+msgid "Top 10 Ordred Categories"
+msgstr "Top 10 des catégories commandés"
+
+#: dashs/dash_order.py:346 dashs/dash_order_vs_supplier.py:348
+msgid "Number Of Orders By Date"
+msgstr "Nombre des commandes par date"
+
+#: dashs/dash_order.py:348 dashs/dash_order_vs_supplier.py:350
+#: dashs/otif_test/callbacks.py:572 dashs/otif_test/callbacks.py:596
+#: dashs/otif_vs_supplier/callbacks.py:542
+msgid "Number of Orders"
+msgstr "Nombre des commandes"
+
+#: dashs/dash_order.py:396
+msgid "Ordered Products By Date"
+msgstr "Produits commandés par date"
+
+#: dashs/dash_order.py:442
+msgid "TOP 10 Ordred Product"
+msgstr "Top 10 des produits commandés"
+
+#: dashs/dash_order.py:534 dashs/dash_order_vs_supplier.py:535
+msgid "TOP 10 Ordred Categories"
+msgstr "TOP 10 des categories plus commandés"
+
+#: dashs/dash_order_vs_supplier.py:130 dashs/dash_order_vs_supplier.py:491
+#: dashs/otif_vs_supplier/layouts.py:48 dashs/otif_vs_supplier/layouts.py:113
+msgid "Suppliers"
+msgstr "Fournisseurs"
+
+#: dashs/dash_order_vs_supplier.py:169
+msgid "Graph Of Orders"
+msgstr "Graphe des commandes"
+
+#: dashs/dash_order_vs_supplier.py:180
+msgid "Ordered Products"
+msgstr "les produits commandés"
+
+#: dashs/dash_order_vs_supplier.py:247
+msgid "Top 10 Ordred  Categories"
+msgstr "Top 10 des catégories commandés"
+
+#: dashs/dash_order_vs_supplier.py:443
+msgid "Most Ordred Product by Quantity"
+msgstr "Produit le plus commandés par quantité"
+
+#: dashs/dash_order_vs_supplier.py:489
+msgid "TOP 10 Supplier Makeing Orders"
+msgstr "TOP 10 des fournisseurs passant des commandes"
+
+#: dashs/dash_profil.py:170
+msgid "Warehouses"
+msgstr "Entrepôts"
+
+#: dashs/dash_profil.py:194
+msgid "Number of products"
+msgstr "Nombre des produits "
+
+#: dashs/dash_profil.py:198
+msgid "Number of Warehouses"
+msgstr "Nombre d'entrepôts "
+
+#: dashs/dash_profil.py:202
+msgid "Number of Categories"
+msgstr "Nombre des catégories "
+
+#: dashs/dash_profil.py:205
+msgid "Number of Circuits"
+msgstr "Nombre des circuits"
 
 #: dashs/dash_profil.py:217
 msgid "Distribution of Products in Warehouses"
@@ -67,23 +274,23 @@ msgid "Distribution of Products By ABC classification"
 msgstr "Répartition des produits par classification ABC"
 
 #: dashs/dash_profil.py:244
-msgid "Répartition des produits par classification FMR"
-msgstr "Répartition des produits par classification FMR"
+msgid "Distribution of Products By FMR classification"
+msgstr "Répartition des produits par classification ABC"
 
 #: dashs/dash_profil.py:273
-msgid "Evolution of Categories"
+msgid "Evolution of quantity by Categories"
 msgstr "Évolution des catégories"
 
 #: dashs/dash_profil.py:283
-msgid "Evolution of Products By ABC Classification"
+msgid "Evolution of quantity by ABC Classification"
 msgstr "Évolution des produits par classification ABC"
 
 #: dashs/dash_profil.py:301
-msgid "Evolution of Products By FMR Classification"
+msgid "Evolution of quantity by FMR Classification "
 msgstr "Évolution des produits par classification FMR"
 
 #: dashs/dash_profil.py:341
-msgid "Top 10 of products"
+msgid "TOP 10 Product"
 msgstr "Top 10 des produits"
 
 #: dashs/dash_profil.py:368
@@ -98,15 +305,136 @@ msgstr "Répartition de la classification ABC dans les entrepôts"
 msgid "Distribution of FMR Classification in Warehouses"
 msgstr "Répartition de la classification FMR dans les entrepôts"
 
+#: dashs/dash_profil.py:674
+msgid "Distribution Of Categories in Warhouses"
+msgstr "Répartition des catégories dans les entrepôts"
+
+#: dashs/dash_profil.py:675 dashs/dash_profil.py:749 dashs/dash_profil.py:829
+msgid "Totale"
+msgstr "Totale"
+
+#: dashs/dash_profil.py:676 dashs/dash_profil.py:750 dashs/dash_profil.py:830
+msgid "Warhouses"
+msgstr "Entrepôts"
+
+#: dashs/dash_profil.py:748
+msgid "Distribution Of ABC Segmentation in Warhouses"
+msgstr "Répartition de la classification ABC dans les entrepôts"
+
+#: dashs/dash_profil.py:828
+msgid "Distribution Of FMR Segmentation in Warhouses"
+msgstr "Répartition de la classification FMR dans les entrepôts"
+
+#: dashs/dash_profil.py:884
+msgid "TOP 10 Products"
+msgstr "Top 10 des produits"
+
+#: dashs/dash_profil.py:968
+msgid "Evolution of Product Quantity in Warhouses by Categories"
+msgstr "Évolution de la quantité des produits  par catégories"
+
+#: dashs/dash_profil.py:969 dashs/dash_profil.py:1062 dashs/dash_profil.py:1156
+msgid "Date"
+msgstr "Date"
+
+#: dashs/dash_profil.py:1061
+msgid "Evolution of Product Quantity in Warhouses by ABC Segmentation"
+msgstr "Évolution dde la quantité des produits par classification ABC"
+
+#: dashs/dash_profil.py:1155
+msgid "Evolution of Product Quantity in Warhouses by FMR Segmentation"
+msgstr "Évolution de la quantité des produits par classification FMR"
+
 #: dashs/otif/layouts.py:204 dashs/otif_test/layouts.py:205
 #: dashs/otif_vs_supplier/layouts.py:205
 msgid "State Of Order Details"
 msgstr "Etat des lignes de commande"
 
-#: dashs/otif/layouts.py:208 dashs/otif_test/layouts.py:209
-#: dashs/otif_vs_supplier/layouts.py:209
+#: dashs/otif/layouts.py:208
+msgid "State Of Order"
+msgstr "Etat des lignes de commande"
+
+#: dashs/otif_test/callbacks.py:124
+msgid "Statut of order Details"
+msgstr "État des lignes de commande"
+
+#: dashs/otif_test/callbacks.py:126 dashs/otif_vs_supplier/callbacks.py:125
+#: dashs/otif_vs_supplier/callbacks.py:366
+msgid "Number of Order Details"
+msgstr "Nombre des lignes de commande"
+
+#: dashs/otif_test/callbacks.py:248
+msgid "OTIF by Ordered Date"
+msgstr "OTIF par date de commande"
+
+#: dashs/otif_test/callbacks.py:249 dashs/otif_test/callbacks.py:571
+#: dashs/otif_test/callbacks.py:595 dashs/otif_vs_supplier/callbacks.py:252
+#: dashs/otif_vs_supplier/callbacks.py:541
+msgid "Ordered Date"
+msgstr "Date de commande"
+
+#: dashs/otif_test/callbacks.py:250 dashs/otif_vs_supplier/callbacks.py:253
+msgid "OTIF in %"
+msgstr "OTIF en %"
+
+#: dashs/otif_test/callbacks.py:367 dashs/otif_test/callbacks.py:400
+msgid "Order Details by date"
+msgstr "lignes de commande par date"
+
+#: dashs/otif_test/callbacks.py:401
+msgid "date "
+msgstr "date"
+
+#: dashs/otif_test/callbacks.py:570 dashs/otif_test/callbacks.py:594
+msgid "Number of Orders by Date"
+msgstr "Nombre des commandes par date"
+
+#: dashs/otif_test/layouts.py:123 templates/otif/customer.html:7
+#: templates/otif/supplier.html:7
+msgid "OTIF"
+msgstr "OTIF"
+
+#: dashs/otif_test/layouts.py:160 dashs/otif_vs_supplier/layouts.py:160
+msgid "OrdersDetails by Date"
+msgstr "lignes de commande par date"
+
+#: dashs/otif_test/layouts.py:170 dashs/otif_vs_supplier/layouts.py:170
+#: templates/index.html:77 templates/order/customer.html:7
+#: templates/order/supplier.html:7
+msgid "Orders"
+msgstr "Commandes"
+
+#: dashs/otif_test/layouts.py:209 dashs/otif_vs_supplier/layouts.py:209
 msgid "Order Status"
-msgstr "État des commande"
+msgstr "État des commandes"
+
+#: dashs/otif_vs_supplier/callbacks.py:123
+msgid "Number of Order Details by Supplier"
+msgstr "Nombre des lignes de commande par fournisseur"
+
+#: dashs/otif_vs_supplier/callbacks.py:124
+msgid "Supplier"
+msgstr "Fournisseur"
+
+#: dashs/otif_vs_supplier/callbacks.py:251
+msgid "OTIF By Date"
+msgstr "OTIF par date"
+
+#: dashs/otif_vs_supplier/callbacks.py:364
+msgid "Order Details by Date"
+msgstr "lignes de commande par date"
+
+#: dashs/otif_vs_supplier/callbacks.py:540
+msgid "Number of Order by date"
+msgstr "Nombre des commandes par date"
+
+#: dashs/otif_vs_supplier/layouts.py:78
+msgid "OTIF Global"
+msgstr "OTIF Global"
+
+#: dashs/otif_vs_supplier/layouts.py:90
+msgid "Number of Orders "
+msgstr "Nombre des commandes"
 
 #: dashs/stock_image.py:92
 msgid "Groupe By"
@@ -117,16 +445,16 @@ msgid "Locations"
 msgstr "Emplacements"
 
 #: dashs/stock_image.py:152
-msgid "Stock simulation"
-msgstr "Simulation de Stock"
+msgid "Simulation de Stock"
+msgstr "Simulation de stock"
 
 #: templates/delivery/customer.html:7 templates/delivery/index.html:7
 #: templates/delivery/supplier.html:7
-msgid "State of Deliveries "
-msgstr "État des livraisons"
+msgid "Delivery Image "
+msgstr "Les livraisons"
 
 #: templates/index.html:18
-msgid "Profil of Warehouses"
+msgid "Warehouse Profiling"
 msgstr "Profil des entrepôts "
 
 #: templates/index.html:19
@@ -145,29 +473,21 @@ msgstr "Stock"
 msgid "Stock Text Description"
 msgstr "Stock Texte de description "
 
-#: templates/index.html:77
-msgid "Orders"
-msgstr "Commandes"
-
 #: templates/index.html:78
-msgid "Oreders Text Description"
+msgid "Oreder Text Description"
 msgstr "Commandes Texte de description"
 
 #: templates/index.html:92 templates/index.html:127 templates/index.html:161
 msgid "Show By Customer"
-msgstr "Afficher par le client"
+msgstr "Afficher par client"
 
 #: templates/index.html:99 templates/index.html:134 templates/index.html:168
 msgid "Show By Supplier"
 msgstr "Afficher par fournisseur"
 
-#: templates/index.html:113
-msgid "Deliveries"
-msgstr "Les livraisons"
-
 #: templates/index.html:114
 msgid "Deliveries Text Description"
-msgstr "Les livraisons Texte de description"
+msgstr "Livraisons Texte de description"
 
 #: templates/index.html:148
 msgid "Otif"
@@ -179,14 +499,27 @@ msgstr "Otif Texte de description"
 
 #: templates/inventory/index.html:7
 msgid "Stock Image "
-msgstr "mage de stock"
+msgstr "Image de stock"
 
-#: templates/order/customer.html:7 templates/order/index.html:7
-#: templates/order/supplier.html:7 templates/profil/index.html:7
-msgid "Orders"
-msgstr "Commandes"
+#: templates/order/index.html:7 templates/profil/index.html:7
+msgid "Order Image "
+msgstr "Les livraisons"
 
-#: templates/otif/customer.html:7 templates/otif/index.html:7
-#: templates/otif/supplier.html:7
-msgid "Otif"
-msgstr "Otif"
+#: templates/otif/index.html:7
+msgid "otif Image "
+msgstr "Image de stock"
+
+#~ msgid "Top 10 Suppliers Making Orders"
+#~ msgstr "Top 10 des fournisseurs passant des commandes"
+
+#~ msgid "TOP 10 Ordered Categories"
+#~ msgstr "TOP 10 des categories plus comandés"
+
+#~ msgid "Top 10 Customers Making Orders"
+#~ msgstr "Top 10 des clients passant des commandes"
+
+#~ msgid "Répartition des produits par classification FMR"
+#~ msgstr "Répartition des produits par classification FMR"
+
+#~ msgid "Stock simulation"
+#~ msgstr "Simulation de Stock"

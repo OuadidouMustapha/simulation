@@ -113,7 +113,7 @@ def filter_container():
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id, _all_categories,
-                    'Categories')
+                    _('Categories'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
@@ -518,7 +518,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
 
     results = results.values('product__category__reference')
     results = results.annotate(delivered_quantity=Sum('delivered_quantity'))
-    results = results.order_by('-delivered_quantity')[0:10]
+    results = results.order_by('-delivered_quantity')[:10]
 
     order_df = read_frame(results)
 

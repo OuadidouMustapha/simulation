@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-05 21:49+0100\n"
+"POT-Creation-Date: 2021-02-01 14:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,284 +18,655 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: dashboards/stock_forecast_accuracy_test.py:116
+#: forecasting/dashboards/forchest/callbacks.py:272
+msgid "Targets, orders & forecasts"
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:273
+msgid "date (monthly)"
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:274
+#: forecasting/dashboards/forecast_accuracy copy.py:896 copy.py:1043
+#: forecasting/dashboards/forecast_accuracy.py:907
+#: forecasting/dashboards/forecast_accuracy.py:1054
+msgid "Quantity"
+msgstr "Quantité"
+
+#: forecasting/dashboards/forchest/callbacks.py:325
+msgid "Graph of order history and forecasts for (product: "
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:348
+msgid "List of events"
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:378
+msgid "Add event"
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:384
+msgid "Save & update"
+msgstr ""
+
+#: forecasting/dashboards/forchest/callbacks.py:393
+msgid "Order history and forecasts"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:63
+#: forecasting/dashboards/forchest/layouts.py:137
+msgid "Data saved successfully"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:75
+msgid "Status updated successfully. The request is approved."
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:87
+msgid "Status updated successfully. The request is rejected."
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:101
+msgid "Approve"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:107
+msgid "Reject"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:113
+msgid "Save"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:119
+msgid "Send for review"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:126
+#, fuzzy
+#| msgid "Select values to show"
+msgid "Select a user to notify"
+msgstr "Sélectionnez les valeurs à afficher"
+
+#: forecasting/dashboards/forchest/layouts.py:149
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:150
+#: forecasting/templates/forecasting/forecast_list.html:130
+#: forecasting/templates/forecasting/forecast_list.html:178
+#: forecasting/templates/forecasting/forecast_list.html:186
+msgid "Close"
+msgstr ""
+
+#: forecasting/dashboards/forchest/layouts.py:154 forecasting/forms.py:58
+#: forecasting/forms.py:83 forecasting/forms.py:107
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:75
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:149
+#: forecasting/templates/forecasting/forecast_list.html:129
+#: forecasting/templates/forecasting/forecast_list.html:177
+#: forecasting/templates/forecasting/forecast_list.html:199
+#: forecasting/templates/forecasting/import.html:54
+#: forecasting/templates/forecasting/input_interface.html:41
+#: forecasting/templates/forecasting/versiondetail_list.html:64
+msgid "Submit"
+msgstr ""
+
+#: forecasting/dashboards/forecast_accuracy copy.py:119
+#: forecasting/dashboards/forecast_accuracy.py:122
 msgid "Products"
 msgstr "Produits"
 
-#: dashboards/stock_forecast_accuracy_test.py:128
-msgid "Warehouses"
-msgstr "Entrepôts"
-
-#: dashboards/stock_forecast_accuracy_test.py:133
-msgid "Circuits"
-msgstr "Circuits"
-
-#: dashboards/stock_forecast_accuracy_test.py:138
+#: forecasting/dashboards/forecast_accuracy copy.py:129
+#: forecasting/dashboards/forecast_accuracy.py:132
 msgid "Products type"
 msgstr "Type Produit"
 
-#: dashboards/stock_forecast_accuracy_test.py:143
+#: forecasting/dashboards/forecast_accuracy copy.py:141
+#: forecasting/dashboards/forecast_accuracy.py:144
+msgid "Warehouses"
+msgstr "Entrepôts"
+
+#: forecasting/dashboards/forecast_accuracy copy.py:146
+#: forecasting/dashboards/forecast_accuracy.py:149
+msgid "Circuits"
+msgstr "Circuits"
+
+#: forecasting/dashboards/forecast_accuracy copy.py:151
+#: forecasting/dashboards/forecast_accuracy.py:158
 msgid "Customers"
 msgstr "Clients"
 
-#: dashboards/stock_forecast_accuracy_test.py:149
-msgid "Forecast version"
-msgstr "Version de prévision"
-
-#: dashboards/stock_forecast_accuracy_test.py:152
-msgid "Forecasting version (Inactive)"
-msgstr "Version de prévision (inactive)"
-
-#: dashboards/stock_forecast_accuracy_test.py:165
+#: forecasting/dashboards/forecast_accuracy copy.py:157
+#: forecasting/dashboards/forecast_accuracy.py:168
 msgid "Time horizon"
 msgstr "Horizon temps"
 
-#: dashboards/stock_forecast_accuracy_test.py:180
+#: forecasting/dashboards/forecast_accuracy copy.py:172
+#: forecasting/dashboards/forecast_accuracy.py:183
 msgid "Forecast bias %"
 msgstr "Biais de prévision en %"
 
-#: dashboards/stock_forecast_accuracy_test.py:182
+#: forecasting/dashboards/forecast_accuracy copy.py:174
+#: forecasting/dashboards/forecast_accuracy.py:185
 msgid "Lowest rates grouped by:"
 msgstr "Valeurs les plus bas regroupés par:"
 
-#: dashboards/stock_forecast_accuracy_test.py:186
-#: dashboards/stock_forecast_accuracy_test.py:214
-#: dashboards/stock_forecast_accuracy_test.py:242
-#: dashboards/stock_forecast_accuracy_test.py:277
-#: dashboards/stock_forecast_accuracy_test.py:396
+#: forecasting/dashboards/forecast_accuracy copy.py:178 copy.py:206 copy.py:234
+#: copy.py:279 copy.py:408 forecasting/dashboards/forecast_accuracy.py:189
+#: forecasting/dashboards/forecast_accuracy.py:217
+#: forecasting/dashboards/forecast_accuracy.py:245
+#: forecasting/dashboards/forecast_accuracy.py:290
+#: forecasting/dashboards/forecast_accuracy.py:419
 msgid "Warehouse"
 msgstr "Entrepôt"
 
-#: dashboards/stock_forecast_accuracy_test.py:188
-#: dashboards/stock_forecast_accuracy_test.py:216
-#: dashboards/stock_forecast_accuracy_test.py:244
-#: dashboards/stock_forecast_accuracy_test.py:278
-#: dashboards/stock_forecast_accuracy_test.py:397
+#: forecasting/dashboards/forecast_accuracy copy.py:180 copy.py:208 copy.py:236
+#: copy.py:280 copy.py:409 forecasting/dashboards/forecast_accuracy.py:191
+#: forecasting/dashboards/forecast_accuracy.py:219
+#: forecasting/dashboards/forecast_accuracy.py:247
+#: forecasting/dashboards/forecast_accuracy.py:291
+#: forecasting/dashboards/forecast_accuracy.py:420
+#: forecasting/templates/forecasting/forecast_list.html:110
 msgid "Customer"
 msgstr "Client"
 
-#: dashboards/stock_forecast_accuracy_test.py:190
-#: dashboards/stock_forecast_accuracy_test.py:218
-#: dashboards/stock_forecast_accuracy_test.py:246
-#: dashboards/stock_forecast_accuracy_test.py:279
-#: dashboards/stock_forecast_accuracy_test.py:398
+#: forecasting/dashboards/forecast_accuracy copy.py:182 copy.py:210 copy.py:238
+#: copy.py:281 copy.py:410 forecasting/dashboards/forecast_accuracy.py:193
+#: forecasting/dashboards/forecast_accuracy.py:221
+#: forecasting/dashboards/forecast_accuracy.py:249
+#: forecasting/dashboards/forecast_accuracy.py:292
+#: forecasting/dashboards/forecast_accuracy.py:421
+#: forecasting/templates/forecasting/forecast_list.html:101
 msgid "Circuit"
 msgstr "Circuit"
 
-#: dashboards/stock_forecast_accuracy_test.py:192
-#: dashboards/stock_forecast_accuracy_test.py:220
-#: dashboards/stock_forecast_accuracy_test.py:248
-#: dashboards/stock_forecast_accuracy_test.py:293
-#: dashboards/stock_forecast_accuracy_test.py:412
+#: forecasting/dashboards/forecast_accuracy copy.py:184 copy.py:212 copy.py:240
+#: copy.py:295 copy.py:424 forecasting/dashboards/forecast_accuracy.py:195
+#: forecasting/dashboards/forecast_accuracy.py:223
+#: forecasting/dashboards/forecast_accuracy.py:251
+#: forecasting/dashboards/forecast_accuracy.py:306
+#: forecasting/dashboards/forecast_accuracy.py:435
 msgid "Product"
 msgstr "Produits"
 
-#: dashboards/stock_forecast_accuracy_test.py:194
-#: dashboards/stock_forecast_accuracy_test.py:222
-#: dashboards/stock_forecast_accuracy_test.py:250
-#: dashboards/stock_forecast_accuracy_test.py:298
-#: dashboards/stock_forecast_accuracy_test.py:417
+#: forecasting/dashboards/forecast_accuracy copy.py:186 copy.py:214 copy.py:242
+#: copy.py:300 copy.py:429 forecasting/dashboards/forecast_accuracy.py:197
+#: forecasting/dashboards/forecast_accuracy.py:225
+#: forecasting/dashboards/forecast_accuracy.py:253
+#: forecasting/dashboards/forecast_accuracy.py:311
+#: forecasting/dashboards/forecast_accuracy.py:440
 #, fuzzy
 #| msgid "Products"
 msgid "Product Type"
 msgstr "Type Produit"
 
-#: dashboards/stock_forecast_accuracy_test.py:208
+#: forecasting/dashboards/forecast_accuracy copy.py:200
+#: forecasting/dashboards/forecast_accuracy.py:211
 msgid "Mean absolute deviation (MAD)"
 msgstr "Écart Absolu Moyen (MAD)"
 
-#: dashboards/stock_forecast_accuracy_test.py:210
+#: forecasting/dashboards/forecast_accuracy copy.py:202
+#: forecasting/dashboards/forecast_accuracy.py:213
 msgid "Highest values grouped by:"
 msgstr "Valeurs les plus élevées regroupées par:"
 
-#: dashboards/stock_forecast_accuracy_test.py:236
+#: forecasting/dashboards/forecast_accuracy copy.py:228
+#: forecasting/dashboards/forecast_accuracy.py:239
 msgid "Mean absolute percentage error % (MAPE)"
 msgstr "% d'Erreur Absolue Moyenne (MAPE)"
 
-#: dashboards/stock_forecast_accuracy_test.py:238
+#: forecasting/dashboards/forecast_accuracy copy.py:230
+#: forecasting/dashboards/forecast_accuracy.py:241
 msgid "Highest rates grouped by:"
 msgstr "Valeurs les plus élevées regroupées par:"
 
-#: dashboards/stock_forecast_accuracy_test.py:268
-#: dashboards/stock_forecast_accuracy_test.py:387
+#: forecasting/dashboards/forecast_accuracy copy.py:260 copy.py:389
+#: forecasting/dashboards/forecast_accuracy.py:271
+#: forecasting/dashboards/forecast_accuracy.py:400
 msgid "Dynamic filter"
 msgstr "Filtre dynamique"
 
-#: dashboards/stock_forecast_accuracy_test.py:272
-#: dashboards/stock_forecast_accuracy_test.py:391
+#: forecasting/dashboards/forecast_accuracy copy.py:263 copy.py:392
+#: forecasting/dashboards/forecast_accuracy.py:274
+#: forecasting/dashboards/forecast_accuracy.py:403
+msgid "Forecast version"
+msgstr "Version de prévision"
+
+#: forecasting/dashboards/forecast_accuracy copy.py:266 copy.py:395
+#: forecasting/dashboards/forecast_accuracy.py:277
+#: forecasting/dashboards/forecast_accuracy.py:406
+#, fuzzy
+#| msgid "Forecast version"
+msgid "Forecasting version"
+msgstr "Version de prévision"
+
+#: forecasting/dashboards/forecast_accuracy copy.py:274 copy.py:403
+#: forecasting/dashboards/forecast_accuracy.py:285
+#: forecasting/dashboards/forecast_accuracy.py:414
 msgid "Distribution field"
 msgstr "Maille distribution"
 
-#: dashboards/stock_forecast_accuracy_test.py:276
-#: dashboards/stock_forecast_accuracy_test.py:292
-#: dashboards/stock_forecast_accuracy_test.py:395
-#: dashboards/stock_forecast_accuracy_test.py:411
+#: forecasting/dashboards/forecast_accuracy copy.py:278 copy.py:294 copy.py:407
+#: copy.py:423 forecasting/dashboards/forecast_accuracy.py:289
+#: forecasting/dashboards/forecast_accuracy.py:305
+#: forecasting/dashboards/forecast_accuracy.py:418
+#: forecasting/dashboards/forecast_accuracy.py:434
 msgid "-None-"
 msgstr "-Aucun-"
 
-#: dashboards/stock_forecast_accuracy_test.py:288
-#: dashboards/stock_forecast_accuracy_test.py:407
+#: forecasting/dashboards/forecast_accuracy copy.py:290 copy.py:419
+#: forecasting/dashboards/forecast_accuracy.py:301
+#: forecasting/dashboards/forecast_accuracy.py:430
 msgid "Product field"
 msgstr "Maille Produit"
 
-#: dashboards/stock_forecast_accuracy_test.py:310
-#: dashboards/stock_forecast_accuracy_test.py:429
+#: forecasting/dashboards/forecast_accuracy copy.py:312 copy.py:441
+#: forecasting/dashboards/forecast_accuracy.py:323
+#: forecasting/dashboards/forecast_accuracy.py:452
 msgid "Show by"
 msgstr "Afficher par"
 
-#: dashboards/stock_forecast_accuracy_test.py:314
-#: dashboards/stock_forecast_accuracy_test.py:433
+#: forecasting/dashboards/forecast_accuracy copy.py:316 copy.py:445
+#: forecasting/dashboards/forecast_accuracy.py:327
+#: forecasting/dashboards/forecast_accuracy.py:456
 msgid "Quantity (Unit)"
 msgstr "Quantité (Unité)"
 
-#: dashboards/stock_forecast_accuracy_test.py:317
-#: dashboards/stock_forecast_accuracy_test.py:436
+#: forecasting/dashboards/forecast_accuracy copy.py:319 copy.py:448
+#: forecasting/dashboards/forecast_accuracy.py:330
+#: forecasting/dashboards/forecast_accuracy.py:459
 msgid "Cost (DH)"
 msgstr "Coût (DH)"
 
-#: dashboards/stock_forecast_accuracy_test.py:329
-#: dashboards/stock_forecast_accuracy_test.py:448
+#: forecasting/dashboards/forecast_accuracy copy.py:331 copy.py:460
+#: forecasting/dashboards/forecast_accuracy.py:342
+#: forecasting/dashboards/forecast_accuracy.py:471
 msgid "Grouping period"
 msgstr "Maille temps"
 
-#: dashboards/stock_forecast_accuracy_test.py:333
-#: dashboards/stock_forecast_accuracy_test.py:452
+#: forecasting/dashboards/forecast_accuracy copy.py:335 copy.py:464
+#: forecasting/dashboards/forecast_accuracy.py:346
+#: forecasting/dashboards/forecast_accuracy.py:475
 msgid "Year"
 msgstr "Année"
 
-#: dashboards/stock_forecast_accuracy_test.py:335
-#: dashboards/stock_forecast_accuracy_test.py:454
+#: forecasting/dashboards/forecast_accuracy copy.py:337 copy.py:466
+#: forecasting/dashboards/forecast_accuracy.py:348
+#: forecasting/dashboards/forecast_accuracy.py:477
 msgid "Month"
 msgstr "Mois"
 
-#: dashboards/stock_forecast_accuracy_test.py:336
-#: dashboards/stock_forecast_accuracy_test.py:455
+#: forecasting/dashboards/forecast_accuracy copy.py:338 copy.py:467
+#: forecasting/dashboards/forecast_accuracy.py:349
+#: forecasting/dashboards/forecast_accuracy.py:478
 msgid "Week"
 msgstr "Semaine"
 
-#: dashboards/stock_forecast_accuracy_test.py:337
-#: dashboards/stock_forecast_accuracy_test.py:456
+#: forecasting/dashboards/forecast_accuracy copy.py:339 copy.py:468
+#: forecasting/dashboards/forecast_accuracy.py:350
+#: forecasting/dashboards/forecast_accuracy.py:479
 msgid "Day"
 msgstr "Jour"
 
-#: dashboards/stock_forecast_accuracy_test.py:348
-#: dashboards/stock_forecast_accuracy_test.py:365
-#: dashboards/stock_forecast_accuracy_test.py:467
-#: dashboards/stock_forecast_accuracy_test.py:484
+#: forecasting/dashboards/forecast_accuracy copy.py:350 copy.py:367 copy.py:479
+#: copy.py:496 forecasting/dashboards/forecast_accuracy.py:361
+#: forecasting/dashboards/forecast_accuracy.py:378
+#: forecasting/dashboards/forecast_accuracy.py:490
+#: forecasting/dashboards/forecast_accuracy.py:507
 msgid "Select values to show"
 msgstr "Sélectionnez les valeurs à afficher"
 
-#: dashboards/stock_forecast_accuracy_test.py:352
-#: dashboards/stock_forecast_accuracy_test.py:471
+#: forecasting/dashboards/forecast_accuracy copy.py:354 copy.py:483
+#: forecasting/dashboards/forecast_accuracy.py:365
+#: forecasting/dashboards/forecast_accuracy.py:494
 msgid "Forcast Bias"
 msgstr "Biais de prévision"
 
-#: dashboards/stock_forecast_accuracy_test.py:353
-#: dashboards/stock_forecast_accuracy_test.py:472
+#: forecasting/dashboards/forecast_accuracy copy.py:355 copy.py:484
+#: forecasting/dashboards/forecast_accuracy.py:366
+#: forecasting/dashboards/forecast_accuracy.py:495
 msgid "Forcasts"
 msgstr "Prévisions"
 
-#: dashboards/stock_forecast_accuracy_test.py:354
-#: dashboards/stock_forecast_accuracy_test.py:473
+#: forecasting/dashboards/forecast_accuracy copy.py:356 copy.py:485
+#: forecasting/dashboards/forecast_accuracy.py:367
+#: forecasting/dashboards/forecast_accuracy.py:496
 msgid "Orders"
 msgstr "Ordres"
 
-#: dashboards/stock_forecast_accuracy_test.py:369
-#: dashboards/stock_forecast_accuracy_test.py:488
+#: forecasting/dashboards/forecast_accuracy copy.py:371 copy.py:500
+#: forecasting/dashboards/forecast_accuracy.py:382
+#: forecasting/dashboards/forecast_accuracy.py:511
 msgid "Forecast Bias %"
 msgstr "Bias de prévision en %"
 
-#: dashboards/stock_forecast_accuracy_test.py:370
-#: dashboards/stock_forecast_accuracy_test.py:489
+#: forecasting/dashboards/forecast_accuracy copy.py:372 copy.py:501
+#: forecasting/dashboards/forecast_accuracy.py:383
+#: forecasting/dashboards/forecast_accuracy.py:512
 msgid "MAD"
 msgstr "MAD"
 
-#: dashboards/stock_forecast_accuracy_test.py:371
-#: dashboards/stock_forecast_accuracy_test.py:490
+#: forecasting/dashboards/forecast_accuracy copy.py:373 copy.py:502
+#: forecasting/dashboards/forecast_accuracy.py:384
+#: forecasting/dashboards/forecast_accuracy.py:513
 msgid "MAPE"
 msgstr "MAPE"
 
-#: dashboards/stock_forecast_accuracy_test.py:847
+#: forecasting/dashboards/forecast_accuracy copy.py:861 copy.py:1008
+#: forecasting/dashboards/forecast_accuracy.py:872
+#: forecasting/dashboards/forecast_accuracy.py:1019
 msgid "Forecast accuracy by {}: Forecasts, orders, bias"
 msgstr "Précision des prévisions par {}: prévisions, commandes, biais"
 
-#: dashboards/stock_forecast_accuracy_test.py:850
-#: dashboards/stock_forecast_accuracy_test.py:919
+#: forecasting/dashboards/forecast_accuracy copy.py:864 copy.py:933
+#: copy.py:1011 copy.py:1080 forecasting/dashboards/forecast_accuracy.py:875
+#: forecasting/dashboards/forecast_accuracy.py:944
+#: forecasting/dashboards/forecast_accuracy.py:1022
+#: forecasting/dashboards/forecast_accuracy.py:1091
 msgid "{}"
 msgstr "{}"
 
-#: dashboards/stock_forecast_accuracy_test.py:877
+#: forecasting/dashboards/forecast_accuracy copy.py:891 copy.py:1038
+#: forecasting/dashboards/forecast_accuracy.py:902
+#: forecasting/dashboards/forecast_accuracy.py:1049
 msgid "{} by {}"
 msgstr "{} par {}"
 
-#: dashboards/stock_forecast_accuracy_test.py:881
+#: forecasting/dashboards/forecast_accuracy copy.py:895 copy.py:1042
+#: forecasting/dashboards/forecast_accuracy.py:906
+#: forecasting/dashboards/forecast_accuracy.py:1053
 msgid "date"
 msgstr "Date"
 
-#: dashboards/stock_forecast_accuracy_test.py:882
-msgid "Quantity"
-msgstr "Quantité"
-
-#: dashboards/stock_forecast_accuracy_test.py:916
+#: forecasting/dashboards/forecast_accuracy copy.py:930 copy.py:1077
+#: forecasting/dashboards/forecast_accuracy.py:941
+#: forecasting/dashboards/forecast_accuracy.py:1088
 msgid "Metric distribution by {}"
 msgstr "Distribution des métriques par {}"
 
-#: dashboards/stock_forecast_accuracy_test.py:920
+#: forecasting/dashboards/forecast_accuracy copy.py:934 copy.py:1081
+#: forecasting/dashboards/forecast_accuracy.py:945
+#: forecasting/dashboards/forecast_accuracy.py:1092
 msgid "Metric"
 msgstr "Métrique"
 
-#: templates/forecasting/index.html:17
-#: templates/forecasting/input_interface.html:17
-msgid "Business Plan"
+#: forecasting/dashboards/forecast_accuracy.py:113
+msgid "All"
 msgstr ""
 
-#: templates/forecasting/index.html:18
-#: templates/forecasting/input_interface.html:18
-msgid "Business Plan Text Description"
-msgstr ""
-
-#: templates/forecasting/index.html:31 templates/forecasting/index.html:59
-#: templates/forecasting/index.html:89 templates/forecasting/index.html:117
-#: templates/forecasting/index.html:147
-#: templates/forecasting/input_interface.html:31
-msgid "More Info"
-msgstr "Plus d'infos"
-
-#: templates/forecasting/index.html:45
+#: forecasting/templates/forecasting/forchest.html:6
+#: forecasting/templates/forecasting/forchest.old.html:6
+#: forecasting/templates/forecasting/index.html:45
 msgid "F-Orchest"
 msgstr ""
 
-#: templates/forecasting/index.html:46
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:36
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:60
+#: forecasting/templates/forecasting/forecast_list.html:36
+msgid "Historical graphs"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:63
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:119
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:326
+#: forecasting/templates/forecasting/forecast_list.html:63
+#: forecasting/templates/forecasting/pivot.html:58
+#, fuzzy
+#| msgid "Forcast Bias"
+msgid "Forecast List"
+msgstr "Biais de prévision"
+
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:69
+#: forecasting/templates/forecasting/forecast_list.html:73
+msgid "Add"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:72
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:129
+#: forecasting/templates/forecasting/forecast_list.html:144
+#: forecasting/templates/forecasting/forecast_list.html:151
+msgid "Submit for review"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.201202.backup.html:162
+#: forecasting/templates/forecasting/forecast_list.html:80
+msgid "Add forecast for a date"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:24
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:83
+#: forecasting/templates/forecasting/partials/_filter.html:8
+#: forecasting/templates/forecasting/pivot.html:22
+#: forecasting/templates/forecasting/version_list.html:24
+#: forecasting/templates/forecasting/version_list_old.html:16
+#: forecasting/templates/forecasting/versiondetail_list.html:20
+#, fuzzy
+#| msgid "Dynamic filter"
+msgid "Data filter"
+msgstr "Filtre dynamique"
+
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:44
+#: forecasting/templates/forecasting/forecast_list.beforePivot.201117.backup.html:103
+#: forecasting/templates/forecasting/partials/_filter.html:27
+#: forecasting/templates/forecasting/pivot.html:42
+#: forecasting/templates/forecasting/version_list.html:44
+#: forecasting/templates/forecasting/versiondetail_list.html:40
+msgid "Filter"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.html:92
+msgid "Category"
+msgstr ""
+
+#: forecasting/templates/forecasting/forecast_list.html:119
+#, fuzzy
+#| msgid "Forcast Bias"
+msgid "Forecast date"
+msgstr "Biais de prévision"
+
+#: forecasting/templates/forecasting/forecast_list.html:124
+#, fuzzy
+#| msgid "Forecast Accuracy"
+msgid "Forecasted Quantity"
+msgstr "Précision de la prévision"
+
+#: forecasting/templates/forecasting/forecast_list.html:168
+msgid "Select the user"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:9
+msgid "Importar"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:16
+msgid ""
+"Below is a preview of data to be imported. If you are satisfied with the "
+"results, click 'Confirm import'"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:19
+msgid "Confirm import"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:28
+msgid "This importer will import the following fields: "
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:61
+msgid "Errors"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:69
+msgid "Line number"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:77
+msgid "Preview"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:92
+msgid "New"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:94
+msgid "Skipped"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:96
+msgid "Delete"
+msgstr ""
+
+#: forecasting/templates/forecasting/import.html:98
+#, fuzzy
+#| msgid "date"
+msgid "Update"
+msgstr "Date"
+
+#: forecasting/templates/forecasting/index.html:17
+msgid "Business Plan"
+msgstr ""
+
+#: forecasting/templates/forecasting/index.html:18
+msgid "Business Plan Text Description"
+msgstr ""
+
+#: forecasting/templates/forecasting/index.html:31
+#: forecasting/templates/forecasting/index.html:59
+#: forecasting/templates/forecasting/index.html:89
+#: forecasting/templates/forecasting/index.html:117
+#: forecasting/templates/forecasting/index.html:147
+msgid "More Info"
+msgstr "Plus d'infos"
+
+#: forecasting/templates/forecasting/index.html:46
 msgid "F-Orchest Text Description"
 msgstr ""
 
-#: templates/forecasting/index.html:75
+#: forecasting/templates/forecasting/index.html:75
 msgid "Business Forecast"
 msgstr "Prévisions commerciales"
 
-#: templates/forecasting/index.html:76
+#: forecasting/templates/forecasting/index.html:76
 msgid "Business Forecast Text Description"
 msgstr ""
 
-#: templates/forecasting/index.html:103
+#: forecasting/templates/forecasting/index.html:103
 msgid "Logistics Forecast"
 msgstr "Prévisions logistiques"
 
-#: templates/forecasting/index.html:104
+#: forecasting/templates/forecasting/index.html:104
 msgid "Logistics Forecast Text Description"
 msgstr ""
 
-#: templates/forecasting/index.html:133
+#: forecasting/templates/forecasting/index.html:133
 msgid "Demand Review"
 msgstr ""
 
-#: templates/forecasting/index.html:134
+#: forecasting/templates/forecasting/index.html:134
 msgid "Demand Review Text Description"
 msgstr ""
 
-#: templates/forecasting/stock_forecast_accuracy_test.html:7
+#: forecasting/templates/forecasting/input_interface.html:14
+msgid "Edit data"
+msgstr ""
+
+#: forecasting/templates/forecasting/partials/_pagination.html:10
+#: forecasting/templates/forecasting/partials/_pagination.html:17
+msgid "Previous"
+msgstr ""
+
+#: forecasting/templates/forecasting/partials/_pagination.html:42
+#: forecasting/templates/forecasting/partials/_pagination.html:49
+msgid "Next"
+msgstr ""
+
+#: forecasting/templates/forecasting/simple_upload.html:14
+msgid "Import forecast data from a CSV file"
+msgstr ""
+
+#: forecasting/templates/forecasting/simple_upload.html:30
+msgid "Selectionner une version existante"
+msgstr ""
+
+#: forecasting/templates/forecasting/stock_forecast_accuracy.html:7
 msgid "Forecast Accuracy"
 msgstr "Précision de la prévision"
+
+#: forecasting/templates/forecasting/tables/forecast_list_action_column.html:7
+#: forecasting/templates/forecasting/tables/version_list_action_column.html:3
+msgid "View"
+msgstr ""
+
+#: forecasting/templates/forecasting/tables/version_list_action_column.html:5
+msgid "Import File"
+msgstr ""
+
+#: forecasting/templates/forecasting/tables/versiondetail_list_action_column.html:2
+msgid "Detail"
+msgstr ""
+
+#: forecasting/templates/forecasting/version_detail.html:16
+#: forecasting/templates/forecasting/version_update.html:19
+msgid "Version"
+msgstr ""
+
+#: forecasting/templates/forecasting/version_list.html:61
+#: forecasting/templates/forecasting/version_list_old.html:53
+msgid "Version List"
+msgstr ""
+
+#: forecasting/templates/forecasting/versiondetail_list.html:57
+#, fuzzy
+#| msgid "Products"
+msgid "Product List"
+msgstr "Produits"
+
+#: forecasting/views.py:149
+msgid "Your file named {} is successfully uploaded"
+msgstr ""
+
+#: forecasting/views.py:164 forecasting/views.py:242
+msgid "Success: Data processed successfully"
+msgstr ""
+
+#: forecasting/views.py:169
+msgid "Warning: An error has occurred while processing the file"
+msgstr ""
+
+#: forecasting/views.py:410
+msgid "Commandes"
+msgstr ""
+
+#: forecasting/views.py:411 forecasting/views.py:452 forecasting/views.py:493
+msgid "Dates"
+msgstr ""
+
+#: forecasting/views.py:412 forecasting/views.py:453 forecasting/views.py:494
+#, fuzzy
+#| msgid "Quantity"
+msgid "Quantité UVC"
+msgstr "Quantité"
+
+#: forecasting/views.py:451
+msgid "Livraisons"
+msgstr ""
+
+#: forecasting/views.py:492
+msgid "Previsions"
+msgstr ""
+
+#: forecasting/views.py:666
+msgid "Review request sent to {} ({})"
+msgstr ""
+
+#: forecasting/views.py:675
+msgid "Warning: An error has occurred. Request not sent."
+msgstr ""
+
+#: forecasting/views.py:688
+msgid "Request approved."
+msgstr ""
+
+#~ msgid "Forecasting version (Inactive)"
+#~ msgstr "Version de prévision (inactive)"
 
 #~ msgid "Translation test"
 #~ msgstr "Test de Translation "

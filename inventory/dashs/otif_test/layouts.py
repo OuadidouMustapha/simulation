@@ -30,22 +30,22 @@ def filter_container():
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     DROPDOWN_CATEGORIE_LIST_ID, DIV_CATEGORIE_LIST_ID, CHECKBOX_CATEGORIE_LIST_ID, _all_categories,
-                    'Categories')
+                    _('Categories'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, _('ABC Segmentation'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
-                    'FMR Segmentation'),
+                    _('FMR Segmentation')),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     DROPDOWN_CUSTOMER_LIST_ID, DIV_CUSTOMER_LIST_ID, CHECKBOX_CUSTOMER_LIST_ID, _all_customers,
-                    'Customers',select_all=False,multi=False),
+                    _('Customers'),select_all=False,multi=False),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
@@ -75,7 +75,7 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title='OTIF Global',id_subtitle=SUBTITLE_OTIF_ID,icon="fas fa-tachometer-alt"
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_BIAS_PERCENT_ID,title=_('OTIF Global'),id_subtitle=SUBTITLE_OTIF_ID,icon="fas fa-tachometer-alt"
                                             #  subtitle=
                                             #     [html.Br(),
                                             #     dbc.Col([
@@ -87,11 +87,11 @@ def body_container():
                                             ,subtitle='')
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAD_ID, title='Number of Orders ',id_subtitle=SUBTITLE_ORDERS_ID,
+                    dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAD_ID, title=_('Number of Orders '),id_subtitle=SUBTITLE_ORDERS_ID,
                                              subtitle='', icon='fas fa-clipboard-list'),
                 ], sm=12, md=4, lg=4),
                 dbc.Col([
-                   dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAPE_ID,title='Number of Deliveries',subtitle='',id_subtitle=SUBTITLE_DELIVERIES_ID,icon='fas fa-dolly')
+                   dash_utils.get_mini_card_profil(MINI_CARD_SUBTITLE_MAPE_ID,title=_('Number of Deliveries'),subtitle='',id_subtitle=SUBTITLE_DELIVERIES_ID,icon='fas fa-dolly')
                 ], sm=12, md=4, lg=4),
             ]),
             dbc.Row([
@@ -206,7 +206,7 @@ def body_container():
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
                                         dcc.Graph(id=FIGURE_PIE_ORDER_ID),
-                                        html.P(_('State Of Order'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Order Status'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],

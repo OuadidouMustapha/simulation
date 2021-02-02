@@ -167,7 +167,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label=_('Graph Number Of deliveries'),
+                                                label=_('Deliveries'),
                                                 value='what-is',
                                                 children=
                                                 dcc.Loading(
@@ -178,7 +178,7 @@ def body_container():
                                                 ),
                                             ),
                                             dcc.Tab(
-                                                label=_('Number Of Products'),
+                                                label=_('Products'),
                                                 value='Product',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -409,9 +409,12 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
     results = results.values('product')
     results = results.annotate(delivered_quantity=Sum('delivered_quantity'))
     results = results.order_by('-delivered_quantity')[0:10]
+    
+
 
     order_df = read_frame(results)
     
+    order_df =  order_df.sort_values('delivered_quantity',ascending = True)
 
     figure = order_df.iplot(
         asFigure=True,
@@ -504,6 +507,8 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
     results = results.order_by('-delivered_quantity')[0:10]
 
     order_df = read_frame(results)
+    
+    order_df =  order_df.sort_values('delivered_quantity',ascending = True)
 
     figure = order_df.iplot(
         asFigure=True,
@@ -512,7 +517,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         x=['product__category__reference'],
         y=['delivered_quantity'],
         theme='white',
-        title=_('TOP 10 Delivered Categories by date'),
+        title=_('TOP 10 Delivered Categories'),
         xTitle=_('Quantity'),
         yTitle=_('Reference of Category'),
     )

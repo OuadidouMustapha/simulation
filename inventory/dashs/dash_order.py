@@ -165,7 +165,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label=_('Graph Number Of Orders'),
+                                                label=_('Orders'),
                                                 value='what-is',
                                                 children=
                                                     dcc.Loading(
@@ -176,7 +176,7 @@ def body_container():
                                                     ),
                                             ),
                                             dcc.Tab(
-                                                label=_('Number Of Ordered Products'),
+                                                label=_('Products'),
                                                 value='Product',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -444,8 +444,8 @@ def plot_most_order_product_figure(selected_products, selected_categories, selec
         y=['ordered_quantity'],
         theme='white',
         title=_('TOP 10 Ordred Product'),
-        xTitle=_('date'),
-        yTitle=_('Quantity'),
+        xTitle=_('Quantity'),
+        yTitle=_('Product'),
     )
     return figure
 
@@ -539,8 +539,8 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         y=['ordered_quantity'],
         theme='white',
         title=_('TOP 10 Ordred Categories'),
-        xTitle=_('date'),
-        yTitle=_('Quantity'),
+        xTitle=_('Quantity'),
+        yTitle=_('Categories'),
     )
     return figure
 

@@ -517,7 +517,7 @@ def plot_most_order_categories_figure(selected_products, selected_categories, se
         x=['product__category__reference'],
         y=['delivered_quantity'],
         theme='white',
-        title=_('TOP 10 Delivered Categories by date'),
+        title=_('TOP 10 Delivered Categories'),
         xTitle=_('Quantity'),
         yTitle=_('Reference of Category'),
     )

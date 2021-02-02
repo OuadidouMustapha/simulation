@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-01 18:12+0100\n"
+"POT-Creation-Date: 2021-02-02 09:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,10 +22,11 @@ msgstr ""
 #: dashs/dash_delivery_vs_supplier.py:116
 #: dashs/dash_delivery_vs_supplier.py:282
 #: dashs/dash_delivery_vs_supplier.py:540 dashs/dash_order.py:114
-#: dashs/dash_order.py:279 dashs/dash_order_vs_supplier.py:115
-#: dashs/dash_order_vs_supplier.py:280 dashs/dash_order_vs_supplier.py:541
-#: dashs/dash_profil.py:155 dashs/otif/layouts.py:32
-#: dashs/otif_test/layouts.py:33 dashs/otif_vs_supplier/layouts.py:33
+#: dashs/dash_order.py:279 dashs/dash_order.py:543
+#: dashs/dash_order_vs_supplier.py:115 dashs/dash_order_vs_supplier.py:280
+#: dashs/dash_order_vs_supplier.py:541 dashs/dash_profil.py:155
+#: dashs/otif/layouts.py:32 dashs/otif_test/layouts.py:33
+#: dashs/otif_vs_supplier/layouts.py:33
 msgid "Categories"
 msgstr "Catégories"
 
@@ -65,11 +66,12 @@ msgstr "Horizon temporel"
 #: dashs/dash_delivery_vs_customer.py:142
 #: dashs/dash_delivery_vs_customer.py:181
 #: dashs/dash_delivery_vs_supplier.py:143 dashs/dash_order.py:141
-#: dashs/dash_order_vs_supplier.py:142 dashs/dash_order_vs_supplier.py:447
-#: dashs/dash_otif_vs_customer.py:130 dashs/dash_otif_vs_sp.py:122
-#: dashs/dash_profil.py:176 dashs/dash_profil.py:886 dashs/otif.py:103
-#: dashs/otif/layouts.py:60 dashs/otif_test/layouts.py:61
-#: dashs/otif_vs_supplier/layouts.py:61 dashs/stock_image.py:107
+#: dashs/dash_order.py:179 dashs/dash_order_vs_supplier.py:142
+#: dashs/dash_order_vs_supplier.py:447 dashs/dash_otif_vs_customer.py:130
+#: dashs/dash_otif_vs_sp.py:122 dashs/dash_profil.py:176
+#: dashs/dash_profil.py:886 dashs/otif.py:103 dashs/otif/layouts.py:60
+#: dashs/otif_test/layouts.py:61 dashs/otif_vs_supplier/layouts.py:61
+#: dashs/stock_image.py:107
 msgid "Products"
 msgstr "Produits"
 
@@ -101,9 +103,9 @@ msgstr "Nombre des livraisons  par date"
 #: dashs/dash_delivery_vs_customer.py:377
 #: dashs/dash_delivery_vs_supplier.py:349
 #: dashs/dash_delivery_vs_supplier.py:395 dashs/dash_order.py:347
-#: dashs/dash_order.py:397 dashs/dash_order.py:447 dashs/dash_order.py:542
-#: dashs/dash_order_vs_supplier.py:349 dashs/dash_order_vs_supplier.py:398
-#: dashs/otif_test/callbacks.py:368 dashs/otif_vs_supplier/callbacks.py:365
+#: dashs/dash_order.py:397 dashs/dash_order_vs_supplier.py:349
+#: dashs/dash_order_vs_supplier.py:398 dashs/otif_test/callbacks.py:368
+#: dashs/otif_vs_supplier/callbacks.py:365
 msgid "date"
 msgstr "Date"
 
@@ -122,7 +124,7 @@ msgstr "Quantité des produits livrés par date"
 #: dashs/dash_delivery_vs_customer.py:521
 #: dashs/dash_delivery_vs_supplier.py:396
 #: dashs/dash_delivery_vs_supplier.py:539 dashs/dash_order.py:398
-#: dashs/dash_order.py:448 dashs/dash_order.py:543
+#: dashs/dash_order.py:447 dashs/dash_order.py:542
 #: dashs/dash_order_vs_supplier.py:399 dashs/dash_order_vs_supplier.py:446
 #: dashs/dash_order_vs_supplier.py:494 dashs/dash_order_vs_supplier.py:540
 #: dashs/dash_profil.py:676 dashs/dash_profil.py:750 dashs/dash_profil.py:830
@@ -140,8 +142,9 @@ msgid "Reference Of Product"
 msgstr "Référence du produit"
 
 #: dashs/dash_delivery_vs_customer.py:520
-msgid "TOP 10 Delivered Categories by date"
-msgstr "TOP 10 des catégories livrées par date"
+#| msgid "TOP 10 Delivered Categories by date"
+msgid "TOP 10 Delivered Categories"
+msgstr "TOP 10 des catégories livrées"
 
 #: dashs/dash_delivery_vs_customer.py:522
 msgid "Reference of Category"
@@ -168,28 +171,26 @@ msgid "Quantity of Products by Date"
 msgstr "Quantité des produits par date"
 
 #: dashs/dash_delivery_vs_supplier.py:444
-msgid "Most Products"
-msgstr "Produits"
+msgid "Most Products by Quantity"
+msgstr "Top 10 des produits  par quantité"
 
 #: dashs/dash_delivery_vs_supplier.py:445
 msgid "quantity"
 msgstr "quantité"
 
 #: dashs/dash_delivery_vs_supplier.py:446
-msgid "Most Products by Quantity"
-msgstr "Top 10 des produits  par quantité"
+msgid "Most Products"
+msgstr "Produits"
 
 #: dashs/dash_delivery_vs_supplier.py:538
 msgid "Most 10 Categories by Quantity"
-msgstr "Top 10 des catégories par Quantité"
+msgstr "Top 10 des catégories par quantité"
 
-#: dashs/dash_order.py:168
-msgid "Graph Number Of Orders"
-msgstr "Graph Nombre des livraisons"
-
-#: dashs/dash_order.py:179
-msgid "Number Of Ordered Products"
-msgstr "Nombre des Produits"
+#: dashs/dash_order.py:168 dashs/otif_test/layouts.py:170
+#: dashs/otif_vs_supplier/layouts.py:170 templates/index.html:77
+#: templates/order/customer.html:7 templates/order/supplier.html:7
+msgid "Orders"
+msgstr "Commandes"
 
 #: dashs/dash_order.py:218 dashs/dash_order_vs_supplier.py:219
 msgid "Top 10 Ordred Products"
@@ -216,6 +217,12 @@ msgstr "Produits commandés par date"
 #: dashs/dash_order.py:446
 msgid "TOP 10 Ordred Product"
 msgstr "Top 10 des produits commandés"
+
+#: dashs/dash_order.py:448
+#, fuzzy
+#| msgid "Products"
+msgid "Product"
+msgstr "Produits"
 
 #: dashs/dash_order.py:541 dashs/dash_order_vs_supplier.py:539
 msgid "TOP 10 Ordred Categories"
@@ -375,7 +382,6 @@ msgid "Statut of order Details"
 msgstr "État des lignes de commande"
 
 #: dashs/otif_test/callbacks.py:125
-#| msgid "Customers"
 msgid "customer"
 msgstr "client"
 
@@ -414,12 +420,6 @@ msgstr "Nombre des commandes par date"
 #: dashs/otif_test/layouts.py:90 dashs/otif_vs_supplier/layouts.py:90
 msgid "Number of Orders "
 msgstr "Nombre des commandes"
-
-#: dashs/otif_test/layouts.py:170 dashs/otif_vs_supplier/layouts.py:170
-#: templates/index.html:77 templates/order/customer.html:7
-#: templates/order/supplier.html:7
-msgid "Orders"
-msgstr "Commandes"
 
 #: dashs/otif_test/layouts.py:209 dashs/otif_vs_supplier/layouts.py:209
 msgid "Order Status"
@@ -521,6 +521,12 @@ msgstr "OTIF"
 #: templates/profil/index.html:7
 msgid "Warehouses Status"
 msgstr "Statut des entrepôts"
+
+#~ msgid "Graph Number Of Orders"
+#~ msgstr "Graph Nombre des livraisons"
+
+#~ msgid "Number Of Ordered Products"
+#~ msgstr "Nombre des Produits"
 
 #~ msgid "Most Ordered  Products"
 #~ msgstr "les produits les plus commandés"

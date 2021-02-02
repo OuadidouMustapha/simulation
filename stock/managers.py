@@ -318,6 +318,11 @@ class WarehouseQuerySet(models.QuerySet):
         return list of unique/distinct warehouses
         '''
         return self.annotate(label=F('reference'), value=F('id')).values('label', 'value').distinct()
+    def get_all_warehouses_fix(self):
+        '''
+        FIXME Used in dash deployment as a quick fix
+        '''
+        return self.annotate(label=F('reference'), value=F('reference')).values('label', 'value').distinct()
     
     def get_warehouses(self):
         ''' NOTE deprecated function. Used to plot warehouses in dash map '''    

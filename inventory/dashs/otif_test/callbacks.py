@@ -79,7 +79,7 @@ def plot_OrderDetail_count_by_custmoer_figuresss(selected_products,
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             ),
@@ -87,7 +87,7 @@ def plot_OrderDetail_count_by_custmoer_figuresss(selected_products,
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             )
@@ -106,30 +106,54 @@ def plot_OrderDetail_count_by_custmoer_figuresss(selected_products,
 
     df = pd.DataFrame.from_records(results)
     
-
-    figure = df.iplot(
-        asFigure=True,
-        kind='bar',
-        barmode='group',
-        x=['customer__reference'],
-        y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
-        colors= [
-            'rgb(255, 0, 0)',
-            'rgb(0, 255, 0)',
-            'rgb(255, 230, 0)',
-            'rgb(0,200,0)',
-            'rgb(255, 132, 0)',
-        ],
-        theme='white',
-        title=_('Statut of order Details'),
-        xTitle=_('customer'),
-        yTitle=_('Number of Order Details'),
-    )
+    
+    
+    if df.size!=0:
+        
+        figure = df.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='group',
+            x=['customer__reference'],
+            y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
+            colors= [
+                'rgb(255, 0, 0)',
+                'rgb(0, 255, 0)',
+                'rgb(255, 230, 0)',
+                'rgb(0,200,0)',
+                'rgb(255, 132, 0)',
+            ],
+            theme='white',
+            title=_('Statut of order Details'),
+            xTitle=_('customer'),
+            yTitle=_('Number of Order Details'),
+        )
+        
+    else :
+        
+        figure = df.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='group',
+            x=None,
+            y=None,
+            colors= [
+                'rgb(255, 0, 0)',
+                'rgb(0, 255, 0)',
+                'rgb(255, 230, 0)',
+                'rgb(0,200,0)',
+                'rgb(255, 132, 0)',
+            ],
+            theme='white',
+            title=_('Statut of order Details'),
+            xTitle=_('customer'),
+            yTitle=_('Number of Order Details'),
+        )
+        
     
     figure.update_layout(
         autosize=True,
         yaxis=dict(
-            tickvals=[1, 2, 3, 4],
             tickmode="array",
         )
     )
@@ -197,7 +221,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             ),
@@ -205,7 +229,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -231,24 +255,53 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
         else:
             return 0
 
-    df_data['OTIF'] = df_data.apply(
-        lambda row: otif(row),
-        axis=1)
+   
     
+    
+    if df_data.size !=0:
+        
+        df_data['OTIF'] = df_data.apply(
+            lambda row: otif(row),
+        axis=1)
+        df_data =  df_data.sort_values('order__ordered_at',ascending = True)
 
-    figure = df_data.iplot(
-        asFigure=True,
-        kind='bar',
-        barmode='stack',
-        x=['order__ordered_at'],
-        y=[
-            'OTIF'
-        ],
-        theme='white',
-        title=_('OTIF by Ordered Date'),
-        xTitle=_('Ordered Date'),
-        yTitle=_('OTIF in %'),
-    )
+        figure = df_data.iplot(
+            asFigure=True,
+            x=['order__ordered_at'],
+            y=[
+                'OTIF'
+            ],
+            theme='white',
+            title=_('OTIF by Ordered Date'),
+            xTitle=_('Ordered Date'),
+            yTitle=_('OTIF in %'),
+        )
+        
+        figure.update_traces(
+            type="scatter",
+            mode="lines+markers",
+            line=dict(shape="spline", smoothing=1.3),
+            marker=dict(
+                symbol="diamond-open",
+                size=7,
+            ),
+        )
+
+        
+    else :
+        
+        figure = df_data.iplot(
+            asFigure=True,
+            kind='bar',
+            barmode='stack',
+            x=None,
+            y=None,
+            theme='white',
+            title=_('OTIF by Ordered Date'),
+            xTitle=_('Ordered Date'),
+            yTitle=_('OTIF in %'),
+        )
+        
     
     figure.update_xaxes(
             tickformat = '%d %B %Y',
@@ -256,7 +309,6 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
     figure.update_layout(
         autosize=True,
         yaxis=dict(
-            tickvals=[1, 2, 3, 4],
             tickmode="array",
         )
     )
@@ -321,7 +373,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             ),
@@ -329,7 +381,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             )
@@ -376,7 +428,6 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
         figure.update_layout(
             autosize=True,
             yaxis=dict(
-                tickvals=[1, 2, 3, 4],
                 tickmode="array",
             )
         )
@@ -464,7 +515,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             ),
@@ -472,7 +523,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -670,7 +721,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         Case(
             When(
                 order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                desired_at__gte=F('order__delivery__delivered_at'), then=1),
             default=0,
             output_field=IntegerField()
         ),
@@ -678,7 +729,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         Case(
             When(
                 order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                desired_at__lt=F('order__delivery__delivered_at'), then=1),
             default=0,
             output_field=IntegerField()
         )
@@ -698,57 +749,59 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
 
     Number_of_orders = len(df_data_order.index)
+    
+    if df_data_order.size!=0:
 
-    df_data_order['sum_all'] = df_data_order.apply(
-        lambda
-            row: row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row[
-            'Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time'],
-        axis=1)
+        df_data_order['sum_all'] = df_data_order.apply(
+            lambda
+                row: row['Not_Delivered'] + row['Partially_Delivered_In_Time'] + row[
+                'Partially_Delivered_Not_In_Time'] + row['Delivered_In_Time'] + row['Delivered_Not_In_Time'],
+            axis=1)
 
-    df_data_order['Order Not_Delivered'] = df_data_order.apply(
-        lambda
-            row: 1 if row['Not_Delivered'] == row['sum_all'] and row['Not_Delivered'] != 0 else None,
-        axis=1
-    )
+        df_data_order['Order Not_Delivered'] = df_data_order.apply(
+            lambda
+                row: 1 if row['Not_Delivered'] == row['sum_all'] and row['Not_Delivered'] != 0 else None,
+            axis=1
+        )
 
-    df_data_order['Order Partially_Delivered_In_Time'] = df_data_order.apply(
-        lambda row: 1 if (
-                row['Partially_Delivered_Not_In_Time'] == 0
-                and row['Delivered_Not_In_Time'] == 0
-                and row['Not_Delivered'] < row['sum_all']
-                and (
-                        row['Delivered_In_Time'] < row['sum_all']
-                        or row['Partially_Delivered_In_Time'] != 0
-                )
-                and row['Delivered_In_Time'] <= row['sum_all']
-                and row['sum_all'] != 0
-        ) else 0, axis=1)
+        df_data_order['Order Partially_Delivered_In_Time'] = df_data_order.apply(
+            lambda row: 1 if (
+                    row['Partially_Delivered_Not_In_Time'] == 0
+                    and row['Delivered_Not_In_Time'] == 0
+                    and row['Not_Delivered'] < row['sum_all']
+                    and (
+                            row['Delivered_In_Time'] < row['sum_all']
+                            or row['Partially_Delivered_In_Time'] != 0
+                    )
+                    and row['Delivered_In_Time'] <= row['sum_all']
+                    and row['sum_all'] != 0
+            ) else 0, axis=1)
 
-    df_data_order['Order Partially_Delivered_Not_In_Time'] = df_data_order.apply(
-        lambda row: 1 if (row['Partially_Delivered_Not_In_Time'] != 0 or (
-                row['Delivered_Not_In_Time'] < row['sum_all'] and row['Delivered_Not_In_Time'] != 0)) and row[
-                             'sum_all'] != 0 else 0, axis=1)
+        df_data_order['Order Partially_Delivered_Not_In_Time'] = df_data_order.apply(
+            lambda row: 1 if (row['Partially_Delivered_Not_In_Time'] != 0 or (
+                    row['Delivered_Not_In_Time'] < row['sum_all'] and row['Delivered_Not_In_Time'] != 0)) and row[
+                                'sum_all'] != 0 else 0, axis=1)
 
-    df_data_order['Order Delivered_In_Time'] = df_data_order.apply(
-        lambda
-            row: 1 if row['Delivered_In_Time'] == row['sum_all'] and row['Delivered_In_Time'] != 0 else 0,
-        axis=1
-    )
+        df_data_order['Order Delivered_In_Time'] = df_data_order.apply(
+            lambda
+                row: 1 if row['Delivered_In_Time'] == row['sum_all'] and row['Delivered_In_Time'] != 0 else 0,
+            axis=1
+        )
 
-    df_data_order['Order Delivered_Not_In_Time'] = df_data_order.apply(
-        lambda
-            row: 1 if row['Delivered_Not_In_Time'] != 0 and row['Delivered_Not_In_Time'] + row[
-            'Delivered_In_Time'] == row['sum_all'] else 0,
-        axis=1
-    )
+        df_data_order['Order Delivered_Not_In_Time'] = df_data_order.apply(
+            lambda
+                row: 1 if row['Delivered_Not_In_Time'] != 0 and row['Delivered_Not_In_Time'] + row[
+                'Delivered_In_Time'] == row['sum_all'] else 0,
+            axis=1
+        )
 
-    df_data_order = df_data_order.agg({
-        'Order Not_Delivered': 'sum',
-        'Order Delivered_In_Time':'sum',
-        'Order Partially_Delivered_In_Time':'sum',
-        'Order Partially_Delivered_Not_In_Time': 'sum',
-        'Order Delivered_Not_In_Time': 'sum',
-    }).reset_index()
+        df_data_order = df_data_order.agg({
+            'Order Not_Delivered': 'sum',
+            'Order Delivered_In_Time':'sum',
+            'Order Partially_Delivered_In_Time':'sum',
+            'Order Partially_Delivered_Not_In_Time': 'sum',
+            'Order Delivered_Not_In_Time': 'sum',
+        }).reset_index()
 
     # ************************************
     results = results.annotate(
@@ -765,67 +818,111 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
 
     labels = df_data.index
     values = df_data.values
+    if df_data.size!=0:
+        df_data = df_data.agg({
+            'Not_Delivered': 'sum',
+            'Delivered_In_Time': 'sum',
+            'Partially_Delivered_In_Time': 'sum',
+            'Partially_Delivered_Not_In_Time': 'sum',
+            'Delivered_Not_In_Time': 'sum',
+        }).reset_index()
 
-    df_data = df_data.agg({
-        'Not_Delivered': 'sum',
-        'Delivered_In_Time': 'sum',
-        'Partially_Delivered_In_Time': 'sum',
-        'Partially_Delivered_Not_In_Time': 'sum',
-        'Delivered_Not_In_Time': 'sum',
-    }).reset_index()
+        sum_all = df_data[0][0]+df_data[0][1]+df_data[0][2]+df_data[0][3]+df_data[0][4]
 
-    sum_all = df_data[0][0]+df_data[0][1]+df_data[0][2]+df_data[0][3]+df_data[0][4]
+        if sum_all!=0:
 
-    if sum_all!=0:
+            OTIF = (df_data[0][1]/sum_all)*100
 
-        OTIF = (df_data[0][1]/sum_all)*100
+        else:
+            OTIF = 0
 
-    else:
+        OTIF = round(OTIF, 1)
+        
+    else :
         OTIF = 0
-
-    OTIF = round(OTIF, 1)
 
 
     figure_pie_orderDetail = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
     figure_pie_order =  make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
 
-
-    figure_pie_order.add_trace(
-        go.Pie(
-            labels=df_data_order['index'],
-            values=df_data_order[0],
-            pull=[0.1, 0.2, 0.2, 0.2],
-            name="",
-            marker={
-                'colors': [
-                    'red',
-                    'rgb(0, 200, 0)',
-                    'rgb(0,255,0)',
-                    'rgb(255, 230, 0)',
-                    'rgb(255, 132, 0)',
-                ]
-            },
-        )
-    , 1, 1)
-
-    figure_pie_orderDetail.add_trace(
-        go.Pie(
-            labels=df_data['index'],
-            values=df_data[0],
-            pull=[0.1, 0.2, 0.2, 0.2],
-            name="",
-            marker={
-                'colors': [
-                    'red',
-                    'rgb(0, 200, 0)',
-                    'rgb(0,255,0)',
-                    'rgb(255, 230, 0)',
-                    'rgb(255, 132, 0)',
-                ]
-            },
-        )
-    , 1, 1)
-
+    if df_data_order.size!=0:
+        
+        figure_pie_order.add_trace(
+            go.Pie(
+                labels=df_data_order['index'],
+                values=df_data_order[0],
+                pull=[0.1, 0.2, 0.2, 0.2],
+                name="",
+                marker={
+                    'colors': [
+                        'red',
+                        'rgb(0, 200, 0)',
+                        'rgb(0,255,0)',
+                        'rgb(255, 230, 0)',
+                        'rgb(255, 132, 0)',
+                    ]
+                },
+            )
+        , 1, 1)
+        
+    else :
+        
+        figure_pie_order.add_trace(
+            go.Pie(
+                labels=None,
+                values=None,
+                pull=[0.1, 0.2, 0.2, 0.2],
+                name="",
+                marker={
+                    'colors': [
+                        'red',
+                        'rgb(0, 200, 0)',
+                        'rgb(0,255,0)',
+                        'rgb(255, 230, 0)',
+                        'rgb(255, 132, 0)',
+                    ]
+                },
+            )
+        , 1, 1)
+        
+    if df_data.size!=0:
+        
+        figure_pie_orderDetail.add_trace(
+            go.Pie(
+                labels=df_data['index'],
+                values=df_data[0],
+                pull=[0.1, 0.2, 0.2, 0.2],
+                name="",
+                marker={
+                    'colors': [
+                        'red',
+                        'rgb(0, 200, 0)',
+                        'rgb(0,255,0)',
+                        'rgb(255, 230, 0)',
+                        'rgb(255, 132, 0)',
+                    ]
+                },
+            )
+        , 1, 1)
+    else :
+        figure_pie_orderDetail.add_trace(
+            go.Pie(
+                labels=None,
+                values=None,
+                pull=[0.1, 0.2, 0.2, 0.2],
+                name="",
+                marker={
+                    'colors': [
+                        'red',
+                        'rgb(0, 200, 0)',
+                        'rgb(0,255,0)',
+                        'rgb(255, 230, 0)',
+                        'rgb(255, 132, 0)',
+                    ]
+                },
+            )
+        , 1, 1)
+        
     figure_pie_orderDetail.update_traces(hole=.4, hoverinfo="label+percent+name")
     figure_pie_order.update_traces(hole=.4, hoverinfo="label+percent+name")
     

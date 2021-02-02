@@ -170,7 +170,7 @@ def filter_container():
                 dbc.Label(_('Forecast version')),
                 dcc.Dropdown(
                     id=dropdown_version_list_id,
-                    placeholder=_('Forecasting version'),
+                    placeholder=_('Forecast version'),
                     options=_all_versions,
                     value=_all_versions[-1]['value'] if _all_versions else None,
                 ),

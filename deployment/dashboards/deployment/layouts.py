@@ -6,6 +6,8 @@ from django.contrib.auth import models
 from django.db.models import F
 from deployment.models import TruckAvailability
 from stock.models import Warehouse
+from forecasting.models import Version
+from inventory.models import StockCheck
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
@@ -14,7 +16,10 @@ from django_pandas.io import read_frame
 
 import datetime
 
-_all_warehouses = list(Warehouse.objects.get_all_warehouses())
+_all_warehouses = list(Warehouse.objects.get_all_warehouses_fix())
+_all_versions = list(Version.objects.get_all_versions())
+_all_check_dates = list(StockCheck.objects.get_all_stock_checks())
+
 # Used parameters
 _min_deployment_days  = 1
 _deployment_days = 6*30
@@ -32,14 +37,34 @@ _input = html.Div([
     dbc.Row([
         dbc.Col([
             dbc.Col([
+                dbc.Label(_('Forecast version')),
+                dcc.Dropdown(
+                    id=ids.DROPDOWN_VERSION,
+                    options=_all_versions,
+                    value=_all_versions[-1]['value'] if _all_versions else None,
+                    className='mb-3',
+                ),
+            ], sm=12, md=12, lg=12),
+            dbc.Col([
+                dbc.Label(_('Stock check date')),
+                dcc.Dropdown(
+                    id=ids.DROPDOWN_CHECK_DATE,
+                    options=_all_check_dates,
+                    value=_all_check_dates[-1]['value'] if _all_check_dates else None,
+                    className='mb-3',
+                ),
+
+            ], sm=12, md=12, lg=12),
+            dbc.Col([
                 dbc.Label(_('Maximize')),
                 dcc.Dropdown(
                     id=ids.DROPDOWN_SHOW_BY,
                     options=[
-                        {'label': _('Turnover'), 'value': 'Chiffre d\'affaire'},
-                        {'label': 'Gain', 'value': 'gain'},
+                        {'label': _('Turnover'), 'value': 'turnover'},
+                        {'label': _('Gain'), 'value': 'gain'},
                     ],
                     value='turnover',
+                    className='mb-3',
                 ),
             ], sm=12, md=12, lg=12),
             dbc.Col([
@@ -121,13 +146,12 @@ _output = html.Div([
                         className='control-tabs',
                         children=[
                             dcc.Tabs(
-                                value='Product-at',
+                                value='tab-1',
                                 children=[
                                     dcc.Tab(
-                                        label=_('Warhouses Pie Graph'),
-                                        value='Product-at',
+                                        label=_('Truck status'),
+                                        value='tab-1',
                                         children=html.Div(
-                                            className='control-tab',
                                             children=[
                                                 dbc.Col([
                                                     dbc.Label(
@@ -140,11 +164,9 @@ _output = html.Div([
                                                     ),
                                                 ], sm=12, md=12, lg=12),
                                                 html.Div(
-                                                    className='app-controls-block',
-                                                    children=dcc.Loading(
+                                                    dcc.Loading(
                                                         html.Div(
                                                             [dcc.Graph(id=ids.FIGURE_PIE_ID)],
-                                                            className="",
                                                         )
                                                     ),
                                                 ),
@@ -152,12 +174,11 @@ _output = html.Div([
                                         )
                                     ),
                                     dcc.Tab(
-                                        label=_('Warehouses'),
-                                        value='what-is',
+                                        label=_('Trucks by warehouse'),
+                                        value='tab-2',
                                         children=dcc.Loading(
                                             html.Div(
                                                 [dcc.Graph(id=ids.FIGURE_WAREHOUSES_ID)],
-                                                className="",
                                             )
                                         ),
                                     ),
@@ -180,7 +201,7 @@ _output = html.Div([
                                 value='what-is',
                                 children=[
                                     dcc.Tab(
-                                        label=_('Product'),
+                                        label=_('Top deployed products'),
                                         value='what-is',
                                         children=html.Div(
                                             className='control-tab',

@@ -5,6 +5,8 @@ from .components import helpers
 _prefix = 'deployment'
 
 # Input fields
+DROPDOWN_VERSION = helpers.generate_html_id(_prefix, 'DROPDOWN_VERSION')
+DROPDOWN_CHECK_DATE = helpers.generate_html_id(_prefix, 'DROPDOWN_CHECK_DATE')
 DROPDOWN_SHOW_BY = helpers.generate_html_id(_prefix, 'DROPDOWN_SHOW_BY')
 INPUT_DATE_RANGE = helpers.generate_html_id(_prefix, 'INPUT_DATE_RANGE')
 DATATABLE_TRUCKAVAILABILITY = helpers.generate_html_id(_prefix, 'DATATABLE_TRUCKAVAILABILITY')

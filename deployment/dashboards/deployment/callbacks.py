@@ -39,16 +39,17 @@ cf.offline.py_offline.__PLOTLY_OFFLINE_INITIALIZED = True
     ],
     [
         Input(ids.BUTTON_RUN, 'n_clicks'),
+        Input(ids.DROPDOWN_VERSION, 'value'),
+        Input(ids.DROPDOWN_CHECK_DATE, 'value'),
         Input(ids.DROPDOWN_SHOW_BY, 'value'),
         Input(ids.INPUT_DATE_RANGE, 'start_date'),
         Input(ids.INPUT_DATE_RANGE, 'end_date'),
     ]
 )
-def return_deployment_datatable(run_n_clicks, show_by, start_date, end_date):
+def return_deployment_datatable(run_n_clicks, version_id, check_date, objective_attribute, start_date, end_date):
     if run_n_clicks is not None:
-        version_id = 21
         truckavailability_df, truck_assignment_df = deployment_alg.run_deployment(
-            version_id, show_by, start_date, end_date)
+            version_id, check_date, objective_attribute, start_date, end_date)
         # truckavailability_df.to_csv('tmp/truckavailability_df.csv')
         # truck_assignment_df.to_csv('tmp/truck_assignment_df.csv')
 
@@ -57,228 +58,194 @@ def return_deployment_datatable(run_n_clicks, show_by, start_date, end_date):
 
         # Return dataframe
         data_deployment = truck_assignment_df.to_dict('records')
-        columns_deployment = [{"name": i, "id": i} for i in truck_assignment_df.columns]
-        data_truck = truck_assignment_df.to_dict('records')
-        columns_truck = [{"name": i, "id": i} for i in truck_assignment_df.columns]
+        columns_deployment = [{"name": i, "id": i}
+                              for i in truck_assignment_df.columns]
+        data_truck = truckavailability_df.to_dict('records')
+        columns_truck = [{"name": i, "id": i}
+                         for i in truckavailability_df.columns]
 
         # Show success message
         is_open = True
         div_hidden = False
 
         return data_deployment, columns_deployment, data_truck, columns_truck, is_open, div_hidden, div_hidden
-    
-    
+
+
 @app.callback(
     Output(ids.FIGURE_WAREHOUSES_ID, 'figure'),
-
-    
     [
-        Input(ids.BUTTON_RUN, 'n_clicks'),
-        Input(ids.DROPDOWN_SHOW_BY, 'value'),
-        Input(ids.INPUT_DATE_RANGE, 'start_date'),
-        Input(ids.INPUT_DATE_RANGE, 'end_date'),
+        # Input(ids.BUTTON_RUN, 'n_clicks'),
+        # Input(ids.DROPDOWN_SHOW_BY, 'value'),
+        # Input(ids.INPUT_DATE_RANGE, 'start_date'),
+        # Input(ids.INPUT_DATE_RANGE, 'end_date'),
+        Input(ids.DATATABLE_TRUCK, 'data'),
+        Input(ids.DATATABLE_DEPLOYMENT, 'data'),
     ],
-    [
-        State(ids.DATATABLE_DEPLOYMENT, 'data'),
-        State(ids.DATATABLE_TRUCK, 'data'),
-    ]
 )
-def return_deployment_graph(run_n_clicks, show_by, start_date, end_date, data_deployment, data_truck):
+def return_bar_chart_truck_status(truckavailability_data, truck_assignment_data):
     # if run_n_clicks is not None:
     # Get dataframe
-    truckavailability_df = pd.read_csv('tmp/truckavailability_df.csv')
-    truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
+    # truckavailability_df = pd.read_csv(
+    #             'tmp/truckavailability_df.csv')
+    # truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
 
-    # truck_assignment_df = pd.DataFrame.from_dict(data_deployment)
-    # truckavailability_df = pd.DataFrame.from_dict(data_truck)
-    print('truck_assignment_df  ddd', truck_assignment_df)
-    print('truckavailability_df  ddd', truckavailability_df)
-    
+    truckavailability_df = pd.DataFrame.from_dict(truckavailability_data)
+    truck_assignment_df = pd.DataFrame.from_dict(truck_assignment_data)
+
     truckavailability_df['Total'] = truckavailability_df.apply(
         lambda
-            row: 1 ,
+        row: 1,
         axis=1
     )
-        
+
     truckavailability_df['Nubmer of used'] = truckavailability_df.apply(
         lambda
-            row: 1 if row['status'] == 'full' or row['status'] == 'used' else 0,
+        row: 1 if row['status'] == 'full' or row['status'] == 'used' else 0,
         axis=1
     )
-    
-
 
     truckavailability_df = truckavailability_df.groupby(
         by=['warehouse'],
         as_index=False
     ).agg({
-        'Total':'sum',
-        'Nubmer of used':'sum',
+        'Total': 'sum',
+        'Nubmer of used': 'sum',
     })
-    
-    truckavailability_df['str name'] = truckavailability_df.apply(
-        lambda
-            row: str(row['warehouse']),
-        axis=1
-    )
-    
+
 
     figure = truckavailability_df.iplot(
         asFigure=True,
         kind='bar',
         barmode='group',
-        x=['str name'],
+        x=['warehouse'],
         y=[
             'Total',
             'Nubmer of used'
         ],
-        colors= [
-                'rgb(255, 230, 0)',
-                'rgb(0, 200, 0)',
-                'rgb(255, 132, 0)',
-                'rgb(0,255,0)',
-                'rgb(255, 0, 0)',
+        colors=[
+            'rgb(255, 230, 0)',
+            'rgb(0, 200, 0)',
+            'rgb(255, 132, 0)',
+            'rgb(0,255,0)',
+            'rgb(255, 0, 0)',
         ],
         theme='white',
-        title=_('Number of Orders by Date'),
-        xTitle=_('Ordered Date'),
-        yTitle=_('Number of Orders'),
+        title=_('Number of used/unused trucks by warehouse'),
+        xTitle=_('Warehouses'),
+        yTitle=_('Number of trucks'),
     )
-    
+
     return figure
 
 
 @app.callback(
-    
+
     Output(ids.FIGURE_PIE_ID, 'figure'),
     [
         Input(ids.DROPDOWN_W_PIE_BY, 'value'),
-        Input(ids.BUTTON_RUN, 'n_clicks'),
-        Input(ids.DROPDOWN_SHOW_BY, 'value'),
-        Input(ids.INPUT_DATE_RANGE, 'start_date'),
-        Input(ids.INPUT_DATE_RANGE, 'end_date'),
-    ]
+        # Input(ids.BUTTON_RUN, 'n_clicks'),
+        # Input(ids.DROPDOWN_SHOW_BY, 'value'),
+        # Input(ids.INPUT_DATE_RANGE, 'start_date'),
+        # Input(ids.INPUT_DATE_RANGE, 'end_date'),
+        Input(ids.DATATABLE_TRUCK, 'data'),
+        Input(ids.DATATABLE_DEPLOYMENT, 'data'),
+    ],
 )
-def return_deployment_graph(warhouses,run_n_clicks, show_by, start_date, end_date):
+def return_pie_chart_truck_status(warhouses, truckavailability_data, truck_assignment_data):
+    # if run_n_clicks is not None:
+    # Get dataframe
+    # truckavailability_df = pd.read_csv(
+    #     'tmp/truckavailability_df.csv')
+    # truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
 
-    # truckavailability_df, truck_assignment_df = deployment_alg.run_deployment(
-    #     show_by, start_date, end_date)
-    # truckavailability_df.to_csv('tmp/truckavailability_df.csv')
-    # truck_assignment_df.to_csv('tmp/truck_assignment_df.csv')
-    
-    if run_n_clicks is not None:
-        truckavailability_df = pd.read_csv('tmp/truckavailability_df.csv')
-        truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
-        
-        newdf = truckavailability_df[truckavailability_df['warehouse'].isin(warhouses)]
-        
-        
-        
-        # newdf['freq'] = newdf.groupby('status')['status'].transform('count')
-        
-        newdf['freq'] = newdf.apply(
-            lambda
-                row: 1 ,
-            axis=1
-        )
-        
-        print(newdf)
-        
+    truckavailability_df = pd.DataFrame.from_dict(truckavailability_data)
 
-        
-        figure= make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
-        
-        figure.add_trace(
-            go.Pie(
-                labels=newdf['status'],
-                values=newdf['freq'],
-                pull=[0.1, 0.2, 0.2, 0.2],
-                name="",
-                marker={
-                    'colors': [
-                        'red',
-                        'rgb(0,255,0)',
-                        'rgb(255, 255, 0)'
-                    ]
-                },
-            )
-        , 1, 1)
-        figure.update_traces(hole=.4, hoverinfo="label+value+name")
+    newdf = truckavailability_df[truckavailability_df['warehouse'].isin(
+        warhouses)]
 
+    # newdf['freq'] = newdf.groupby('status')['status'].transform('count')
 
-    
+    newdf['freq'] = newdf.apply(
+        lambda
+        row: 1,
+        axis=1
+    )
+
+    figure = make_subplots(rows=1, cols=1, specs=[[{'type': 'domain'}]])
+
+    figure.add_trace(
+        go.Pie(
+            labels=newdf['status'],
+            values=newdf['freq'],
+            pull=[0.1, 0.2, 0.2, 0.2],
+            name="",
+            marker={
+                'colors': [
+                    'red',
+                    'rgb(0,255,0)',
+                    'rgb(255, 255, 0)'
+                ]
+            },
+        ), 1, 1)
+    figure.update_traces(
+        hole=.4, hoverinfo="label+value+name", 
+        # title_text=_('Rate of used and unused trucks for selected warehouses')
+    )
 
     return figure
 
 
 @app.callback(
-    
+
     Output(ids.FIGURE_TOP_ID, 'figure'),
     [
         Input(ids.DROPDOWN_W_T_BY, 'value'),
-        Input(ids.BUTTON_RUN, 'n_clicks'),
-        Input(ids.DROPDOWN_SHOW_BY, 'value'),
-        Input(ids.INPUT_DATE_RANGE, 'start_date'),
-        Input(ids.INPUT_DATE_RANGE, 'end_date'),
-    ]
+        # Input(ids.BUTTON_RUN, 'n_clicks'),
+        # Input(ids.DROPDOWN_SHOW_BY, 'value'),
+        # Input(ids.INPUT_DATE_RANGE, 'start_date'),
+        # Input(ids.INPUT_DATE_RANGE, 'end_date'),
+        Input(ids.DATATABLE_DEPLOYMENT, 'data'),
+        # Input(ids.DATATABLE_TRUCK, 'data'),
+    ],
 )
-def return_deployment_grapeh(warhouses,run_n_clicks, show_by, start_date, end_date):
+def return_bar_chart_top_profuct(warhouses, truck_assignment_data):
+    # if run_n_clicks is not None:
+    # Get dataframe
+    # truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
 
-    # truckavailability_df, truck_assignment_df = deployment_alg.run_deployment(
-    #     show_by, start_date, end_date)
-    # truckavailability_df.to_csv('tmp/truckavailability_df.csv')
-    # truck_assignment_df.to_csv('tmp/truck_assignment_df.csv')
-    
-    
-    
+    truck_assignment_df = pd.DataFrame.from_dict(truck_assignment_data)
 
-    truck_assignment_df = pd.read_csv('tmp/truck_assignment_df.csv')
-    
-    newdf = truck_assignment_df[truck_assignment_df['warehouse'].isin(warhouses)]
-    
-    if newdf.size!=0:
-        newdf['Quantity'] = newdf.apply(
-            lambda
-                row:quantity(row),axis=1
-        )
+    newdf = truck_assignment_df[truck_assignment_df['warehouse'].isin(
+        warhouses)]
 
-    
-    if newdf.size!=0:
-    
+    if newdf.size != 0:
         newdf = newdf.groupby(
             by=['product'],
             as_index=False
         ).agg({
-            'Quantity':'sum',
+            'deployed_unit_quantity': 'sum',
         })
-    
-    
-    
-        df = newdf.sort_values('Quantity',ascending = True).head(10)
-    
 
-    
+        df = newdf.sort_values('deployed_unit_quantity', ascending=True).head(10)
+
         df['str prod'] = df.apply(
             lambda
-                row: str(row['product']),
+            row: str(row['product']),
             axis=1
         )
-        
-        
+
         figure = df.iplot(
             asFigure=True,
             kind='barh',
             barmode='stack',
             x=['str prod'],
-            y=['Quantity'],
+            y=['deployed_unit_quantity'],
             theme='white',
-            title=_('Most 10 Products'),
+            title=_('Top 10 deployed products'),
             xTitle=_('Quantity'),
             yTitle=_('Product'),
         )
-        return figure
-    
-    else :
+    else:
         figure = newdf.iplot(
             asFigure=True,
             kind='barh',
@@ -290,19 +257,4 @@ def return_deployment_grapeh(warhouses,run_n_clicks, show_by, start_date, end_da
             xTitle=_('Quantity'),
             yTitle=_('Product'),
         )
-        return figure
-        
-
-
-
-def quantity(row):
-    try : 
-        out = row['pallet_size']*row['deployed_quantity']        
-    except   :
-       out =  None  
-    return out
-                
-
-
-
-
+    return figure

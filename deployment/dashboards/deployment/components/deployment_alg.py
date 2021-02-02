@@ -19,47 +19,54 @@ def get_truck_type_by_product_type(product_type):
     return int(table[product_type])
 
 
-def run_deployment(version_id, show_by, start_date, end_date):
+def run_deployment(version_id, check_date, objective_attribute, start_date, end_date):
     model_start = timeit.default_timer()
-
 
     PARAM_SAVE_DATA = False
 
-
-    version_id = 22
-    check_date = '2021-01-25'
+    # version_id = 22
+    # check_date = '2021-02-01'
 
     # Get queries
     product_qs = Product.objects.all()
 
     forecast_qs = Forecast.objects.filter(version__id=version_id)
     forecast_qs = forecast_qs.values(
-        'id', 'forecast_date', 'forecasted_quantity', 'edited_forecasted_quantity', 'product', 'circuit', 'customer', 'customer__warehouse', 'version')
-        
+        'id', 'forecast_date', 'forecasted_quantity', 'edited_forecasted_quantity', 'product', 'circuit', 'customer', 'customer__warehouse__reference', 'version')
+
     stockcheck_qs = StockCheck.objects.filter(check_date=check_date).values(
         'id', 'product', 'check_date', 'warehouse', 'warehouse__warehouse_type', 'quantity')
 
     truckavailability_qs = TruckAvailability.objects.values(
         'id', 'warehouse', 'available_truck', 'category__capacity', 'category__cost', 'category__truck_type')
+
+    print('product_qs\n', product_qs)
+    print('forecast_qs\n', forecast_qs)
+    print('stockcheck_qs\n', stockcheck_qs)
+    print('truckavailability_qs\n', truckavailability_qs)
     # Get dataframes
     product_df = read_frame(product_qs)
     forecast_df = read_frame(forecast_qs)
     stockcheck_df = read_frame(stockcheck_qs)
     truckavailability_df = read_frame(
         truckavailability_qs)
+    
+    print('product_df\n', product_df.head(2))
+    print('forecast_df\n', forecast_df.head(2))
+    print('stockcheck_df\n', stockcheck_df.head(2))
+    print('truckavailability_df\n', truckavailability_df.head(2))
 
     # Format
-    truckavailability_df['category__truck_type'] = truckavailability_df['category__truck_type'].astype('int32')
-
-
+    truckavailability_df['category__truck_type'] = truckavailability_df['category__truck_type'].astype(
+        'int32')
 
     # Rename
     product_df = product_df.rename(columns={
-        'id': 'product',
+        'reference': 'product',
     })
     forecast_df = forecast_df.rename(columns={
         'forecast_date': 'date',
-        'customer__warehouse': 'warehouse',
+        'customer__warehouse__reference': 'warehouse',
         # 'product': 'product',
     })
     stockcheck_df = stockcheck_df.rename(columns={
@@ -84,7 +91,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
     _all_warehouses_rdc = stockcheck_df[stockcheck_df['warehouse_type']
                                         == 'RDC']['warehouse'].unique()
 
-
     # init dataframe
     stock_warehouse_rdc_df = pd.DataFrame(
         columns=['warehouse', 'product', 'date', 'simulated_stock_quantity_rdc', 'required_quantity_rdc'])
@@ -108,12 +114,11 @@ def run_deployment(version_id, show_by, start_date, end_date):
         how='left'
     )
 
-
     # Rename image de stock column
     stock_warehouse_rdc_df = stock_warehouse_rdc_df.rename(
         columns={'quantity': 'image_stock_rdc'})
     stock_warehouse_rdc_df.loc[stock_warehouse_rdc_df['date']
-                            != _check_date, 'image_stock_rdc'] = 0
+                               != _check_date, 'image_stock_rdc'] = 0
 
     # Add reception quantity column (null for now)
     stock_warehouse_rdc_df['reception_quantity'] = 0
@@ -126,7 +131,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
     stock_warehouse_rdc_df['data_value'] = 0
     # TODO used for testing. To be deleted
     stock_warehouse_rdc_df['data_value_i-1'] = np.nan
-
 
     # Do the calculation
     # create empty dataframe
@@ -150,7 +154,7 @@ def run_deployment(version_id, show_by, start_date, end_date):
                         sub_stock_warehouse_rdc_df.at[i, 'image_stock_rdc']
                 else:
                     sub_stock_warehouse_rdc_df.at[i,
-                                                'data_value_i-1'] = sub_stock_warehouse_rdc_df.at[i-1, 'data_value']
+                                                  'data_value_i-1'] = sub_stock_warehouse_rdc_df.at[i-1, 'data_value']
                     # If data_value(j-1) > 0 then
                     sub_stock_warehouse_rdc_df.at[i, 'data_value'] += min(
                         sub_stock_warehouse_rdc_df.at[i-1, 'data_value'], 0)
@@ -160,7 +164,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
             concat_stock_warehouse_rdc_df = pd.concat(
                 [concat_stock_warehouse_rdc_df, sub_stock_warehouse_rdc_df])
 
-
     # Get simulated stock & required quantity columns
 
     stock_warehouse_rdc_df = concat_stock_warehouse_rdc_df
@@ -168,7 +171,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
         stock_warehouse_rdc_df['data_value'].clip(None, 0))
     stock_warehouse_rdc_df['required_quantity_rdc'] = stock_warehouse_rdc_df['data_value'].clip(
         0, None)
-
 
     model_stop = timeit.default_timer()
     print('Step 1.2 [Update dataframes] - Done in ', model_stop-model_start)
@@ -180,7 +182,8 @@ def run_deployment(version_id, show_by, start_date, end_date):
         product_df.to_excel(writer, sheet_name='product_df')
         stockcheck_df.to_excel(writer, sheet_name='stockcheck_df')
         forecast_df.to_excel(writer, sheet_name='forecast_df')
-        truckavailability_df.to_excel(writer, sheet_name='truckavailability_df')
+        truckavailability_df.to_excel(
+            writer, sheet_name='truckavailability_df')
         # reception_df.to_excel(writer, sheet_name='reception_df')
         stock_warehouse_rdc_df.to_excel(
             writer, sheet_name='stock_warehouse_rdc_df')
@@ -188,7 +191,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
         model_stop = timeit.default_timer()
         print('Step 1 - Done in {} including {} for saving the data'.format(model_stop -
                                                                             model_start, model_stop-time_save_date))
-
 
     ##########################################################################
     ############################# STEP 2:
@@ -208,14 +210,15 @@ def run_deployment(version_id, show_by, start_date, end_date):
 
     # Merge needed columns from other dataframes
     deployment_df = pd.merge(stock_warehouse_rdc_df, product_df[[
-                            'product', 'product_type', 'profit_margin', 'pallet_size', 'unit_size']], on=['product'])
+        'product', 'product_type', 'profit_margin', 'unit_price', 'pallet_size', 'unit_size']], on=['product'])
 
     ###########
     model_stop = timeit.default_timer()
     print('Step TEST.2 - Done in ', model_stop-model_start)
     ###########
 
-    deployment_df = pd.merge(deployment_df, available_stock_cdc_df, on=['product'])
+    deployment_df = pd.merge(
+        deployment_df, available_stock_cdc_df, on=['product'])
 
     ###########
     model_stop = timeit.default_timer()
@@ -224,10 +227,9 @@ def run_deployment(version_id, show_by, start_date, end_date):
 
     # Convert added columns to int
     deployment_df = deployment_df.astype(
-        {'pallet_size': int, 'unit_size': int, 'initial_cdc_quantity': int, 'profit_margin': float})
+        {'pallet_size': int, 'unit_size': int, 'initial_cdc_quantity': int, 'profit_margin': float, 'unit_price': float})
     deployment_df['required_quantity_rdc'] = deployment_df['required_quantity_rdc'].astype(
         int)
-
 
     ###########
     model_stop = timeit.default_timer()
@@ -242,8 +244,7 @@ def run_deployment(version_id, show_by, start_date, end_date):
         columns={'required_quantity_rdc': 'sum_required_quantity_rdc'})
     # Merge dataframes to copy sum_required_quantity_rdc column
     deployment_df = pd.merge(deployment_df, deployment_grouped_by_product_df,
-                            left_on='product', right_on='product', how='left')
-
+                             left_on='product', right_on='product', how='left')
 
     # for i in deployment_df.index:
     #     product_value = deployment_df.at[i, 'product']
@@ -258,7 +259,8 @@ def run_deployment(version_id, show_by, start_date, end_date):
             deployment_df['initial_cdc_quantity'] *
             deployment_df['required_quantity_rdc']
         ).div(
-            deployment_df['unit_size'] * deployment_df['sum_required_quantity_rdc']
+            deployment_df['unit_size'] *
+            deployment_df['sum_required_quantity_rdc']
         )
     ).apply(np.floor)
 
@@ -306,12 +308,11 @@ def run_deployment(version_id, show_by, start_date, end_date):
         columns={'deployment_by_unit': 'sum_deployment_by_unit'})
     # Merge dataframes to copy the aggreagated column
     deployment_df = pd.merge(deployment_df, deployment_by_unit_sum_df,
-                            left_on='product', right_on='product', how='left')
+                             left_on='product', right_on='product', how='left')
 
     # Get available quantity after deployment
     deployment_df['available_cdc_after_deployment'] = deployment_df['initial_cdc_quantity'] - \
         deployment_df['sum_deployment_by_unit'] * deployment_df['unit_size']
-
 
     # for i in deployment_df.index:
     #     product_value = deployment_df.at[i, 'product']
@@ -324,10 +325,8 @@ def run_deployment(version_id, show_by, start_date, end_date):
     # Replace infinity values with NaN
     deployment_df = deployment_df.replace([np.inf, -np.inf], np.nan)
 
-
     model_stop = timeit.default_timer()
     print('Step 2.1 [after computation] - Done in ', model_stop-model_start)
-
 
     # Save data
     PARAM_SAVE_DATA = False
@@ -339,7 +338,8 @@ def run_deployment(version_id, show_by, start_date, end_date):
         product_df.to_excel(writer, sheet_name='product_df')
         stockcheck_df.to_excel(writer, sheet_name='stockcheck_df')
         forecast_df.to_excel(writer, sheet_name='forecast_df')
-        truckavailability_df.to_excel(writer, sheet_name='truckavailability_df')
+        truckavailability_df.to_excel(
+            writer, sheet_name='truckavailability_df')
         # reception_df.to_excel(writer, sheet_name='reception_df')
         stock_warehouse_rdc_df.to_excel(
             writer, sheet_name='stock_warehouse_rdc_df')
@@ -355,8 +355,13 @@ def run_deployment(version_id, show_by, start_date, end_date):
     ############################# STEP 3:
     model_start = timeit.default_timer()
     # Sort dataframe
-    deployment_df = deployment_df.sort_values(by=['warehouse', 'date', 'profit_margin'], ascending=[
-                                            True, True, False]).reset_index(drop=True)
+    if objective_attribute == 'turnover':
+        deployment_sort_by = 'unit_price'
+    elif objective_attribute == 'gain':
+        deployment_sort_by = 'profit_margin'
+
+    deployment_df = deployment_df.sort_values(by=['warehouse', 'date', deployment_sort_by], ascending=[
+        True, True, False]).reset_index(drop=True)
 
     # Add usefull columns to dataframes
     deployment_df['remaining_quantity_pallet'] = deployment_df['deployment_by_pallet'].astype(
@@ -392,19 +397,21 @@ def run_deployment(version_id, show_by, start_date, end_date):
                 (truckavailability_df['warehouse'] == w) &
                 (truckavailability_df['category__truck_type'] == get_truck_type_by_product_type(product_type)) &
                 (truckavailability_df['status'] != 'full') &
-                (truckavailability_df['product_type'].isin([product_type, None, '']))
+                (truckavailability_df['product_type'].isin(
+                    [product_type, None, '']))
             ]
             for ti in conditional_truckavailability_df.index:
                 if truckavailability_df.at[ti, 'remaining_capacity'] >= deployment_df.at[di, 'remaining_quantity_pallet']:
                     # Update truck capacity
                     truckavailability_df.at[ti, 'remaining_capacity'] -= deployment_df.at[di,
-                                                                                        'remaining_quantity_pallet']
+                                                                                          'remaining_quantity_pallet']
                     # Update truck's product type if not already filled
                     truckavailability_df.at[ti, 'product_type'] = product_type if truckavailability_df.at[ti,
-                                                                                                        'product_type'] else product_type
+                                                                                                          'product_type'] else product_type
                     # Append row to truck_assignement
                     truck_assignment_columns = ['truckavailability_id', 'category__truck_type', 'warehouse', 'product',
-                                                'product_type', 'date', 'pallet_size', 'deployed_quantity', 'full_capacity', 'remaining_capacity']
+                                                'product_type', 'date', 'pallet_size', 'profit_margin',
+                                                'unit_price', 'deployed_quantity', 'full_capacity', 'remaining_capacity']
                     truck_assignment_list = [
                         truckavailability_df.at[ti, 'truckavailability_id'],
                         truckavailability_df.at[ti, 'category__truck_type'],
@@ -413,6 +420,8 @@ def run_deployment(version_id, show_by, start_date, end_date):
                         deployment_df.at[di, 'product_type'],
                         deployment_df.at[di, 'date'],
                         deployment_df.at[di, 'pallet_size'],
+                        deployment_df.at[di, 'profit_margin'],
+                        deployment_df.at[di, 'unit_price'],
                         # In this case it is the quantity deployed
                         deployment_df.at[di, 'remaining_quantity_pallet'],
                         truckavailability_df.at[ti, 'category__capacity'],
@@ -447,21 +456,26 @@ def run_deployment(version_id, show_by, start_date, end_date):
 
                         # Update remaining quantity to deploy
                         deployment_df.at[di,
-                                        'remaining_quantity_pallet'] -= available_capacity_value
+                                         'remaining_quantity_pallet'] -= available_capacity_value
                         # Update truck's product type if not already filled
                         truckavailability_df.at[ti, 'product_type'] = product_type if truckavailability_df.at[ti,
-                                                                                                            'product_type'] else product_type
+                                                                                                              'product_type'] else product_type
                         # Append row to truck_assignement
                         truck_assignment_columns = ['truckavailability_id', 'category__truck_type', 'warehouse', 'product',
-                                                    'product_type', 'date', 'pallet_size', 'deployed_quantity', 'full_capacity', 'remaining_capacity']
+                                                    'product_type', 'date', 'pallet_size', 'profit_margin',
+                                                    'unit_price', 'deployed_quantity', 'full_capacity', 'remaining_capacity']
                         truck_assignment_list = [
-                            truckavailability_df.at[ti, 'truckavailability_id'],
-                            truckavailability_df.at[ti, 'category__truck_type'],
+                            truckavailability_df.at[ti,
+                                                    'truckavailability_id'],
+                            truckavailability_df.at[ti,
+                                                    'category__truck_type'],
                             deployment_df.at[di, 'warehouse'],
                             deployment_df.at[di, 'product'],
                             deployment_df.at[di, 'product_type'],
                             deployment_df.at[di, 'date'],
                             deployment_df.at[di, 'pallet_size'],
+                            deployment_df.at[di, 'profit_margin'],
+                            deployment_df.at[di, 'unit_price'],
                             available_capacity_value,
                             truckavailability_df.at[ti, 'category__capacity'],
                             # Capacity already updated
@@ -486,7 +500,6 @@ def run_deployment(version_id, show_by, start_date, end_date):
                         # Go to next truckavailability_df row (for the same deployment_df row)
                         continue
 
-
     model_stop = timeit.default_timer()
     print('Step 3.1 [after computation] - Done in ', model_stop-model_start)
     print('truck_assignment_df\n', truck_assignment_df)
@@ -497,12 +510,29 @@ def run_deployment(version_id, show_by, start_date, end_date):
     if PARAM_SAVE_DATA:
         writer = pd.ExcelWriter('step3.xlsx', engine='xlsxwriter')
         deployment_df.to_excel(writer, sheet_name='deployment_df')
-        truckavailability_df.to_excel(writer, sheet_name='truckavailability_df')
+        truckavailability_df.to_excel(
+            writer, sheet_name='truckavailability_df')
         truck_assignment_df.to_excel(writer, sheet_name='truck_assignment_df')
         writer.save()
 
     model_stop = timeit.default_timer()
     print('Step 3 - Done in {} including {} for saving the data'.format(model_stop -
                                                                         model_start, model_stop-time_save_date))
+
+    # Create column of deployed quantity by unit
+    truck_assignment_df['deployed_unit_quantity'] = truck_assignment_df['deployed_quantity'] * \
+        truck_assignment_df['pallet_size']
+    truck_assignment_df['deployed_unit_quantity'] = truck_assignment_df['deployed_unit_quantity'].astype('int32')
+    # Create turnover & gain columns
+    truck_assignment_df['turnover'] = truck_assignment_df['unit_price'] * \
+        truck_assignment_df['deployed_unit_quantity']
+    truck_assignment_df['gain'] = truck_assignment_df['profit_margin'] * \
+        truck_assignment_df['deployed_unit_quantity']
+
+    truck_assignment_df = truck_assignment_df[['truckavailability_id', 'category__truck_type', 'warehouse', 'product',
+                                               'product_type', 'deployed_unit_quantity', 'turnover', 'gain']]
+    truck_assignment_df = truck_assignment_df.sort_values(
+        by=['warehouse', 'truckavailability_id', objective_attribute], ascending=[True, True, False]).reset_index(drop=True)
+
 
     return truckavailability_df, truck_assignment_df

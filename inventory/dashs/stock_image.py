@@ -107,7 +107,7 @@ def filter_container():
             html.Summary(_('Products')),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_product_list_id, div_product_list_id, checkbox_product_list_id, _all_products, '')
+                    dropdown_product_list_id, div_product_list_id, checkbox_product_list_id, _all_products,'',multi=False)
 
             ], sm=12, md=12, lg=12),
         ], id=details_product_list_id, open=False),
@@ -238,169 +238,6 @@ def body_container():
                                 ],
                                 inline=True,
                             ),
-                            html.Div([
-                                # Create element to hide/show, in this case an 'Input Component'
-                                dash_table.DataTable(
-                                    id='computed-table',
-                                    columns=
-                                    [
-                                        {'id': 'Rupture', 'name': 'Valeur Min', 'editable': False},
-                                        {'id': 'Risque Rupture', 'name': 'Valeur Max', 'editable': False},
-                                        {'id': 'Bon Stock', 'name': 'Valeur Moyenne', 'editable': False},
-                                        {'id': 'Sur Stock', 'name': 'Écart type ', 'editable': False},
-
-                                    ],
-                                    data=[
-                                        {'Rupture': ''}, {'Rupture': ''}
-                                    ],
-                                    style_data_conditional=[
-                                        {
-                                            'if':
-                                                {
-                                                    'column_id': 'Rupture',
-                                                },
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'background-image': 'linear-gradient(to right, rgb(200, 0, 0), black)',
-                                            'border': 'linear-gradient(to right, rgb(200, 0, 0), black))',
-                                            'text-align': 'center',
-                                            'fontStyle': 'oblique',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontWeight': 'bold',
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Risque Rupture',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black, black)',
-                                            'border': 'linear-gradient(to right, black, black)',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'text-align': 'center',
-                                            'fontStyle': 'oblique',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontWeight': 'bold',
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Bon Stock',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black, black)',
-                                            'border': 'linear-gradient(to right, black, black)',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'text-align': 'center',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontStyle': 'oblique',
-                                            'fontWeight': 'bold',
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Sur Stock',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black, rgb(200, 0, 0))',
-                                            'border': 'linear-gradient(to right, black, rgb(200, 0, 0))',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontWeight': 'bold',
-                                            'fontStyle': 'oblique',
-                                            'text-align': 'center'
-                                        },
-                                    ],
-                                    style_header_conditional=[
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Rupture',
-                                                },
-                                            'background-image': 'linear-gradient(to right, rgb(200, 0, 0), black)',
-                                            'border': 'linear-gradient(to right, rgb(200, 0, 0), black)',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'fontWeight': 'bold',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontStyle': 'oblique',
-                                            'text-align': 'center'
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Risque Rupture',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black,black)',
-                                            'border': 'linear-gradient(to right, black,black)',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'fontWeight': 'bold',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontStyle': 'oblique',
-                                            'text-align': 'center'
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Bon Stock',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black,black)',
-                                            'border': 'linear-gradient(to right,black,black)',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'fontWeight': 'bold',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontStyle': 'oblique',
-                                            'text-align': 'center'
-                                        },
-                                        {
-
-                                            'if':
-                                                {
-                                                    'column_id': 'Sur Stock',
-                                                },
-                                            'background-image': 'linear-gradient(to right, black,rgb(200, 0, 0))',
-                                            'border': 'linear-gradient(to right,black,rgb(200, 0, 0))',
-                                            'color': 'white',
-                                            'width': '80px',
-                                            'font_family': 'cursive',
-                                            'font_size': '18px',
-                                            'fontWeight': 'bold',
-                                            'fontStyle': 'oblique',
-                                            'text-align': 'center'
-                                        },
-                                    ],
-                                ),
-                                html.Div(
-                                    [
-                                        html.Div(
-                                            [dcc.Graph(id="pie")],
-                                            className="pretty_container",
-                                        ),
-                                    ],
-                                    className="flex-display",
-                                ),
-                                # html.Div(
-                                #     [dcc.Graph(id="pie")],
-                                #     className="",
-                                # ),
-                            ], style={'display': 'none'}, id='div_table'
-                                # <-- This is the line that will be changed by the dropdown callback
-                            )
                         ]),
                         datatable_div=dash_table.DataTable(
                             id=mini_card_datatable_mape_id,
@@ -409,10 +246,153 @@ def body_container():
                 ], sm=12, md=12, lg=12)]),
             dcc.Store(id="aggregate_data_id"),
             html.Div(id="output-clientside"),
+                                        html.Div([
+                                    # Create element to hide/show, in this case an 'Input Component'
+                                    dash_table.DataTable(
+                                        id='computed-table',
+                                        columns=
+                                        [
+                                            {'id': 'Rupture', 'name': 'Valeur Min', 'editable': False},
+                                            {'id': 'Risque Rupture', 'name': 'Valeur Max', 'editable': False},
+                                            {'id': 'Bon Stock', 'name': 'Valeur Moyenne', 'editable': False},
+                                            {'id': 'Sur Stock', 'name': 'Écart type ', 'editable': False},
+
+                                        ],
+                                        data=[
+                                            {'Rupture': ''}, {'Rupture': ''}
+                                        ],
+                                        style_data_conditional=[
+                                            {
+                                                'if':
+                                                    {
+                                                        'column_id': 'Rupture',
+                                                    },
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'background-image': 'linear-gradient(to right, rgb(200, 0, 0), black)',
+                                                'border': 'linear-gradient(to right, rgb(200, 0, 0), black))',
+                                                'text-align': 'center',
+                                                'font_size': '18px',
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Risque Rupture',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black, black)',
+                                                'border': 'linear-gradient(to right, black, black)',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'text-align': 'center',
+                                                'font_size': '18px',
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Bon Stock',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black, black)',
+                                                'border': 'linear-gradient(to right, black, black)',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'text-align': 'center',
+                                                'font_size': '18px',
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Sur Stock',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black, rgb(200, 0, 0))',
+                                                'border': 'linear-gradient(to right, black, rgb(200, 0, 0))',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'font_size': '18px',
+                                                'text-align': 'center'
+                                            },
+                                        ],
+                                        style_header_conditional=[
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Rupture',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, rgb(200, 0, 0), black)',
+                                                'border': 'linear-gradient(to right, rgb(200, 0, 0), black)',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'font_size': '18px',
+                                                'text-align': 'center'
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Risque Rupture',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black,black)',
+                                                'border': 'linear-gradient(to right, black,black)',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'font_size': '18px',
+                                                'text-align': 'center'
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Bon Stock',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black,black)',
+                                                'border': 'linear-gradient(to right,black,black)',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'font_size': '18px',
+                                                'text-align': 'center'
+                                            },
+                                            {
+
+                                                'if':
+                                                    {
+                                                        'column_id': 'Sur Stock',
+                                                    },
+                                                'background-image': 'linear-gradient(to right, black,rgb(200, 0, 0))',
+                                                'border': 'linear-gradient(to right,black,rgb(200, 0, 0))',
+                                                'color': 'white',
+                                                'width': '80px',
+                                                'font_size': '18px',
+                                                'text-align': 'center'
+                                            },
+                                        ],
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [dcc.Graph(id="pie")],
+                                                className="pretty_container",
+                                            ),
+                                        ],
+                                        className="flex-display",
+                                    ),
+                                    # html.Div(
+                                    #     [dcc.Graph(id="pie")],
+                                    #     className="",
+                                    # ),
+                                ], style={'display': 'none'}, id='div_table'
+                                # <-- This is the line that will be changed by the dropdown callback
+                            ),
             html.Div(
                 [
                     html.Div(
-                        [dcc.Graph(id="aggregate_graph")],
+                        [
+                            dcc.Loading(
+                                dcc.Graph(id="aggregate_graph")
+                            )
+                        ],
                         className="",
                     ),
                     dcc.Loading(
@@ -498,16 +478,329 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
             ]
         }
     }
+    if (groupe_by == 'Product'):
+        data = []
+    
+        results = StockCheck.objects.filter(
+            Q(location__in=selected_locations) & Q(product__category__in=selected_categories) & Q(
+                product__in=[selected_products]) & Q(check_date__gte=start_date) & Q(check_date__lte=end_date)).values(
+            'product__reference','product__id','check_date').order_by('product__reference', 'check_date').annotate(sum=Sum('quantity'))
 
-    if (groupe_by == 'Categorie'):
+        operations = Operation.objects.filter(
+            Q(product__in=[selected_products]) &
+            Q(status__in=selected_statuts) &
+            Q(location__in=selected_locations) &
+            Q(product__category__in=selected_categories) &
+            Q(operation_date__gte=start_date) &
+            Q(operation_date__lte=end_date)).values('product__reference', 'operation_date', 'quantity').order_by(
+            'product__reference','product__id','operation_date')
+
+        df = pd.DataFrame(list(operations))
+
+        df_results = pd.DataFrame(list(results.values()))
+
+        if n_clicks > 0 and dates:
+
+            stock_images = StockCheck.objects.filter(
+                Q(product__in=[selected_products]) & Q(status__in=selected_statuts) & Q(
+                    location__in=selected_locations) & Q(product__category__in=selected_categories) & Q(
+                    check_date__in=dates)).values('product__reference', 'product__id', 'check_date').order_by(
+                'product__reference', 'check_date').annotate(sum=Sum('quantity'))
+
+            all_y_data = []
+            if (len(stock_images) > 0):
+                for stock_image in stock_images:
+                    range_futur_date = []
+                    range_past_date = []
+                    range_futur_date = pd.date_range(stock_image['check_date'], end_date)
+                    range_past_date = pd.date_range(start_date, stock_image['check_date'])
+                    range_past_date = range_past_date.sort_values(ascending=False)
+
+                    x_date = []
+                    y_quantity = []
+
+                    max_data = {'value': stock_image['sum'], 'date': stock_image['check_date']}
+
+                    min_data = {'value': stock_image['sum'], 'date': stock_image['check_date']}
+
+                    x_date.append(stock_image['check_date'])
+
+                    y_quantity.append(stock_image['sum'])
+
+                    # ------------------------------------------------- future -------------------------------------------------------------------------
+
+                    if (len(df) != 0 and len(results) != 0):
+                        df_future = df[(df.product__reference == stock_image['product__reference'])]
+
+                        for date in range_futur_date:
+                            x_date.append(date)
+                            y_quantity.append(y_quantity[-1])
+                            newDf = df_future[(df_future.operation_date == date)]
+                            if (len(newDf) != 0):
+                                for index, row in newDf.iterrows():
+                                    y_quantity[-1] += row['quantity']
+                                    # Boucle for coorection if you dont want coorection comment the this bloc
+
+                            for result in results:
+                                if result['check_date'] == date and result['product__reference'] == stock_image[
+                                    'product__reference']:
+                                    y_quantity[-1] = result['sum']
+
+                            if y_quantity[-1] >= max_data['value']:
+                                max_data['value'] = y_quantity[-1]
+                                max_data['date'] = date
+
+                            if y_quantity[-1] <= min_data['value']:
+                                min_data['value'] = y_quantity[-1]
+                                min_data['date'] = date
+                    else:
+                        for date in range_futur_date:
+                            x_date.append(date)
+                            y_quantity.append(y_quantity[-1])
+                    # ----------------------------------------------past-----------------------------------------------------------------------------------
+                    x_past_date = []
+                    y_past_quantity = []
+                    x_past_date.append(stock_image['check_date'])
+                    y_past_quantity.append(stock_image['sum'])
+
+                    if (len(df) != 0 and len(results) != 0):
+                        df_past = df[(df.product__reference == stock_image['product__reference'])]
+
+                        for date in range_past_date[1::]:
+                            x_past_date.append(date)
+                            y_past_quantity.append(y_past_quantity[-1])
+
+                            newDf = df_past[(df_past.operation_date == date)]
+
+                            if (len(newDf) != 0):
+                                for index, row in newDf.iterrows():
+                                    y_past_quantity[-1] -= row['quantity']
+                            # Boucle for coorection if you dont want coorection comment the this bloc 
+                            for result in results:
+                                if result['check_date'] == date and result['product__reference'] == stock_image[
+                                    'product__reference']:
+                                    y_past_quantity[-1] = result['sum']
+
+                            if y_past_quantity[-1] >= max_data['value']:
+                                max_data['value'] = y_past_quantity[-1]
+                                max_data['date'] = date
+
+                            if y_quantity[-1] <= min_data['value']:
+                                min_data['value'] = y_past_quantity[-1]
+                                min_data['date'] = date
+                    else:
+                        for date in range_past_date[1::]:
+                            x_past_date.append(date)
+                            y_past_quantity.append(y_past_quantity[-1])
+                    # -------------------------------------------------------- Plot -------------------------------------------------------------
+                    x_total = []
+                    y_total = []
+                    x_total = x_past_date[::-1]
+                    x_total.extend(x_date[2::])
+                    y_total = y_past_quantity[::-1]
+                    y_total.extend(y_quantity[2::])
+
+                    all_y_data.extend(y_total)
+
+                    data.append(
+                        dict(
+                            type="scatter",
+                            mode="lines+markers",
+                            name=' Simulation de Stock' + stock_image['product__reference'],
+                            x=x_total,
+                            y=y_total,
+                            line=dict(shape="spline", smoothing="2"),
+                            marker=dict(symbol="diamond-open"),
+                        ),
+                    )
+                    # ---------------------------------------------------------------------{end calcul stock}---------------------------------------------------------
+            # ---------------------------------------------------{Table}------------------------------------------------------
+            nbr_rupture = 0
+            nbr_risque_rupture = 0
+            nbr_bon_stock = 0
+            nbr_sur_stock = 0
+            rupture = 0
+
+            if value_risque_rupture != None and value_bon_stock != None:
+
+                risque_rupture = int(value_risque_rupture)
+                bon_stock = int(value_bon_stock)
+
+                for y in all_y_data:
+                    if y == rupture:
+                        nbr_rupture += 1
+                    elif y <= risque_rupture and y > rupture:
+                        nbr_risque_rupture += 1
+                    elif y <= bon_stock and y > risque_rupture:
+                        nbr_bon_stock += 1
+                    elif y > bon_stock:
+                        nbr_sur_stock += 1
+
+                ecart_type_data = statistics.pstdev(all_y_data)
+                mean_data = statistics.mean(all_y_data)
+
+                mean_data = np.around(float(mean_data), 2)
+
+                start_time = time.strptime(start_date, '%Y-%m-%d')
+                end_time = time.strptime(end_date, '%Y-%m-%d')
+                try:
+                    rows[0]['Rupture'] = min_data['value']
+                    rows[1]['Rupture'] = min_data['date'].date()
+                except:
+                    rows[0]['Rupture'] = 'NA'
+                try:
+                    rows[0]['Risque Rupture'] = max_data['value']
+                    rows[1]['Risque Rupture'] = max_data['date'].date()
+                except:
+                    rows[0]['Risque Rupture'] = 'NA'
+                try:
+                    rows[0]['Bon Stock'] = mean_data
+                    rows[1]['Bon Stock'] = time.strftime('%d/%m/%Y ', end_time) + ' <--> ' + time.strftime('%d/%m/%Y ',
+                                                                                                           start_time)
+
+                except:
+                    rows[0]['Bon Stock'] = 'NA'
+                try:
+                    rows[0]['Sur Stock'] = np.around(float(ecart_type_data), 2)
+                    rows[1]['Sur Stock'] = time.strftime('%d/%m/%Y ', end_time) + ' <--> ' + time.strftime('%d/%m/%Y ',
+                                                                                                           start_time)
+                except:
+                    rows[0]['Sur Stock'] = 'NA'
+                table_style = {'display': 'block'}
+
+                max_data = max(all_y_data)
+                min_data = min(all_y_data)
+                if min_data < 0:
+                    min_data = 0
+                if max_data < 0:
+                    max_data = 0
+
+                crit = np.array([1, 10, 2, 6, 1, 2, 2, 3, 1, 4, 6, 6, 9, 10, 5, 8, 3, 8,
+                                 5, 4, 9, 2, 8, 7, 1, 1, 7, 3, 9, 9, 6, 6, 8, 9, 6, 7, 5,
+                                 9, 8, 4, 4, 5, 6, 2, 9, 9, 4, 6, 9, 9])
+                color_dict = {
+                    'Rupture': 'rgb(255, 0, 0)',
+                    'Risque de Rupture': 'rgb(255, 153, 0)',
+                    'Bon Stock': 'rgb(0, 204, 102)',
+                    'Sur Stock': 'rgb(128, 0, 0)',
+                }
+
+                labels = np.unique(crit)  # or simply = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                values = np.bincount(crit)[1:]  # [5, 5, 3, 5, 4, 8, 3, 5, 10, 2]
+
+                labels = [
+                    'Rupture', 'Risque de Rupture', 'Bon Stock', 'Sur Stock'
+                ]
+                values = [
+                    nbr_rupture, nbr_risque_rupture, nbr_bon_stock, nbr_sur_stock
+                ]
+
+                colors = ['rgb(255, 0, 0)', 'rgb(255, 153, 0)', 'rgb(0, 255, 0)', 'rgb(153, 51, 51)']
+
+                fig = go.Figure(
+                    data=[
+                        go.Pie(
+                            labels=labels,
+                            values=values,
+                            pull=[0.1, 0.1, 0.1, 0.1]
+                        ),
+                    ]
+                )
+                fig.update_traces(
+                    hoverinfo='value+percent',
+                    textinfo='value+percent',
+                    hole=.4,
+                    marker=dict(colors=colors),
+
+                )
+                # fig.update_layout(legend = dict(font = dict(family = "Courier", size = 20, color = "black",)),
+                #   legend_title = dict(font = dict(family = "Courier", size = 20, color = "blue")))
+                fig.update_layout(
+                    xaxis_title="X Axis Title",
+                    yaxis_title="Y Axis Title",
+                    legend_title="Legend Title",
+                    font=dict(
+                        family="Courier New, monospace",
+                        size=18,
+                        color="black"
+                    )
+                )
+                # # fig = {
+                #     "data": [
+                #         {
+                #         "values": values,
+                #         "labels": labels,
+                #         'domain':{'x': [0, 1], 'y': [0, 1]},
+                #         "name": "Criticality",
+                #         "sort": False,
+                #         'pull' : [0.1, 0.1, 0.1, 0.1],
+                #         "marker": {'colors': ['rgb(255, 0, 0)', 'rgb(255, 153, 0)', 'rgb(0, 255, 0)','rgb(153, 51, 51)']},
+                #         "textinfo":"value+label",
+                #         "textfont": {'color': '#000000', 'size': 15},
+                #         "hole": .4,
+                #         "type": "pie",
+                #         'text-align': 'center',
+                #         'fontStyle': 'oblique',
+                #         'fontWeight': 'bold',
+                #         } 
+                #     ],
+                #     "layout": {
+                #         "title":"Criticalities",
+                #         "annotations": [
+                #             {
+                #                 "font": {
+                #                     "size": 1000,
+                #                     "color": '#5A5A5A'
+                #                 },
+                #                 "showarrow": False,
+                #                 'autosize':True,
+                #                 "text": "",
+                #                 'text-align': 'center',
+                #                 'fontStyle': 'oblique',
+                #                 'fontWeight': 'bold',
+                #             }
+                #         ]
+                #     }
+                # }
+
+        cats = _all_products.copy()
+        print(cats,'desrtoo1')
+        for cat in _all_products:
+            if cat['value'] in [selected_products]:
+                pass
+            else:
+                cats.remove(cat)
+                
+        print(cats,'desrtoo')
+        for cat in cats:
+            x = []
+            y = []
+            for target in results:
+                if (cat['value'] == target['product__id']):
+                    x.append(target['check_date'])
+                    y.append(target['sum'])
+                    
+            data.append(
+                dict(
+                    type="scatter",
+                    mode="lines+markers",
+                    name='Product: ' + cat['label'],
+                    x=x,
+                    y=y,
+                    line=dict(shape="spline", smoothing="2"),
+                    marker=dict(symbol="diamond-open"),
+                ),
+            )
+   
+    elif (groupe_by == 'Categorie'):
 
         results = StockCheck.objects.filter(
             Q(location__in=selected_locations) & Q(product__category__in=selected_categories) & Q(
-                product__in=selected_products) & Q(check_date__gte=start_date) & Q(check_date__lte=end_date)).values(
+                product__in=[selected_products]) & Q(check_date__gte=start_date) & Q(check_date__lte=end_date)).values(
             'product__category', 'check_date').order_by('product__category', 'check_date').annotate(sum=Sum('quantity'))
 
         operations = Operation.objects.filter(
-            Q(product__in=selected_products) &
+            Q(product__in=[selected_products]) &
             Q(status__in=selected_statuts) &
             Q(location__in=selected_locations) &
             Q(product__category__in=selected_categories) &
@@ -522,7 +815,7 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
         if n_clicks > 0 and dates:
 
             stock_images = StockCheck.objects.filter(
-                Q(product__in=selected_products) & Q(status__in=selected_statuts) & Q(
+                Q(product__in=[selected_products]) & Q(status__in=selected_statuts) & Q(
                     location__in=selected_locations) & Q(product__category__in=selected_categories) & Q(
                     check_date__in=dates)).values('product__category', 'product__category__id',
                                                   'product__category__reference', 'check_date').order_by(
@@ -801,17 +1094,18 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
                 dict(
                     type="scatter",
                     mode="lines+markers",
-                    name='Location : ' + cat['label'],
+                    name='Category : ' + cat['label'],
                     x=x,
                     y=y,
                     line=dict(shape="spline", smoothing="2"),
                     marker=dict(symbol="diamond-open"),
                 ),
             )
+   
     elif (groupe_by == 'Location'):
 
-        results = StockCheck.objects.filter(Q(location__in=selected_locations) & Q(product__in=selected_products) & Q(
-            product__category__in=selected_categories) & Q(product__in=selected_products) & Q(
+        results = StockCheck.objects.filter(Q(location__in=selected_locations) & Q(product__in=[selected_products]) & Q(
+            product__category__in=selected_categories) & Q(product__in=[selected_products]) & Q(
             product__category__in=selected_categories) & Q(check_date__gte=start_date) & Q(
             check_date__lte=end_date)).values('location', 'check_date').order_by('location', 'check_date').annotate(
             sum=Sum('quantity'))
@@ -844,8 +1138,8 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
 
         # ------------------------------------------------------{start calcule image stock } ------------------------------------------------------------------
 
-        if selected_references:
-            stock_images = StockCheck.objects.all().filter(Q(id__in=selected_references)).order_by('check_date')
+        if False:
+            stock_images = StockCheck.objects.all().order_by('check_date')
 
             for stock_image in stock_images:
                 range_futur_date = []
@@ -950,11 +1244,11 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
                 )
 
                 # ---------------------------------------------------------------------{end calcul stock}---------------------------------------------------------
-    elif (groupe_by == 'Product'):
+    elif (groupe_by == 'Prodduct'):
 
         results = StockCheck.objects.filter(
             Q(location__in=selected_locations) &
-            Q(product__in=selected_products) &
+            Q(product__in=[selected_products]) &
             Q(status__in=selected_statuts) &
             Q(product__category__in=selected_categories) &
             Q(check_date__gte=start_date) &
@@ -962,7 +1256,7 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
             'product', 'check_date')
 
         operations = Operation.objects.filter(
-            Q(product__in=selected_products) &
+            Q(product__in=[selected_products]) &
             Q(status__in=selected_statuts) &
             Q(location__in=selected_locations) &
             Q(product__category__in=selected_categories) &
@@ -980,12 +1274,12 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
         if n_clicks > 0 and dates:
 
             stock_images = StockCheck.objects.filter(
-                Q(product__in=selected_products) & Q(status__in=selected_statuts) & Q(
+                Q(product__in=[selected_products]) & Q(status__in=selected_statuts) & Q(
                     location__in=selected_locations) & Q(product__category__in=selected_categories) & Q(
                     check_date__in=dates)).values('product', 'product__reference', 'product__id',
                                                   'check_date').annotate(sum=Sum('quantity')).order_by('product',
                                                                                                        'check_date')
-
+            print(len(stock_images),'salam mustapha')
             all_y_data = []
             if (len(stock_images) > 0):
                 for stock_image in stock_images:
@@ -1062,6 +1356,9 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
                     y_total.extend(y_quantity[2::])
 
                     all_y_data.extend(y_total)
+                    
+                    
+                    print('hello',all_y_data)
 
                     data.append(
                         dict(
@@ -1096,23 +1393,44 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
                         nbr_bon_stock += 1
                     elif y > bon_stock:
                         nbr_sur_stock += 1
+                ecart_type_data = statistics.pstdev(all_y_data)
+                mean_data = statistics.mean(all_y_data)
+
+                mean_data = np.around(float(mean_data), 2)
+
+                start_time = time.strptime(start_date, '%Y-%m-%d')
+                end_time = time.strptime(end_date, '%Y-%m-%d')
                 try:
-                    rows[0]['Rupture'] = nbr_rupture
+                    rows[0]['Rupture'] = min_data['value']
+                    rows[1]['Rupture'] = min_data['date'].date()
                 except:
                     rows[0]['Rupture'] = 'NA'
                 try:
-                    rows[0]['Risque Rupture'] = nbr_risque_rupture
+                    rows[0]['Risque Rupture'] = max_data['value']
+                    rows[1]['Risque Rupture'] = max_data['date'].date()
                 except:
                     rows[0]['Risque Rupture'] = 'NA'
                 try:
-                    rows[0]['Bon Stock'] = nbr_bon_stock
+                    rows[0]['Bon Stock'] = mean_data
+                    rows[1]['Bon Stock'] = time.strftime('%d/%m/%Y ', end_time) + ' <--> ' + time.strftime('%d/%m/%Y ',
+                                                                                                           start_time)
+
                 except:
                     rows[0]['Bon Stock'] = 'NA'
                 try:
-                    rows[0]['Sur Stock'] = nbr_sur_stock
+                    rows[0]['Sur Stock'] = np.around(float(ecart_type_data), 2)
+                    rows[1]['Sur Stock'] = time.strftime('%d/%m/%Y ', end_time) + ' <--> ' + time.strftime('%d/%m/%Y ',
+                                                                                                           start_time)
                 except:
                     rows[0]['Sur Stock'] = 'NA'
                 table_style = {'display': 'block'}
+
+                max_data = max(all_y_data)
+                min_data = min(all_y_data)
+                if min_data < 0:
+                    min_data = 0
+                if max_data < 0:
+                    max_data = 0
 
                 crit = np.array([1, 10, 2, 6, 1, 2, 2, 3, 1, 4, 6, 6, 9, 10, 5, 8, 3, 8,
                                  5, 4, 9, 2, 8, 7, 1, 1, 7, 3, 9, 9, 6, 6, 8, 9, 6, 7, 5,
@@ -1192,7 +1510,7 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
 
         prods = _all_products.copy()
         for prod in _all_products:
-            if prod['value'] in selected_products:
+            if prod['value'] in [selected_products]:
                 pass
             else:
                 prods.remove(prod)
@@ -1216,11 +1534,13 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
             )
 
     else:
+        
+        data = []
 
         if selected_categories and selected_products and selected_locations:
 
             results = StockCheck.objects.filter(
-                product__in=selected_products,
+                product__in=[selected_products],
                 location__in=selected_locations,
                 product__category__in=selected_categories,
                 check_date__gte=start_date,
@@ -1228,7 +1548,7 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
             ).order_by('check_date')
 
             operations = Operation.objects.all().filter(
-                Q(product__in=selected_products) & Q(location__in=selected_locations) & Q(
+                Q(product__in=[selected_products]) & Q(location__in=selected_locations) & Q(
                     product__category__in=selected_categories) & Q(operation_date__gte=start_date) & Q(
                     operation_date__lte=end_date)).values('operation_date', 'location', 'product').order_by(
                 'operation_date')
@@ -1241,7 +1561,7 @@ def make_aggregate_figure(selected_products, selected_statuts, selected_location
             if n_clicks > 0 and dates:
 
                 stock_images = StockCheck.objects.all().filter(
-                    Q(product__in=selected_products) & Q(location__in=selected_locations) & Q(
+                    Q(product__in=[selected_products]) & Q(location__in=selected_locations) & Q(
                         product__category__in=selected_categories) & Q(check_date__in=dates)).order_by('check_date')
 
                 all_y_data = []
@@ -1468,7 +1788,7 @@ def set_stock_images_reference_options(selected_products, selected_status, selec
                                        groupe_by, start_date, end_date):
     stock_images = StockCheck.objects.distinct('check_date')
     stock_images = stock_images.filter(
-        product__in=selected_products,
+        product__in=[selected_products],
         status__in=selected_status,
         location__in=selected_locations,
         product__category__in=selected_categories,
@@ -1487,8 +1807,8 @@ def set_stock_images_reference_options(selected_products, selected_status, selec
     Output(dropdown_categorie_list_id, 'options'),
     [Input(dropdown_product_list_id, 'value')])
 def set_product_options(selected_products):
-    if (selected_products):
-        products = Product.objects.all().filter(id__in=selected_products)
+    if ([selected_products]):
+        products = Product.objects.all().filter(id__in=[selected_products])
     else:
         products = Product.objects.all()
     categories = []

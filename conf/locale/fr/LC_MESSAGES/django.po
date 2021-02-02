@@ -150,6 +150,10 @@ msgstr "Précision de la prévision"
 msgid "F-Orchest"
 msgstr ""
 
+#: templates/partials/_sidebar.html:91
+msgid "Diagnostic"
+msgstr "Diagnostique"
+
 #: templates/partials/_sidebar.html:92
 msgid "Deployment"
 msgstr "Déploiement"

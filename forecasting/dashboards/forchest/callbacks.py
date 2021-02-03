@@ -24,6 +24,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 
+
 @app.expanded_callback(
     [
         Output(ids.DIV_CHART, 'children'),
@@ -37,7 +38,7 @@ import dash_table
     ]
 )
 def init_graph_and_dataframe(n_clicks, *args, **kwargs):
-    ''' Plot initial graph and initiate the dataframe ''' 
+    ''' Plot initial graph and initiate the dataframe '''
     _plot_freq = 'M'
     # Get version detail object
     versiondetail_id = kwargs['session_state']['dash_context']['versiondetail_id']
@@ -68,13 +69,14 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         # Get version detail object
         _delta_year = 2
         versiondetail_id = kwargs['session_state']['dash_context']['versiondetail_id']
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
 
         qs = EventDetail.objects.filter(
             # product=versiondetail_obj.product,
             # circuit=versiondetail_obj.circuit,
             # start_date__gte=versiondetail_obj.version.version_date -
-            #     timedelta(days=365*_delta_year),
+            # timedelta(days=365*_delta_year),
         )
         qs = qs.values('id', 'product', 'circuit', 'event__id',
                        'start_date', 'lower_window', 'upper_window')
@@ -84,7 +86,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     eventdetail_df = read_frame(eventdetail_qs)
     # Hide first 3 columns
     eventdetail_columns = [{
-        'name': i, 
+        'name': i,
         'id': i,
         'presentation': 'dropdown' if i == 'event__id' else None,
         'editable': True if (user.has_perm('forecasting.can_request_review')) else False,
@@ -92,24 +94,25 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     } for i in eventdetail_df.columns[3:]]
     eventdetail_data = eventdetail_df.to_dict('records')
     # Get all events for the dropdown
-    _all_events_dropdown = list(Event.objects.annotate(label=F('category'), value=F('id')).values('label', 'value').distinct())
-
+    _all_events_dropdown = list(Event.objects.annotate(
+        label=F('category'), value=F('id')).values('label', 'value').distinct())
 
     def get_order_history_qs(versiondetail_id):
         ''' Get last 2 years (based on version date) of orders data for the selected product & circuit '''
         _delta_year = 2
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
         qs = OrderDetail.objects.filter(
             product=versiondetail_obj.product,
             circuit=versiondetail_obj.circuit,
             order__ordered_at__gte=versiondetail_obj.version.version_date -
-                                    timedelta(days=365*_delta_year),
+            timedelta(days=365*_delta_year),
             order__ordered_at__lte=versiondetail_obj.version.version_date,
         )
         qs = qs.values('order__ordered_at', 'ordered_quantity')
         qs = qs.order_by('order__ordered_at')
         return qs
-    
+
     def get_forecast_qs(versiondetail_id):
         ''' Get forecasts of selected version '''
         versiondetail_obj = get_object_or_404(
@@ -128,7 +131,8 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
 
     def get_target_qs(versiondetail_id):
         _delta_year = 2
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
 
         qs = Target.objects.filter(
             product=versiondetail_obj.product,
@@ -143,7 +147,8 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
 
     def get_plannedorder_qs(versiondetail_id):
         _delta_year = 2
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
 
         qs = PlannedOrder.objects.filter(
             product=versiondetail_obj.product,
@@ -157,7 +162,6 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         qs = qs.order_by('planned_at')
         return qs
 
-
     # Get forecasts
     forecast_qs = get_forecast_qs(versiondetail_id)
     forecast_df = read_frame(forecast_qs)
@@ -165,7 +169,6 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     # forecast_df['event__id'] = forecast_df['event__id'].astype('int32')
     forecast_df['forecast_date'] = forecast_df['forecast_date'].astype(
         'datetime64[ns]')
-
 
     # Group data and prepare the dataframe for the plot
     forecast_df = forecast_df.groupby(
@@ -189,7 +192,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     plannedorder_df = read_frame(plannedorder_qs)
     plannedorder_df['planned_at'] = plannedorder_df['planned_at'].astype(
         'datetime64[ns]')
-        
+
     # Group data and prepare the dataframe for the plot
     plannedorder_df = plannedorder_df.groupby(
         pd.Grouper(key='planned_at', freq=_plot_freq)
@@ -203,18 +206,49 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     # Convert datetime to date
     plannedorder_df['planned_at'] = plannedorder_df['planned_at'].dt.date
 
-
     # Add planned orders to the forecasted df
     forecast_df = pd.merge(forecast_df, plannedorder_df,
                            how='left', left_on='forecast_date', right_on='planned_at')
     # # Sum planned & forecasted quantity
     # forecast_df['planned_quantity'] = forecast_df['planned_quantity'].fillna(0)
 
+    # FIXME added for demo purposes (to be deleted)
+    # Get demo
+    # random seed
+    prng = RandomState(1234567890)
+    demo_date_column = pd.date_range('2020-01-31', '2020-07-31',
+                                     freq='MS').tolist()
+    demo_quantity_column = prng.randint(0, 1500, size=len(demo_date_column))
+    demo_quantity_column[-1] = 205
+    # demo_date_column = pd.date_range('2020-01-01', '2020-06-20',
+    #           freq='MS').strftime("%Y-%b").tolist()
+    demo_data_df = pd.DataFrame({
+        'order__ordered_at': demo_date_column,
+        'ordered_quantity': demo_quantity_column
+    })
+    # merged_df = merged_df.append(demo_data_df, ignore_index=True)
+    demo_data_df = demo_data_df.groupby(
+        pd.Grouper(key='order__ordered_at', freq=_plot_freq)
+    ).agg({
+        'ordered_quantity': 'sum',
+    }).reset_index(
+    ).sort_values(
+        by=['order__ordered_at'],
+        ascending=True,
+    )
+
+
+
     # Get orders
     order_qs = get_order_history_qs(versiondetail_id)
     order_df = read_frame(order_qs)
+
+    # FIXME appended demo data (for demo)
+    order_df = order_df.append(demo_data_df, ignore_index=True)
+
     order_df['order__ordered_at'] = order_df['order__ordered_at'].astype(
         'datetime64[ns]')
+
 
     # Group data and prepare the dataframe for the plot
     order_df = order_df.groupby(
@@ -244,6 +278,9 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         by=['targeted_date'],
         ascending=True,
     )
+
+
+    
     # Convert datetime to date
     target_df['targeted_date'] = target_df['targeted_date'].dt.date
 
@@ -254,14 +291,14 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     # Merge date columns
     merged_df['date'] = merged_df.apply(lambda row: row['order__ordered_at']
                                         if not pd.isna(row['order__ordered_at']) else row['forecast_date'], axis=1)
-
     # Merge with target df
     merged_df = pd.merge(merged_df, target_df,
                          how='left', left_on='date', right_on='targeted_date')
     merged_df = merged_df[['date', 'targeted_quantity', 'ordered_quantity', 'planned_quantity',
-                         'forecasted_quantity', 'edited_forecasted_quantity']]
+                           'forecasted_quantity', 'edited_forecasted_quantity']]
     merged_df = merged_df.sort_values('date')
-    
+
+
     # Plot the figure
     # Add targeted_quantity to graph
     figure = merged_df.iplot(
@@ -299,22 +336,20 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             name='ordered_quantity',
         )
     ])
-
+    
     # Convert date to year-month
     # merged_df['date'] = pd.to_datetime(merged_df['date']).dt.to_period('M')
-    merged_df['date'] = merged_df['date'].apply(lambda x: x.strftime('%B-%Y'))
+    # merged_df['date'] = merged_df['date'].apply(lambda x: x.strftime('%B-%Y'))
 
+    # FIXME Add empty columns to the dataframe (to be deleted)
+    added_columns = ['objectif_famille', 'prev_famille', 'capacité_famille', 'prev_total', 'objectif_total']
+    for c in added_columns:
+        merged_df[c] = ''
 
+    merged_df['planned_quantity'] = prng.randint(0, 50, size=len(merged_df.index))
 
-    # # FIXME Add empty columns to the dataframe (to be deleted)
-    # added_columns = ['objectif_famille', 'prev_famille', 'capacité_famille', 'prev_total, objectif_total']
-    # for c in added_columns:
-    #     merged_df[c] = ''
+    
 
-    # # random seed
-    # prng = RandomState(1234567890)
-
-    # merged_df['planned_quantity'] = prng.randint(0, 50, size=len(merged_df.index))
 
     # Output datatable
     forecast_columns = [
@@ -324,7 +359,6 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             'editable': True if (i == 'edited_forecasted_quantity' and user.has_perm('forecasting.can_request_review')) else False,
         } for i in merged_df.columns
     ]
-
     forecast_data = merged_df.to_dict('records')
 
     div = html.Div([
@@ -344,14 +378,15 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
                 ),
                 dcc.Loading(
                     dcc.Graph(
-                        id=ids.CHART_ORDER_FORECAST, 
+                        id=ids.CHART_ORDER_FORECAST,
                         figure=figure,
-                        config=dict(displaylogo=False, showLink=False, showTips=True)
+                        config=dict(displaylogo=False,
+                                    showLink=False, showTips=True)
                     ),
                 ),
             ], sm=12, md=12, lg=12),
         ]),
-    
+
         # Datatable
         dbc.Row([
             dbc.Col([
@@ -421,7 +456,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
                         page_size=50,
                         style_data_conditional=[{
                             'if': {'column_editable': True},
-                            'backgroundColor': 'WhiteSmoke',                            
+                            'backgroundColor': 'WhiteSmoke',
                         }],
                     )
                 )
@@ -448,10 +483,11 @@ def add_row(n_clicks, rows, columns, * args, **kwargs):
         rows.append({c['id']: '' for c in columns})
     return rows
 
+
 @app.callback(
     # [
     Output(ids.MODAL_DIV, 'is_open'),
-    # ],   
+    # ],
     [
         Input(ids.BUTTON_SUBMIT_REVIEW, 'n_clicks'),
         Input(ids.MODAL_BUTTON_CLOSE, 'n_clicks')
@@ -462,7 +498,7 @@ def add_row(n_clicks, rows, columns, * args, **kwargs):
 )
 def toggle_modal(n_clicks_submit, n_clicks_close, is_open, * args, **kwargs):
     ''' Return the state of the modal '''
-    
+
     body_div = html.Embed(
         src=VersionDetailView.as_view()),
 
@@ -505,8 +541,9 @@ def sent_for_review(n_clicks, value, * args, **kwargs):
     if n_clicks is not None:
         # Get version detail object
         versiondetail_id = kwargs['session_state']['dash_context']['versiondetail_id']
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
-        
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
+
         # Update the object
         approved_by_obj = get_object_or_404(CustomUser, pk=value)
         versiondetail_obj.created_by = kwargs['user']
@@ -514,11 +551,11 @@ def sent_for_review(n_clicks, value, * args, **kwargs):
         versiondetail_obj.approved_by = approved_by_obj
         versiondetail_obj.status = VersionDetail.SENT_FOR_REVIEW
         versiondetail_obj.save()
-        
-        
+
         return True
     return False
-    
+
+
 @app.callback(
     Output(ids.MESSAGE_APPROVE, 'is_open'),
     [
@@ -530,12 +567,14 @@ def approve_review_request(approve_n_clicks, * args, **kwargs):
     if approve_n_clicks is not None:
         # Get version detail object
         versiondetail_id = kwargs['session_state']['dash_context']['versiondetail_id']
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
         # Update the object
         versiondetail_obj.status = VersionDetail.APPROVED
         versiondetail_obj.save()
         return True
     return False
+
 
 @app.callback(
     Output(ids.MESSAGE_REJECT, 'is_open'),
@@ -548,7 +587,8 @@ def reject_review_request(reject_n_clicks, * args, **kwargs):
     if reject_n_clicks is not None:
         # Get version detail object
         versiondetail_id = kwargs['session_state']['dash_context']['versiondetail_id']
-        versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
+        versiondetail_obj = get_object_or_404(
+            VersionDetail, pk=versiondetail_id)
         # Update the object
         versiondetail_obj.status = VersionDetail.REJECTED
         versiondetail_obj.save()
@@ -575,7 +615,8 @@ def on_click_save_edited_forecast(n_clicks, columns, data, * args, **kwargs):
     versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
 
     # Get the dataframe
-    monthly_forecast_df = pd.DataFrame(data, columns=[c['name'] for c in columns])
+    monthly_forecast_df = pd.DataFrame(
+        data, columns=[c['name'] for c in columns])
     monthly_forecast_df['date'] = pd.to_datetime(
         monthly_forecast_df['date'], errors='coerce')
 
@@ -589,14 +630,14 @@ def on_click_save_edited_forecast(n_clicks, columns, data, * args, **kwargs):
                             'forecast_date', 'forecasted_quantity', 'edited_forecasted_quantity')
     # Convert qs to df
     forecast_df = read_frame(forecast_qs)
-    forecast_df['forecast_date'] = pd.to_datetime(forecast_df['forecast_date'], errors='coerce')
-
+    forecast_df['forecast_date'] = pd.to_datetime(
+        forecast_df['forecast_date'], errors='coerce')
 
     def _get_forecasted_quantity_by_circuit_by_month(df, row):
         ''' Return aggregated values for the forecast column '''
         forecasted_quantity_sum = df.loc[
             # (df['circuit__id'] == row['circuit__id']) &
-            (df['forecast_date'].dt.month == row['forecast_date'].month) & 
+            (df['forecast_date'].dt.month == row['forecast_date'].month) &
             (df['forecast_date'].dt.year == row['forecast_date'].year),
             'forecasted_quantity'
         ].sum()
@@ -605,20 +646,25 @@ def on_click_save_edited_forecast(n_clicks, columns, data, * args, **kwargs):
     def _get_edited_forecasted_quantity_by_circuit_by_month(df, row):
         ''' Return aggregated values for the edited forecast column '''
         edited_forecasted_quantity_sum = df.loc[
-            (df['date'].dt.month == row['forecast_date'].month) & 
+            (df['date'].dt.month == row['forecast_date'].month) &
             (df['date'].dt.year == row['forecast_date'].year),
             'edited_forecasted_quantity'
         ].sum()
         return int(edited_forecasted_quantity_sum)
-    
-    forecast_df['forecasted_quantity_by_circuit_by_month'] = forecast_df.apply(lambda row: _get_forecasted_quantity_by_circuit_by_month(forecast_df, row), axis=1)
-    forecast_df['edited_forecasted_quantity_by_circuit_by_month'] = forecast_df.apply(lambda row: _get_edited_forecasted_quantity_by_circuit_by_month(monthly_forecast_df, row), axis=1)
 
-    # FIXME edited forecast conversion to int makes the total value < original value 
+    forecast_df['forecasted_quantity_by_circuit_by_month'] = forecast_df.apply(
+        lambda row: _get_forecasted_quantity_by_circuit_by_month(forecast_df, row), axis=1)
+    forecast_df['edited_forecasted_quantity_by_circuit_by_month'] = forecast_df.apply(
+        lambda row: _get_edited_forecasted_quantity_by_circuit_by_month(monthly_forecast_df, row), axis=1)
+
+    # FIXME edited forecast conversion to int makes the total value < original value
     forecast_df['new_edited_forecasted_quantity'] = forecast_df['edited_forecasted_quantity_by_circuit_by_month'] * \
         forecast_df['forecasted_quantity'] / \
         forecast_df['forecasted_quantity_by_circuit_by_month']
-    forecast_df['new_edited_forecasted_quantity'] = forecast_df['new_edited_forecasted_quantity'].astype(int)
+    forecast_df['new_edited_forecasted_quantity'] = forecast_df['new_edited_forecasted_quantity'].astype(
+        int)
+
+
 
     # Bulk update edited forecasts in database
     forecast_objs = [
@@ -635,4 +681,3 @@ def on_click_save_edited_forecast(n_clicks, columns, data, * args, **kwargs):
     versiondetail_obj.save()
 
     return True
-

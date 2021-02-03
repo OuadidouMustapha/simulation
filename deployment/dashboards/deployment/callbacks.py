@@ -179,13 +179,13 @@ def return_pie_chart_truck_status(warhouses, truckavailability_data, truck_assig
             values=newdf['freq'],
             pull=[0.1, 0.2, 0.2, 0.2],
             name="",
-            marker={
-                'colors': [
-                    'red',
-                    'rgb(0,255,0)',
-                    'rgb(255, 255, 0)'
-                ]
-            },
+            # marker={
+            #     'colors': [
+            #         'crimson',
+            #         'lightgreen',
+            #         'Cyan'
+            #     ]
+            # },
         ), 1, 1)
     figure.update_traces(
         hole=.4, hoverinfo="label+value+name", 

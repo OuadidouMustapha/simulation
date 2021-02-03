@@ -46,12 +46,13 @@ _input = html.Div([
                 ),
             ], sm=12, md=12, lg=12),
             dbc.Col([
-                dbc.Label(_('Stock check date')),
+                # dbc.Label(_('Stock check date')),
                 dcc.Dropdown(
                     id=ids.DROPDOWN_CHECK_DATE,
                     options=_all_check_dates,
                     value=_all_check_dates[-1]['value'] if _all_check_dates else None,
                     className='mb-3',
+                    style={'display': 'none'}
                 ),
 
             ], sm=12, md=12, lg=12),

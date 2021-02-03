@@ -205,7 +205,7 @@ AUTH_USER_MODEL = 'account.CustomUser'
 
 LOGIN_URL = '/account/login'
 # Redirect page after login
-LOGIN_REDIRECT_URL = "/forecasting/index"
+LOGIN_REDIRECT_URL = "/stock"
 # Redirect page after logout    
 LOGOUT_REDIRECT_URL = "/account/login"
 

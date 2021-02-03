@@ -1,3 +1,4 @@
+from numpy.random import RandomState
 from django.shortcuts import get_object_or_404
 from datetime import date, datetime, timedelta
 from django_pandas.io import read_frame
@@ -70,10 +71,10 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         versiondetail_obj = get_object_or_404(VersionDetail, pk=versiondetail_id)
 
         qs = EventDetail.objects.filter(
-            product=versiondetail_obj.product,
-            circuit=versiondetail_obj.circuit,
-            start_date__gte=versiondetail_obj.version.version_date -
-                timedelta(days=365*_delta_year),
+            # product=versiondetail_obj.product,
+            # circuit=versiondetail_obj.circuit,
+            # start_date__gte=versiondetail_obj.version.version_date -
+            #     timedelta(days=365*_delta_year),
         )
         qs = qs.values('id', 'product', 'circuit', 'event__id',
                        'start_date', 'lower_window', 'upper_window')
@@ -253,6 +254,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     # Merge date columns
     merged_df['date'] = merged_df.apply(lambda row: row['order__ordered_at']
                                         if not pd.isna(row['order__ordered_at']) else row['forecast_date'], axis=1)
+
     # Merge with target df
     merged_df = pd.merge(merged_df, target_df,
                          how='left', left_on='date', right_on='targeted_date')
@@ -297,8 +299,22 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             name='ordered_quantity',
         )
     ])
-    print('figure  c', figure)
 
+    # Convert date to year-month
+    # merged_df['date'] = pd.to_datetime(merged_df['date']).dt.to_period('M')
+    merged_df['date'] = merged_df['date'].apply(lambda x: x.strftime('%B-%Y'))
+
+
+
+    # # FIXME Add empty columns to the dataframe (to be deleted)
+    # added_columns = ['objectif_famille', 'prev_famille', 'capacité_famille', 'prev_total, objectif_total']
+    # for c in added_columns:
+    #     merged_df[c] = ''
+
+    # # random seed
+    # prng = RandomState(1234567890)
+
+    # merged_df['planned_quantity'] = prng.randint(0, 50, size=len(merged_df.index))
 
     # Output datatable
     forecast_columns = [
@@ -308,6 +324,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
             'editable': True if (i == 'edited_forecasted_quantity' and user.has_perm('forecasting.can_request_review')) else False,
         } for i in merged_df.columns
     ]
+
     forecast_data = merged_df.to_dict('records')
 
     div = html.Div([
@@ -404,7 +421,7 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
                         page_size=50,
                         style_data_conditional=[{
                             'if': {'column_editable': True},
-                            'backgroundColor': 'WhiteSmoke',
+                            'backgroundColor': 'WhiteSmoke',                            
                         }],
                     )
                 )

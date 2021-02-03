@@ -135,8 +135,8 @@ msgid "Dashboard"
 msgstr "Tableau de bord"
 
 #: templates/partials/_sidebar.html:67
-msgid "Forecasting"
-msgstr "Prévision"
+msgid "Demand planning"
+msgstr "Demand planning"
 
 #: templates/partials/_sidebar.html:74 templates/partials/_sidebar.html:102
 msgid "Overview"
@@ -144,11 +144,11 @@ msgstr "Aperçu"
 
 #: templates/partials/_sidebar.html:81
 msgid "Forecast Accuracy"
-msgstr "Précision de la prévision"
+msgstr "Fiabilité des prévisions"
 
 #: templates/partials/_sidebar.html:84
 msgid "F-Orchest"
-msgstr ""
+msgstr "Réalisation des prévisions"
 
 #: templates/partials/_sidebar.html:91
 msgid "Diagnostic"

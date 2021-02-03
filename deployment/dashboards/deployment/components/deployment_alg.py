@@ -24,8 +24,8 @@ def run_deployment(version_id, check_date, objective_attribute, start_date, end_
 
     PARAM_SAVE_DATA = False
 
-    # version_id = 22
-    # check_date = '2021-02-01'
+    version_id = 22
+    check_date = '2021-02-01'
 
     # Get queries
     product_qs = Product.objects.all()
@@ -40,10 +40,10 @@ def run_deployment(version_id, check_date, objective_attribute, start_date, end_
     truckavailability_qs = TruckAvailability.objects.values(
         'id', 'warehouse', 'available_truck', 'category__capacity', 'category__cost', 'category__truck_type')
 
-    print('product_qs\n', product_qs)
-    print('forecast_qs\n', forecast_qs)
-    print('stockcheck_qs\n', stockcheck_qs)
-    print('truckavailability_qs\n', truckavailability_qs)
+    # print('product_qs\n', product_qs)
+    # print('forecast_qs\n', forecast_qs)
+    # print('stockcheck_qs\n', stockcheck_qs)
+    # print('truckavailability_qs\n', truckavailability_qs)
     # Get dataframes
     product_df = read_frame(product_qs)
     forecast_df = read_frame(forecast_qs)
@@ -51,10 +51,10 @@ def run_deployment(version_id, check_date, objective_attribute, start_date, end_
     truckavailability_df = read_frame(
         truckavailability_qs)
     
-    print('product_df\n', product_df.head(2))
-    print('forecast_df\n', forecast_df.head(2))
-    print('stockcheck_df\n', stockcheck_df.head(2))
-    print('truckavailability_df\n', truckavailability_df.head(2))
+    # print('product_df\n', product_df.head(2))
+    # print('forecast_df\n', forecast_df.head(2))
+    # print('stockcheck_df\n', stockcheck_df.head(2))
+    # print('truckavailability_df\n', truckavailability_df.head(2))
 
     # Format
     truckavailability_df['category__truck_type'] = truckavailability_df['category__truck_type'].astype(
@@ -502,7 +502,7 @@ def run_deployment(version_id, check_date, objective_attribute, start_date, end_
 
     model_stop = timeit.default_timer()
     print('Step 3.1 [after computation] - Done in ', model_stop-model_start)
-    print('truck_assignment_df\n', truck_assignment_df)
+    # print('truck_assignment_df\n', truck_assignment_df)
 
     # Save data
     time_save_date = timeit.default_timer()

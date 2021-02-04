@@ -216,9 +216,9 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
     # Get demo
     # random seed
     prng = RandomState(1234567890)
-    demo_date_column = pd.date_range('2020-01-31', '2020-07-31',
+    demo_date_column = pd.date_range('2020-01-31', '2020-09-30',
                                      freq='MS').tolist()
-    demo_quantity_column = prng.randint(0, 1500, size=len(demo_date_column))
+    demo_quantity_column = prng.randint(0, 1000, size=len(demo_date_column))
     demo_quantity_column[-1] = 205
     # demo_date_column = pd.date_range('2020-01-01', '2020-06-20',
     #           freq='MS').strftime("%Y-%b").tolist()
@@ -306,6 +306,9 @@ def init_graph_and_dataframe(n_clicks, *args, **kwargs):
         kind='bar',
         x='date',
         y=['targeted_quantity'],
+        # layout=dict(
+        #     width=18
+        # ),
         theme='white',
         title=_('Targets, orders & forecasts'),
         xTitle=_('date (monthly)'),

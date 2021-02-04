@@ -534,5 +534,18 @@ def run_deployment(version_id, check_date, objective_attribute, start_date, end_
     truck_assignment_df = truck_assignment_df.sort_values(
         by=['warehouse', 'truckavailability_id', objective_attribute], ascending=[True, True, False]).reset_index(drop=True)
 
+    
+    # TODO Test this bloc
+    truck_assignment_df = truck_assignment_df.groupby(
+        ['truckavailability_id', 'category__truck_type', 'warehouse', 'product', 'product_type']).agg({
+            'truckavailability_id': 'first',
+            'category__truck_type': 'first',
+            'warehouse': 'first',
+            'product': 'first',
+            'product_type': 'first',
+            'deployed_unit_quantity': 'sum',
+            'turnover': 'sum',
+            'gain': 'sum',
+        })
 
     return truckavailability_df, truck_assignment_df

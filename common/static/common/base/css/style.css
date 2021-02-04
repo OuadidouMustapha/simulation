@@ -1,0 +1,8 @@
+/* Make the cursor not allowed when button disabled */
+button:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
+/* .not-allowed {
+     cursor: not-allowed !important;
+} */

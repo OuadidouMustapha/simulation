@@ -79,7 +79,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             ),
@@ -87,7 +87,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             )
@@ -109,7 +109,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
         asFigure=True,
         kind='bar',
         barmode='group',
-        x=['customer'],
+        x=['customer__reference'],
         y=['Not_Delivered', 'Partially_Delivered_In_Time','Partially_Delivered_Not_In_Time', 'Delivered_In_Time', 'Delivered_Not_In_Time'],
         colors= [
             'rgb(255, 0, 0)',
@@ -120,7 +120,7 @@ def plot_OrderDetail_count_by_custmoer_figure(selected_products,
         ],
         theme='white',
         title='title',
-        xTitle='customer',
+        xTitle='supplier',
         yTitle='Number of Orders',
     )
 
@@ -187,7 +187,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             ),
@@ -195,7 +195,7 @@ def plot_otif_by_date_figure(selected_products, selected_categories, selected_cu
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -267,7 +267,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -302,7 +302,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             ),
@@ -310,7 +310,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=None,
                 output_field=IntegerField()
             )
@@ -372,7 +372,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
 
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -411,7 +411,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                     desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                     desired_at__gte=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             ),
@@ -419,7 +419,7 @@ def plot_order_count_figure(selected_products, selected_categories, selected_cus
             Case(
                 When(
                     order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                    desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                    desired_at__lt=F('order__delivery__delivered_at'), then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -551,7 +551,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
                                     start_date, end_date):
     results = OrderDetail.objects.filter(
         product__in=selected_products,
-        # product__category__in=selected_categories,
+        product__category__in=selected_categories,
         product__fmr_segmentation__in=selected_fmr,
         product__abc_segmentation__in=selected_abc,
         order__ordered_at__gte=start_date,
@@ -599,7 +599,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         Case(
             When(
                 order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__lte=F('order__delivery__delivered_at'), then=1),
+                desired_at__gte=F('order__delivery__delivered_at'), then=1),
             default=0,
             output_field=IntegerField()
         ),
@@ -607,7 +607,7 @@ def plot_pie_statuts_product_figure(selected_products, selected_categories, sele
         Case(
             When(
                 order__delivery__deliverydetail__delivered_quantity__gte=F('ordered_quantity'),
-                desired_at__gte=F('order__delivery__delivered_at'), then=1),
+                desired_at__lt=F('order__delivery__delivered_at'), then=1),
             default=0,
             output_field=IntegerField()
         )

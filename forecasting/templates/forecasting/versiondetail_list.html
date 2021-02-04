@@ -7,6 +7,7 @@
 {% load widget_tweaks %}
 
 {% load django_tables2 %}
+{% block header_title %} {% trans 'F-Orchest' %} {% endblock %}
 
 {% block content %}
 
@@ -58,9 +59,9 @@
 
                     <div class="card-body">
 
-                    {% render_table table %}
-                    <button class="btn btn-primary" type="submit" disabled>{% trans "Submit" %}</button>
-
+                        {% render_table table %}
+                        <button class="btn btn-primary" disabled><i class="fas fa-check-circle pr-2"></i>{% trans "Confirm" %}</button>
+                        <button class="btn btn-danger" disabled><i class="fas fa-share pr-2"></i>{% trans "Send for review" %}</button>
                     </div>
                 </div>
             </div>

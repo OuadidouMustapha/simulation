@@ -2,7 +2,7 @@
 
 from common.dashboards import dash_constants, dash_utils
 
-_prefix = 'otif'
+_prefix = 'otif-supplier'
 
 
 # ------------------------------------------{Id Graph}--------------------------------------------------------

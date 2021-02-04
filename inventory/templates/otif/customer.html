@@ -4,14 +4,14 @@
 {% load plotly_dash %}
 {% load i18n %}
 
-{% block header_title %} {% trans 'otif Image ' %} {% endblock %}
+{% block header_title %} {% trans 'OTIF' %} {% endblock %}
 
 {% plotly_header %}
 
 {% block content %}
 
 <!-- stock coverage Dash -->
-{% plotly_direct name="test" %}
+{% plotly_direct name="otif_test" %}
 
     
 {% plotly_footer %}

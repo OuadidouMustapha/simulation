@@ -82,8 +82,9 @@ def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, o
             id=dropdown_id,
             placeholder=placeholder,
             options=options,
-            multi=multi
+            multi=multi,
         ),
+        
         html.Div(
             id=div_checklist_id,
             children=dcc.Checklist(
@@ -93,7 +94,7 @@ def get_filter_dropdown(dropdown_id, div_checklist_id, checkbox_select_all_id, o
                 value=["All" if select_all else ''],
                 labelStyle={'display': 'block', 'cursor': 'pointer', 'margin-top': '10px'},
             ),
-        ),
+        ) if multi else None,
     ])
     return div
 

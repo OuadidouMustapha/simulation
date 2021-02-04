@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-02 15:47+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: dashboards/deployment/callbacks.py:133
+msgid "Number of used/unused trucks by warehouse"
+msgstr "Nombre de véhicules utilisés / non utilisés par entrepôt"
+
+#: dashboards/deployment/callbacks.py:134 dashboards/deployment/layouts.py:158
+#: dashboards/deployment/layouts.py:210
+msgid "Warehouses"
+msgstr "Entrepôts"
+
+#: dashboards/deployment/callbacks.py:135
+msgid "Number of trucks"
+msgstr "Nombre de véhicules"
+
+#: dashboards/deployment/callbacks.py:244
+msgid "Top 10 deployed products"
+msgstr "Top 10 des produits déployés"
+
+#: dashboards/deployment/callbacks.py:245
+#: dashboards/deployment/callbacks.py:257
+msgid "Quantity"
+msgstr "Quantité"
+
+#: dashboards/deployment/callbacks.py:246
+#: dashboards/deployment/callbacks.py:258
+msgid "Product"
+msgstr "Produit"
+
+#: dashboards/deployment/callbacks.py:256
+msgid "Most 10 Products"
+msgstr "Top 10 produits"
+
+#: dashboards/deployment/layouts.py:40
+msgid "Forecast version"
+msgstr "Cycle de prévision"
+
+#: dashboards/deployment/layouts.py:49
+msgid "Stock check date"
+msgstr "Date de l'image de stock"
+
+#: dashboards/deployment/layouts.py:59
+msgid "Maximize"
+msgstr "Maximiser"
+
+#: dashboards/deployment/layouts.py:63
+msgid "Turnover"
+msgstr "Chiffre d'affaire"
+
+#: dashboards/deployment/layouts.py:64
+msgid "Gain"
+msgstr "Gain"
+
+#: dashboards/deployment/layouts.py:72
+msgid "Over the period"
+msgstr "Au cours de la période"
+
+#: dashboards/deployment/layouts.py:88
+msgid "Run"
+msgstr "Executer"
+
+#: dashboards/deployment/layouts.py:93
+msgid "Save"
+msgstr "Enregistrer"
+
+#: dashboards/deployment/layouts.py:104
+msgid "Availability of vehicles and their capacities"
+msgstr "Disponibilité des véhicules et leurs capacités"
+
+#: dashboards/deployment/layouts.py:132
+msgid "Data saved successfully"
+msgstr "Données enregistrées avec succès"
+
+#: dashboards/deployment/layouts.py:152
+msgid "Truck status"
+msgstr "Statut des véhicules"
+
+#: dashboards/deployment/layouts.py:177
+msgid "Trucks by warehouse"
+msgstr "Véhicules par entrepôt"
+
+#: dashboards/deployment/layouts.py:204
+#, fuzzy
+#| msgid "Top 10 deployed products"
+msgid "Top deployed products"
+msgstr "Top 10 des produits déployés"
+
+#: dashboards/deployment/layouts.py:244
+msgid "Deployed quantities by truck"
+msgstr "Quantités déployées par véhicule"

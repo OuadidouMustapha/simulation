@@ -110,10 +110,10 @@ _charts = html.Div([
             hidden=True            
         ),
         html.Button(
-            [html.I(className="fas fa-save mr-2"), _('Save')],
+            [html.I(className="fas fa-check-circle mr-2"), _('Confirm')],
             id=ids.BUTTON_SAVE,
             className="btn btn-xs btn-primary mb-3 mx-3",
-            hidden=True            
+            hidden=True
         ),
         html.Button(
             [html.I(className="fas fa-share mr-2"), _('Send for review')],

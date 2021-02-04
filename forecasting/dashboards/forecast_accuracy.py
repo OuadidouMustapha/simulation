@@ -53,6 +53,7 @@ dropdown_customer_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_custo
 div_customer_list_id = dash_utils.generate_html_id(_prefix, 'div_customer_list_id')
 checkbox_customer_list_id = dash_utils.generate_html_id(_prefix, 'checkbox_customer_list_id')
 
+dropdown_version_list_id = dash_utils.generate_html_id(_prefix, 'dropdown_version_list_id')
 input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id')
 
 # Mini-cards IDs & datatables
@@ -60,14 +61,17 @@ input_date_range_id = dash_utils.generate_html_id(_prefix, 'input_date_range_id'
 mini_card_subtitle_bias_percent_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_bias_percent_id')
 mini_card_dropdown_bias_percent_id = dash_utils.generate_html_id(_prefix, 'mini_card_dropdown_bias_percent_id')
 mini_card_datatable_bias_percent_id = dash_utils.generate_html_id(_prefix, 'mini_card_datatable_bias_percent_id')
+chart_bias_id = dash_utils.generate_html_id(_prefix, 'chart_bias_id')
 # Mini card 2
 mini_card_subtitle_mad_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_mad_id')
 mini_card_dropdown_mad_id = dash_utils.generate_html_id(_prefix, 'mini_card_dropdown_mad_id')
 mini_card_datatable_mad_id = dash_utils.generate_html_id(_prefix, 'mini_card_datatable_mad_id')
+chart_mad_id = dash_utils.generate_html_id(_prefix, 'chart_mad_id')
 # Mini card 3
 mini_card_subtitle_mape_id = dash_utils.generate_html_id(_prefix, 'mini_card_subtitle_mape_id')
 mini_card_dropdown_mape_id = dash_utils.generate_html_id(_prefix, 'mini_card_dropdown_mape_id')
 mini_card_datatable_mape_id = dash_utils.generate_html_id(_prefix, 'mini_card_datatable_mape_id')
+chart_mape_id = dash_utils.generate_html_id(_prefix, 'chart_mape_id')
 
 # Charts
 # Chart right
@@ -110,7 +114,7 @@ _all_products_type = list(Product.objects.get_all_products_by_attribute(attribut
 _all_warehouses = list(Warehouse.objects.get_all_warehouses())
 _all_circuits = list(Circuit.objects.get_all_circuits())
 _all_customers = list(Customer.objects.get_all_customers())
-_select_all_option = {'label': _('All'), 'value': 'all'}
+_select_all_option = {'label': _('All'), 'value': ''}
 _all_customers.insert(0, _select_all_option.copy())
 _all_versions = list(Version.objects.get_all_versions())
 
@@ -148,7 +152,7 @@ def filter_container():
                 dash_utils.get_filter_dropdown(
                     dropdown_circuit_list_id, div_circuit_list_id, checkbox_circuit_list_id, _all_circuits, _('Circuits'))
 
-            ], sm=12, md=6, lg=3),
+            ], sm=12, md=6, lg=2),
             # dbc.Col([
             #     dash_utils.get_filter_dropdown(
             #         dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id, _all_customers, _('Customers'))
@@ -159,9 +163,18 @@ def filter_container():
                 dcc.Dropdown(
                     id=dropdown_customer_list_id,
                     options=_all_customers, 
-                    value='all',
+                    value='',
                 ),
-            ], sm=12, md=6, lg=3),
+            ], sm=12, md=6, lg=2),
+            dbc.Col([
+                dbc.Label(_('Forecast version')),
+                dcc.Dropdown(
+                    id=dropdown_version_list_id,
+                    placeholder=_('Forecast version'),
+                    options=_all_versions,
+                    value=_all_versions[0]['value'] if _all_versions else None,
+                ),
+            ], sm=12, md=6, lg=2),
             dbc.Col([
                 dash_utils.get_date_range(
                     input_date_range_id,
@@ -200,9 +213,18 @@ def body_container():
                         value='warehouse',
                         ),
                     ]),
-                    datatable_div=dash_table.DataTable(
-                        id=mini_card_datatable_bias_percent_id,
-                    )
+                    datatable_div=html.Div([
+                        dcc.Loading(
+                            html.Div([
+                                dcc.Graph(id=chart_bias_id)
+                            ]),
+                        ),
+                        dcc.Loading(
+                            dash_table.DataTable(
+                                id=mini_card_datatable_bias_percent_id,
+                            ),
+                        ),
+                    ]),
                 )
             ], sm=12, md=4, lg=4), 
             dbc.Col([
@@ -228,9 +250,18 @@ def body_container():
                         value='warehouse',
                         ),
                     ]),
-                    datatable_div=dash_table.DataTable(
-                        id=mini_card_datatable_mad_id,
-                    )
+                    datatable_div=html.Div([
+                        dcc.Loading(
+                            html.Div([
+                                dcc.Graph(id=chart_mad_id)
+                            ]),
+                        ),
+                        dcc.Loading(
+                            dash_table.DataTable(
+                                id=mini_card_datatable_mad_id,
+                            ),
+                        ),
+                    ]),
                 )
             ], sm=12, md=4, lg=4), 
             dbc.Col([
@@ -256,9 +287,18 @@ def body_container():
                         value='warehouse',
                         ),
                     ]),
-                    datatable_div=dash_table.DataTable(
-                        id=mini_card_datatable_mape_id,
-                    )
+                    datatable_div=html.Div([
+                        dcc.Loading(
+                            html.Div([
+                                dcc.Graph(id=chart_mape_id)
+                            ]),
+                        ),
+                        dcc.Loading(
+                            dash_table.DataTable(
+                                id=mini_card_datatable_mape_id,
+                            ),
+                        ),
+                    ]),
                 )
             ], sm=12, md=4, lg=4), 
 
@@ -271,16 +311,6 @@ def body_container():
                         html.Summary(_('Dynamic filter')),
                         dbc.Row([
                             dbc.Col([
-                                dbc.Label(_('Forecast version')),
-                                dcc.Dropdown(
-                                    id=dropdown_chart_1_forecast_version_id,
-                                    placeholder=_('Forecasting version'),
-                                    options=_all_versions,
-                                    value=_all_versions[-1]['value'] if _all_versions else None,
-                                ),
-                            ], sm=12, md=12, lg=12),
-
-                            dbc.Col([
                                 html.Div([
                                     dbc.Label(_('Distribution field')),
                                     dcc.Dropdown(
@@ -292,7 +322,7 @@ def body_container():
                                             {'label': _('Circuit'), 'value': 'circuit'},
                                             # {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
                                         ],
-                                        value='warehouse',
+                                        value='circuit',
                                     ),
                                 ])
                             ], sm=12, md=6, lg=6),
@@ -315,7 +345,7 @@ def body_container():
                                             # {'label': 'Sub-Category',
                                             #  'value': 'product_category'},
                                         ],
-                                        value='product',
+                                        value='product__product_type',
                                     ),
                                 ])
                             ], sm=12, md=6, lg=6),
@@ -400,16 +430,6 @@ def body_container():
                         html.Summary(_('Dynamic filter')),
                         dbc.Row([
                             dbc.Col([
-                                dbc.Label(_('Forecast version')),
-                                dcc.Dropdown(
-                                    id=dropdown_chart_2_forecast_version_id,
-                                    placeholder=_('Forecasting version'),
-                                    options=_all_versions,
-                                    value=_all_versions[-1]['value'] if _all_versions else None,
-                                ),
-                            ], sm=12, md=12, lg=12),
-
-                            dbc.Col([
                                 html.Div([
                                     dbc.Label(_('Distribution field')),
                                     dcc.Dropdown(
@@ -421,7 +441,7 @@ def body_container():
                                             {'label': _('Circuit'), 'value': 'circuit'},
                                             # {'label': 'Sub-Circuit', 'value': 'sub_circuit'},
                                         ],
-                                        value='',
+                                        value='warehouse',
                                     ),
                                 ])
                             ], sm=12, md=6, lg=6),
@@ -444,7 +464,7 @@ def body_container():
                                             # {'label': 'Sub-Category',
                                             #  'value': 'product_category'},
                                         ],
-                                        value='',
+                                        value='product__product_type',
                                     ),
                                 ])
                             ], sm=12, md=6, lg=6),
@@ -478,7 +498,7 @@ def body_container():
                                                 {'label': _('Week'), 'value': '%Y-Week%W'},
                                                 {'label': _('Day'), 'value': '%Y-%b-%d'}
                                             ],
-                                            value='%Y-%b-%d',
+                                            value='%Y-Week%W',
                                         )
                                     ]),
                                 ])
@@ -540,6 +560,7 @@ app.layout = dash_utils.get_dash_layout(filter_container(), body_container())
         Output(mini_card_subtitle_bias_percent_id, 'children'),
         Output(mini_card_datatable_bias_percent_id, 'data'),
         Output(mini_card_datatable_bias_percent_id, 'columns'),
+        Output(chart_bias_id, 'figure'),
     ],
     [
         Input(table_forecast_dataframe_id, 'data'),
@@ -576,7 +597,20 @@ def fill_cards(
     ).sort_values(
         'forecast_bias_percent',
         # ascending=False,
+        na_position='first',
     ).head(10)
+
+    figure = df.iplot(
+        asFigure=True,
+        kind='barh',
+        x=group_by,
+        y=['forecast_bias_percent'],
+        theme='white',
+        title=_('Forecast bias percent {}').format(group_by),
+        xTitle=_(group_by),
+        yTitle='Forecast bias percent',
+    )
+
 
 
     # Output datatable
@@ -586,7 +620,8 @@ def fill_cards(
     return (
         card_value,
         data,
-        column
+        column,
+        figure
     )
 
 @app.callback(
@@ -594,6 +629,7 @@ def fill_cards(
         Output(mini_card_subtitle_mad_id, 'children'),
         Output(mini_card_datatable_mad_id, 'data'),
         Output(mini_card_datatable_mad_id, 'columns'),
+        Output(chart_mad_id, 'figure'),
     ],
     [
         Input(table_forecast_dataframe_id, 'data'),
@@ -631,8 +667,19 @@ def fill_cards(
     ).sort_values(
         'forecast_mad_single',
         ascending=False,
+        na_position='first',
     ).head(10)
 
+    figure = df.iplot(
+        asFigure=True,
+        kind='barh',
+        x=group_by,
+        y=['forecast_mad_single'],
+        theme='white',
+        title=_('Forecast MAD single {}').format(group_by),
+        xTitle=_(group_by),
+        yTitle='Forecast MAD single',
+    )
 
     # Output datatable
     column = [{"name": i, "id": i} for i in df.columns]
@@ -641,7 +688,8 @@ def fill_cards(
     return (
         card_value,
         data,
-        column
+        column,
+        figure
     )
 
 @app.callback(
@@ -649,6 +697,7 @@ def fill_cards(
         Output(mini_card_subtitle_mape_id, 'children'),
         Output(mini_card_datatable_mape_id, 'data'),
         Output(mini_card_datatable_mape_id, 'columns'),
+        Output(chart_mape_id, 'figure'),
     ],
     [
         Input(table_forecast_dataframe_id, 'data'),
@@ -685,8 +734,19 @@ def fill_cards(
     ).sort_values(
         'forecast_mape_single',
         ascending=False,
+        na_position='first',
     ).head(10)
 
+    figure = df.iplot(
+        asFigure=True,
+        kind='barh',
+        x=group_by,
+        y=['forecast_mape_single'],
+        theme='white',
+        title=_('Forecast MAPE single {}').format(group_by),
+        xTitle=_(group_by),
+        yTitle='Forecast MAPE single',
+    )
 
     # Output datatable
     column = [{"name": i, "id": i} for i in df.columns]
@@ -695,7 +755,8 @@ def fill_cards(
     return (
         card_value,
         data,
-        column
+        column,
+        figure
     )
 
 
@@ -711,6 +772,7 @@ def fill_cards(
         Input(dropdown_warehouse_list_id, 'value'),
         Input(dropdown_circuit_list_id, 'value'),
         Input(dropdown_customer_list_id, 'value'),
+        Input(dropdown_version_list_id, 'value'),
         Input(input_date_range_id, 'start_date'),
         Input(input_date_range_id, 'end_date'),
     ]
@@ -720,6 +782,7 @@ def dataframe_date_filter(
         selected_warehouses,
         selected_circuits,
         selected_customers,
+        selected_version,
         start_date,
         end_date,
         # kind,
@@ -753,11 +816,26 @@ def dataframe_date_filter(
     # }
 
     # Get queryset
+    # print('selected_version:', selected_version)
     forecast_qs = Forecast.objects.get_forecasting(
-        product_filter=selected_products, warehouse_filter=selected_warehouses, circuit_filter=selected_circuits, customer_filter=selected_customers, start_date=start_date, end_date=end_date)
+        product_filter=selected_products, 
+        warehouse_filter=selected_warehouses, 
+        circuit_filter=selected_circuits, 
+        customer_filter=selected_customers, 
+        version_filter=selected_version, 
+        start_date=start_date, 
+        end_date=end_date
+    )
+    # print('forecast_qs:', forecast_qs)
 
     order_qs = OrderDetail.objects.get_forecasting(
-        product_filter=selected_products, warehouse_filter=selected_warehouses, circuit_filter=selected_circuits, customer_filter=selected_customers, start_date=start_date, end_date=end_date)
+        product_filter=selected_products,
+        warehouse_filter=selected_warehouses,
+        circuit_filter=selected_circuits,
+        customer_filter=selected_customers,
+        start_date=start_date,
+        end_date=end_date
+    )
 
     # Convert queryset to dataframe and assign the right column type
     forecast_df = read_frame(forecast_qs)
@@ -778,6 +856,7 @@ def dataframe_date_filter(
     # default grouping
     _group_by_default = ['product', 'warehouse', 'circuit', 'customer']
 
+    # print(forecast_df)
     # Group by order_date and aggregate
     # forecast_df['forecast_date'] = forecast_df['forecast_date'].dt.strftime(kind)
     forecast_df = forecast_df.groupby([*_group_by_default, 'forecast_date'], as_index=False).agg(
@@ -786,10 +865,11 @@ def dataframe_date_filter(
     # order_df['order__ordered_at'] = order_df['order__ordered_at'].dt.strftime(kind)
     order_df = order_df.groupby([*_group_by_default, 'order__ordered_at'], as_index=False).agg(
         {'ordered_quantity': 'sum'})
-
+    # print(order_df)
     merged_df = pd.merge(forecast_df, order_df, how='left', left_on=[
         *_group_by_default, 'forecast_date'], right_on=[
         *_group_by_default, 'order__ordered_at'])  # .dropna()
+    # print(merged_df)
 
     # Prepare data & columns to be returned
     data = merged_df.to_dict('records')
@@ -797,6 +877,7 @@ def dataframe_date_filter(
 
 
     return data, columns
+
 
 @app.callback(
     [
@@ -808,7 +889,6 @@ def dataframe_date_filter(
     [
         # Input(datatable_data_upload_id, 'column'),
         Input(table_forecast_dataframe_id, 'data'),
-        Input(dropdown_chart_1_forecast_version_id, 'value'),
         Input(dropdown_chart_1_group_by_product_id, 'value'),
         Input(dropdown_chart_1_group_by_distribution_id, 'value'),
         Input(dropdown_chart_1_kind_id, 'value'),
@@ -818,20 +898,21 @@ def dataframe_date_filter(
     ]
 )
 def update_graph(
-    data,
-    version_id,
-    group_by_product, 
-    group_by_distribution, 
-    kind, 
-    show_by,
-    selected_y_column,
-    selected_metric):    
+        data,
+        group_by_product,
+        group_by_distribution,
+        kind,
+        show_by,
+        selected_y_column,
+        selected_metric):
     # Define group_by
+
     group_by = []
     if group_by_distribution:
         group_by.append(group_by_distribution)
     if group_by_product:
         group_by.append(group_by_product)
+    print('[*] group_by\n', group_by)
 
     # Get dataframe
     df = pd.DataFrame.from_dict(data)
@@ -842,9 +923,10 @@ def update_graph(
 
     # Convert datetime column to the correct kind (day, week, year..)
     df['forecast_date'] = df['forecast_date'].astype(
-            'datetime64[ns]')
+        'datetime64[ns]')
     df['forecast_date'] = df['forecast_date'].dt.strftime(kind)
     df['bias_quantity'] = df['forecasted_quantity'] - df['ordered_quantity']
+    print('[*] df\n', df)
 
     # Figure settings
     # Figure_1
@@ -863,18 +945,19 @@ def update_graph(
         ascending=False,
         na_position='first',
     ).iplot(
-        asFigure=True, 
-        kind='bar', 
+        asFigure=True,
+        kind='bar',
         # barmode='stack',
-        x=group_by, 
+        x=group_by,
         y=['forecasted_quantity', 'ordered_quantity', 'bias_quantity'],
-        theme='white', 
+        theme='white',
         title=_('Forecast accuracy by {}: Forecasts, orders, bias').format(
             [item.split('__')[-1] for item in group_by]
         ),
         xTitle=_('{}').format([item.split('__')[-1] for item in group_by]),
         yTitle=show_by.capitalize(),
     )
+    print('[*] figure_1\n', figure_1)
 
     # Figure 2
     df_2 = df.copy()
@@ -888,17 +971,18 @@ def update_graph(
         'bias_quantity': 'sum'
     }).reset_index(
     ).sort_values(
-        by=['forecast_date', group_by[0]], 
+        by=['forecast_date', group_by[0]],
         ascending=True
     ).iplot(
-        asFigure=True, 
+        asFigure=True,
         kind='scatter',
         mode='lines + markers',
         size=5,
-        x='forecast_date', 
+        x='forecast_date',
         y=selected_y_column,  # ['forecasted_quantity', 'ordered_quantity'],
-        categories=group_by[0],#group_by[1] if len(group_by) > 1 else group_by[0], # Assuming the array is not empty (checked previousely)
-        theme='white', 
+        # group_by[1] if len(group_by) > 1 else group_by[0], # Assuming the array is not empty (checked previousely)
+        categories=group_by[0],
+        theme='white',
         title=_('{} by {}').format(
             selected_y_column.capitalize(),
             group_by[0],
@@ -932,12 +1016,12 @@ def update_graph(
         ascending=False,
         # na_position='last'
     ).iplot(
-        asFigure=True, 
+        asFigure=True,
         kind='bar',
         x=group_by,
         y=selected_metric,
         # categories=group_by[1] if len(group_by) > 1 else group_by[0],
-        theme='white', 
+        theme='white',
         title=_('Metric distribution by {}').format(
             [item.split('__')[-1] for item in group_by]
         ),
@@ -966,19 +1050,21 @@ def update_graph(
     ]
 )
 def update_graph(
-    data, 
-    group_by_product, 
-    group_by_distribution, 
-    kind, 
-    show_by,
-    selected_y_column,
-    selected_metric):    
+        data,
+        group_by_product,
+        group_by_distribution,
+        kind,
+        show_by,
+        selected_y_column,
+        selected_metric):
     # Define group_by
+
     group_by = []
     if group_by_distribution:
         group_by.append(group_by_distribution)
     if group_by_product:
         group_by.append(group_by_product)
+    print('[*] group_by\n', group_by)
 
     # Get dataframe
     df = pd.DataFrame.from_dict(data)
@@ -989,9 +1075,10 @@ def update_graph(
 
     # Convert datetime column to the correct kind (day, week, year..)
     df['forecast_date'] = df['forecast_date'].astype(
-            'datetime64[ns]')
+        'datetime64[ns]')
     df['forecast_date'] = df['forecast_date'].dt.strftime(kind)
     df['bias_quantity'] = df['forecasted_quantity'] - df['ordered_quantity']
+    print('[*] df\n', df)
 
     # Figure settings
     # Figure_1
@@ -1010,18 +1097,19 @@ def update_graph(
         ascending=False,
         na_position='first',
     ).iplot(
-        asFigure=True, 
-        kind='bar', 
+        asFigure=True,
+        kind='bar',
         # barmode='stack',
-        x=group_by, 
+        x=group_by,
         y=['forecasted_quantity', 'ordered_quantity', 'bias_quantity'],
-        theme='white', 
+        theme='white',
         title=_('Forecast accuracy by {}: Forecasts, orders, bias').format(
             [item.split('__')[-1] for item in group_by]
         ),
         xTitle=_('{}').format([item.split('__')[-1] for item in group_by]),
         yTitle=show_by.capitalize(),
     )
+    print('[*] figure_1\n', figure_1)
 
     # Figure 2
     df_2 = df.copy()
@@ -1035,17 +1123,18 @@ def update_graph(
         'bias_quantity': 'sum'
     }).reset_index(
     ).sort_values(
-        by=['forecast_date', group_by[0]], 
+        by=['forecast_date', group_by[0]],
         ascending=True
     ).iplot(
-        asFigure=True, 
+        asFigure=True,
         kind='scatter',
         mode='lines + markers',
         size=5,
-        x='forecast_date', 
+        x='forecast_date',
         y=selected_y_column,  # ['forecasted_quantity', 'ordered_quantity'],
-        categories=group_by[0],#group_by[1] if len(group_by) > 1 else group_by[0], # Assuming the array is not empty (checked previousely)
-        theme='white', 
+        # group_by[1] if len(group_by) > 1 else group_by[0], # Assuming the array is not empty (checked previousely)
+        categories=group_by[0],
+        theme='white',
         title=_('{} by {}').format(
             selected_y_column.capitalize(),
             group_by[0],
@@ -1079,12 +1168,12 @@ def update_graph(
         ascending=False,
         # na_position='last'
     ).iplot(
-        asFigure=True, 
+        asFigure=True,
         kind='bar',
         x=group_by,
         y=selected_metric,
         # categories=group_by[1] if len(group_by) > 1 else group_by[0],
-        theme='white', 
+        theme='white',
         title=_('Metric distribution by {}').format(
             [item.split('__')[-1] for item in group_by]
         ),
@@ -1093,8 +1182,6 @@ def update_graph(
     )
 
     return figure_1, figure_2, figure_3
-
-
 
 
 # Select all checklist callbacks
@@ -1108,7 +1195,3 @@ dash_utils.select_all_callbacks(
     app, dropdown_customer_list_id, div_customer_list_id, checkbox_customer_list_id)
 dash_utils.select_all_callbacks(
     app, dropdown_product_range_list_id, div_product_range_list_id, checkbox_product_range_list_id)
-
-
-
-

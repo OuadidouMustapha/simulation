@@ -38,10 +38,10 @@ import time
 
 # Create global chart template
 mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
-df = pd.read_csv(
-    "https://github.com/plotly/datasets/raw/master/dash-sample-apps/dash-oil-and-gas/data/wellspublic.csv",
-    low_memory=False,
-)
+# df = pd.read_csv(
+#     "https://github.com/plotly/datasets/raw/master/dash-sample-apps/dash-oil-and-gas/data/wellspublic.csv",
+#     low_memory=False,
+# )
 
 layout = dict(
     autosize=True,
@@ -152,22 +152,22 @@ def filter_container():
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_categorie_list_id, div_categorie_list_id, checkbox_categorie_list_id, _all_categories,
-                    'Categories')
+                    _('Categories'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
-                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, 'ABC Segmentation')
+                    dropdown_abc_list_id, div_abc_list_id, checkbox_abc_list_id, _all_abc_segmentation, _('ABC Segmentation'))
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_fmr_list_id, div_fmr_list_id, checkbox_fmr_list_id, _all_fmr_segmentation,
-                    'FMR Segmentation'),
+                    _('FMR Segmentation')),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
             dbc.Col([
                 dash_utils.get_filter_dropdown(
                     dropdown_warehouse_list_id, div_warehouse_list_id, checkbox_warehouse_list_id, _all_warehouses,
-                    'Warehouses',),
+                    _('Warehouses'),),
                 html.Div(id="number-out"),
             ], sm=12, md=6, lg=3),
         ]),
@@ -191,18 +191,18 @@ def body_container():
         [
             dbc.Row([
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(mini_card_products_number_id,title='Number of products',
+                    dash_utils.get_mini_card_profil(mini_card_products_number_id,title=_('Number of products'),
                                              subtitle=count_products,icon="fas fa-boxes")
                 ], sm=12, md=3, lg=3),
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(mini_card_warehouses_number_id, title='Number of Warehouses ',
+                    dash_utils.get_mini_card_profil(mini_card_warehouses_number_id, title=_('Number of Warehouses'),
                                              subtitle=count_warhouses, icon="fas fa-warehouse"),
                 ], sm=12, md=3, lg=3),
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(mini_card_categories_number_id,title='Number of Categories',subtitle=count_product_categories,icon="fas fa-stream")
+                    dash_utils.get_mini_card_profil(mini_card_categories_number_id,title=_('Number of Categories'),subtitle=count_product_categories,icon="fas fa-stream")
                 ], sm=12, md=3, lg=3),
                 dbc.Col([
-                    dash_utils.get_mini_card_profil(mini_card_circuits_number_id,title='Number of Circuit',subtitle=count_circuits,icon="fas fa-code-branch")
+                    dash_utils.get_mini_card_profil(mini_card_circuits_number_id,title=_('Number of Circuits'),subtitle=count_circuits,icon="fas fa-code-branch")
                 ], sm=12, md=3, lg=3),
             ]),
                 
@@ -214,11 +214,11 @@ def body_container():
                                 dbc.Row([
                                     dbc.Col([
                                         dcc.Graph(id=figure_pie_warehouse_id),
-                                        html.P(_('Distribution of Product in Warehouses'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Distribution of Products in Warehouses'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
                                         dcc.Graph(id=figure_pie_categories_id),
-                                        html.P(_('Distribution of Product By Categories'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Distribution of Products By Categories'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],
@@ -237,11 +237,11 @@ def body_container():
                                 dbc.Row([
                                     dbc.Col([
                                         dcc.Graph(id=figure_pie_abc_id),
-                                        html.P(_('Distribution of Product By ABC classification'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Distribution of Products By ABC classification'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6),
                                     dbc.Col([
                                         dcc.Graph(id=figure_pie_fmr_id),
-                                        html.P(_('Distribution of Product By FMR classification'),className='font-weight-bold text-primary  h6  text-center'),
+                                        html.P(_('Distribution of Products By FMR classification'),className='font-weight-bold text-primary  h6  text-center'),
                                     ], sm=12, md=6, lg=6)
                                 ])
                             ],
@@ -270,7 +270,7 @@ def body_container():
                                         value='what-is',
                                         children=[
                                             dcc.Tab(
-                                                label=_('Evolution of Categories'),
+                                                label=_('Evolution of quantity by Categories'),
                                                 value='what-is',
                                                 children=dcc.Loading(
                                                     html.Div(
@@ -280,7 +280,7 @@ def body_container():
                                                 ),
                                             ),
                                             dcc.Tab(
-                                                label=_('Evolution of ABC Classification'),
+                                                label=_('Evolution of quantity by ABC Classification'),
                                                 value='abc_by_date',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -298,7 +298,7 @@ def body_container():
                                                 )
                                             ),
                                             dcc.Tab(
-                                                label=_('Evolution of FMR Classification '),
+                                                label=_('Evolution of quantity by FMR Classification '),
                                                 value='fmr_by_date',
                                                 children=html.Div(
                                                     className='control-tab',
@@ -671,9 +671,9 @@ def plot_pie_statutsd_product_figure(selected_products, selected_categories, sel
         x=['warehouse'],
         y=[row_cat for row_cat in cats],
         theme='white',
-        title='title',
-        xTitle='customer',
-        yTitle='Number of Orders',
+        title=_('Distribution Of Categories in Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure
@@ -745,9 +745,9 @@ def plot_pie_statutsd_product_figure(selected_products, selected_categories, sel
         x=['warehouse'],
         y=[row_cat for row_cat in cats],
         theme='white',
-        title='title',
-        xTitle='customer',
-        yTitle='Number of Orders',
+        title=_('Distribution Of ABC Segmentation in Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure
@@ -825,9 +825,9 @@ def plot_pie_statutsd_product_ffigure(selected_products, selected_categories, se
         x=['warehouse'],
         y=[row_cat for row_cat in cats],
         theme='white',
-        title='title',
-        xTitle='customer',
-        yTitle='Number of Orders',
+        title=_('Distribution Of FMR Segmentation in Warhouses'),
+        xTitle=_('Warhouses'),
+        yTitle=_('Quantity'),
     )
     
     return figure
@@ -874,9 +874,6 @@ def plot_most_product_figure(selected_products, selected_categories, selected_wa
     df_data_cat = df_data_cat.sort_values(by='quantity',ascending = True).head(10)
 
 
-    print(df_data_cat,'momo')
-
-
     figure = df_data_cat.iplot(
         asFigure=True,
         kind='barh',
@@ -884,9 +881,9 @@ def plot_most_product_figure(selected_products, selected_categories, selected_wa
         x=['product'],
         y=['quantity'],
         theme='white',
-        title='title',
-        xTitle='date',
-        yTitle='Most Ordered  Products',
+        title=_('TOP 10 Products'),
+        xTitle=_('Quantity'),
+        yTitle=_('Products'),
     )  
     
     
@@ -966,11 +963,11 @@ def plot_pie_statutsd_product_ffigure(selected_products, selected_categories, se
         x=['check_date'],
         y=['quantity'].append([row_cat for row_cat in cats]),
         theme='white',
-        title='title',
-        xTitle='customer',
-        mode='markers',
         name="Oil Produced (bbl)",
-        yTitle='Number of Orders',
+        mode='markers',
+        title=_('Evolution of Product Quantity in Warhouses by Categories'),
+        xTitle=_('Date'),
+        yTitle=_('Quantity'),
     )
     
     figure.update_traces(
@@ -1059,11 +1056,11 @@ def plot_pie_statutsd_product_ffigure(selected_products, selected_categories, se
         x=['check_date'],
         y=['quantity'].append([row_cat for row_cat in cats]),
         theme='white',
-        title='title',
-        xTitle='customer',
-        mode='markers',
         name="Oil Produced (bbl)",
-        yTitle='Number of Orders',
+        mode='markers',
+        title=_('Evolution of Product Quantity in Warhouses by ABC Segmentation'),
+        xTitle=_('Date'),
+        yTitle=_('Quantity'),
     )
     
     figure.update_traces(
@@ -1153,11 +1150,11 @@ def plot_pie_statutsd_product_ffigure(selected_products, selected_categories, se
         x=['check_date'],
         y=['quantity'].append([row_cat for row_cat in cats]),
         theme='white',
-        title='title',
-        xTitle='customer',
         mode='markers',
         name="Oil Produced (bbl)",
-        yTitle='Number of Orders',
+        title=_('Evolution of Product Quantity in Warhouses by FMR Segmentation'),
+        xTitle=_('Date'),
+        yTitle=_('Quantity'),
     )
     
     figure.update_traces(

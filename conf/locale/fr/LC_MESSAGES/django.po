@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: templates/partials/_topbar.html:188
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-05 21:48+0100\n"
+"POT-Creation-Date: 2021-02-01 14:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,43 +18,302 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/partials/_footer.html:5
-msgid "Copyright &copy; ORCHEST Supply Chain Analytics 2020"
+#: deployment/dashboards/deployment/callbacks.py:149
+msgid "Number of Orders by Date"
 msgstr ""
 
-#: templates/partials/_sidebar.html:27
+#: deployment/dashboards/deployment/callbacks.py:150
+msgid "Ordered Date"
+msgstr ""
+
+#: deployment/dashboards/deployment/callbacks.py:151
+msgid "Number of Orders"
+msgstr ""
+
+#: deployment/dashboards/deployment/callbacks.py:280
+#: deployment/dashboards/deployment/callbacks.py:294
+msgid "Most 10 Products"
+msgstr ""
+
+#: deployment/dashboards/deployment/callbacks.py:281
+#: deployment/dashboards/deployment/callbacks.py:295
+msgid "Quantity"
+msgstr ""
+
+#: deployment/dashboards/deployment/callbacks.py:282
+#: deployment/dashboards/deployment/callbacks.py:296
+#: deployment/dashboards/deployment/layouts.py:164
+msgid "Product"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:33
+#: deployment/dashboards/deployment/layouts.py:129
+#: deployment/dashboards/deployment/layouts.py:170
+msgid "Maximize"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:37
+msgid "Turnover"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:45
+msgid "Over the period"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:61
+msgid "Run"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:66
+msgid "Save"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:77
+msgid "Availability of vehicles and their capacities"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:113
+msgid "Warehouses"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:123
+msgid "Warhouses Pie Graph"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:199
+msgid "Data saved successfully"
+msgstr ""
+
+#: deployment/dashboards/deployment/layouts.py:210
+msgid "Deployed quantities by truck"
+msgstr ""
+
+#: templates/admin/base_site.html:3
+msgid "Django site admin"
+msgstr ""
+
+#: templates/admin/base_site.html:6
+msgid "Django administration"
+msgstr ""
+
+#: templates/base.admin.html:67
+msgid "Welcome,"
+msgstr ""
+
+#: templates/base.admin.html:72
+msgid "View site"
+msgstr ""
+
+#: templates/base.admin.html:77
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:6
+msgid "Documentation"
+msgstr ""
+
+#: templates/base.admin.html:81
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:6
+msgid "Change password"
+msgstr ""
+
+#: templates/base.admin.html:83
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:6
+msgid "Log out"
+msgstr ""
+
+#: templates/partials/_footer.html:5
+msgid "Copyright &copy; ORCHEST Supply Chain Analytics "
+msgstr ""
+
+#: templates/partials/_sidebar.html:28
+msgid "Admin"
+msgstr ""
+
+#: templates/partials/_sidebar.html:35
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: templates/partials/_sidebar.html:60
-msgid "Forecasting"
-msgstr "Prévision"
-
 #: templates/partials/_sidebar.html:67
+msgid "Demand planning"
+msgstr "Demand planning"
+
+#: templates/partials/_sidebar.html:74 templates/partials/_sidebar.html:102
 msgid "Overview"
 msgstr "Aperçu"
 
-#: templates/partials/_sidebar.html:70
-msgid "Input Interface"
-msgstr "Interface de saisie"
-
-#: templates/partials/_sidebar.html:73
-msgid "Forecast Accuracy"
-msgstr "Précision de la prévision"
-
 #: templates/partials/_sidebar.html:81
+msgid "Forecast Accuracy"
+msgstr "Fiabilité des prévisions"
+
+#: templates/partials/_sidebar.html:84
+msgid "F-Orchest"
+msgstr "Réalisation des prévisions"
+
+#: templates/partials/_sidebar.html:91
+msgid "Diagnostic"
+msgstr "Diagnostique"
+
+#: templates/partials/_sidebar.html:92
 msgid "Deployment"
 msgstr "Déploiement"
 
-#: templates/partials/_topbar.html:201 templates/partials/_topbar.html:214
-#: templates/partials/_topbar.html:222
+#: templates/partials/_sidebar.html:105
+msgid "Warehouse Profiling"
+msgstr ""
+
+#: templates/partials/_sidebar.html:108
+msgid "Stock"
+msgstr ""
+
+#: templates/partials/_sidebar.html:111
+msgid "Customers"
+msgstr ""
+
+#: templates/partials/_sidebar.html:112 templates/partials/_sidebar.html:118
+msgid "Orders"
+msgstr "Commandes"
+
+#: templates/partials/_sidebar.html:113 templates/partials/_sidebar.html:119
+msgid "Deliveries"
+msgstr ""
+
+#: templates/partials/_sidebar.html:114 templates/partials/_sidebar.html:120
+msgid "OTIF"
+msgstr ""
+
+#: templates/partials/_sidebar.html:117
+msgid "Suppliers"
+msgstr ""
+
+#: templates/partials/_topbar.html:65
+msgid "Notifications center"
+msgstr ""
+
+#: templates/partials/_topbar.html:69
+msgid "Show all notifications"
+msgstr ""
+
+#: templates/partials/_topbar.html:162
+msgid "Profile"
+msgstr ""
+
+#: templates/partials/_topbar.html:166
+#: templates/registration/password_change_done.html:9
+#: templates/registration/password_change_form.html:12
+msgid "Password change"
+msgstr ""
+
+#: templates/partials/_topbar.html:179 templates/partials/_topbar.html:192
+#: templates/partials/_topbar.html:200
 msgid "Logout"
 msgstr "Se déconnecter"
 
-#: templates/partials/_topbar.html:219
+#: templates/partials/_topbar.html:197
 msgid "Select \"Logout\" below if you are ready to end your current session."
-msgstr "Sélectionnez \"Logout\" ci-dessous si vous êtes prêt à mettre fin à votre session en cours."
+msgstr ""
+"Sélectionnez \"Logout\" ci-dessous si vous êtes prêt à mettre fin à votre "
+"session en cours."
 
-#: templates/partials/_topbar.html:221
+#: templates/partials/_topbar.html:199
 msgid "Cancel"
 msgstr "Annuler"
+
+#: templates/registration/login.html:7 templates/registration/login.html:25
+#: templates/registration/login.html:33
+msgid "Login"
+msgstr ""
+
+#: templates/registration/login.html:38
+msgid "Forgot Password?"
+msgstr ""
+
+#: templates/registration/login.html:41
+msgid "Create an account"
+msgstr ""
+
+#: templates/registration/password_change_done.html:8
+#: templates/registration/password_change_form.html:11
+msgid "Account"
+msgstr ""
+
+#: templates/registration/password_change_done.html:21
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/registration/password_change_form.html:31
+#: templates/registration/password_reset_confirm.html:32
+msgid "Change my password"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:7
+#: templates/registration/password_reset_complete.html:25
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:27
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:28
+msgid "Log in"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:7
+#: templates/registration/password_reset_confirm.html:26
+msgid "Enter new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:35
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:7
+msgid "Email Sent"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:25
+msgid "Password reset sent"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:27
+msgid ""
+"We’ve emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:28
+msgid ""
+"If you don’t receive an email, please make sure you’ve entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:7
+#: templates/registration/password_reset_form.html:25
+msgid "Password reset"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:26
+msgid ""
+"Forgotten your password? Enter your email address below, and we’ll email "
+"instructions for setting a new one."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:33
+#: templates/registration/signup.html:31
+msgid "Login instead?"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:34
+msgid "Reset my password"
+msgstr ""
+
+#: templates/registration/signup.html:7 templates/registration/signup.html:25
+#: templates/registration/signup.html:32
+msgid "Sign Up"
+msgstr ""
+
+#~ msgid "Input Interface"
+#~ msgstr "Interface de saisie"

@@ -27,7 +27,7 @@ _deployment_days = 6*30
 # Truck availability query
 truckavailability_qs = TruckAvailability.objects.filter(warehouse__warehouse_type='RDC')
 truckavailability_qs = truckavailability_qs.values(
-    'warehouse', 'category__reference', 'warehouse__reception_capacity', 'available_truck', 'category__capacity', 'category__cost')
+    'warehouse', 'category__reference', 'warehouse__reception_capacity', 'available_truck')
 truckavailability_qs = truckavailability_qs.order_by('warehouse')
 truckavailability_df = read_frame(truckavailability_qs)
 _editable_columns = ['warehouse__reception_capacity', 'available_truck',

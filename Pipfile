@@ -7,7 +7,6 @@ verify_ssl = true
 autopep8 = "*"
 pylint = "*"
 django-extensions = "*"
-pygraphviz = "*"
 
 [packages]
 gunicorn = "==20.0.4"
@@ -126,7 +125,6 @@ pyasn1 = "==0.4.8"
 pyasn1-modules = "==0.2.8"
 pycodestyle = "==2.6.0"
 pycparser = "==2.20"
-pygraphviz = "==1.6"
 pylint = "==2.6.0"
 pyparsing = "==2.4.7"
 pyrsistent = "==0.17.3"

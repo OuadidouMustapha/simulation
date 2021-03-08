@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2139169356667c67114306e5097bbe42010be88e1bdc3f66807600350ae1ca86"
+            "sha256": "065be06195cc608ab0ba9c0f40f1c24e7fa7b9075966b6728ebc29a19d2f6876"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1556,13 +1556,6 @@
             "index": "pypi",
             "version": "==2.7.3"
         },
-        "pygraphviz": {
-            "hashes": [
-                "sha256:411ae84a5bc313e3e1523a1cace59159f512336318a510573b47f824edef8860"
-            ],
-            "index": "pypi",
-            "version": "==1.6"
-        },
         "pyhamcrest": {
             "hashes": [
                 "sha256:412e00137858f04bde0729913874a48485665f2d36fe9ee449f26be864af9316",
@@ -2179,13 +2172,6 @@
             ],
             "index": "pypi",
             "version": "==2.6.0"
-        },
-        "pygraphviz": {
-            "hashes": [
-                "sha256:411ae84a5bc313e3e1523a1cace59159f512336318a510573b47f824edef8860"
-            ],
-            "index": "pypi",
-            "version": "==1.6"
         },
         "pylint": {
             "hashes": [

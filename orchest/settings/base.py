@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from django.contrib.messages import constants as messages
 import os
 from decouple import config, Csv
+import django_on_heroku
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
@@ -304,3 +305,5 @@ LOGGING = {
         },
     }
 }
+# Activate Django-Heroku.
+django_on_heroku.settings(locals())
